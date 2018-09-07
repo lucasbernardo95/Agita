@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "244355564251",
+    "firebase_url": "https://agita-ed061.firebaseio.com",
+    "project_id": "agita-ed061",
+    "storage_bucket": "agita-ed061.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244355564251:android:f3f47a91179081a0",
+        "android_client_info": {
+          "package_name": "com.example.suelliton.agita"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "244355564251-dqvu1vo8pc4l1s4i5o9vloe4i5s64jlj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKqv6TA8O23A2kAQ1zm-eiZzCWq3EPGpk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
