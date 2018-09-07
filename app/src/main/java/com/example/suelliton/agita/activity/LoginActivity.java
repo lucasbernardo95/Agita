@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Usuario;
+import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -62,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-//        database = MyDatabaseUtil.getDatabase();
+        database = MyDatabaseUtil.getDatabase();
         RootReference = database.getReference("usuarios");
         mProgressView = (ProgressBar) findViewById(R.id.login_progress);
 
