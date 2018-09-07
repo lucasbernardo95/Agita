@@ -10,14 +10,16 @@ public class Usuario {
     private String password;
     private String cpf_cnpj;
     private boolean admin;
+    private String email;
     private List<Evento> meusEventos;
     private List<String> eventosInteresse;
 
     public Usuario() {
     }
 
-    public Usuario(String nome, String contato, String login, String password, String cpf_cnpj, boolean admin) {
+    public Usuario(String nome, String email, String contato, String login, String password, String cpf_cnpj, boolean admin) {
         this.nome = nome;
+        this.email = email;
         this.contato = contato;
         this.login = login;
         this.password = password;
@@ -25,16 +27,7 @@ public class Usuario {
         this.admin = admin;
     }
 
-    public Usuario(String nome, String contato, String login, String password, String cpf_cnpj, boolean admin, List<Evento> meusEventos, List<String> eventosInteresse) {
-        this.nome = nome;
-        this.contato = contato;
-        this.login = login;
-        this.password = password;
-        this.cpf_cnpj = cpf_cnpj;
-        this.admin = admin;
-        this.meusEventos = meusEventos;
-        this.eventosInteresse = eventosInteresse;
-    }
+
 
     @Override
     public String toString() {
@@ -48,6 +41,14 @@ public class Usuario {
                 ", meusEventos=" + meusEventos +
                 ", eventosInteresse=" + eventosInteresse +
                 '}';
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getNome() {

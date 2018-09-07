@@ -24,52 +24,51 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-
+import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
-
 import static android.Manifest.permission.READ_CONTACTS;
+
+
 import static com.example.suelliton.agita.SplashActivity.LOGADO;
-
-
-public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class AddUserActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
     private static final int REQUEST_READ_CONTACTS = 0;
     private UserLoginTask mAuthTask = null;
-    private Usuario USUARIO_OBJETO_LOGADO;
+    // UI references.
+    private EditText mUserView;
+    private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
-    private TextView mLinkCadastro;
-    private EditText mUserView;
+    private View mCadastroFormView;
+    private Usuario USUARIO_OBJETO_LOGADO;
+
     private FirebaseDatabase database ;
     private DatabaseReference RootReference ;
-
-
+    private ValueEventListener listener;
+    boolean passUser = false;
+    boolean passEmail = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        setContentView(R.layout.activity_add_user);
+
         database = MyDatabaseUtil.getDatabase();
         RootReference = database.getReference("usuarios");
-        mProgressView = (ProgressBar) findViewById(R.id.login_progress);
 
-        populateAutoComplete();
-
-        mUserView = (EditText) findViewById(R.id.input_user);
+        mUserView = (EditText) findViewById(R.id.user_cadastro);
         mUserView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -81,7 +80,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        mPasswordView = (EditText) findViewById(R.id.input_password);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email_cadastro);
+        populateAutoComplete();
+
+        mPasswordView = (EditText) findViewById(R.id.password_cadastro);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -93,7 +95,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
+        Button mEmailSignInButton = (Button) findViewById(R.id.cadastro_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,19 +103,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        mLinkCadastro = (TextView) findViewById(R.id.link_signup);
-        mLinkCadastro.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this,AddUserActivity.class));
-                finish();
-            }
-        });
-
+        mCadastroFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
     }
-
-
-
 
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
@@ -131,7 +123,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mUserView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -145,7 +137,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return false;
     }
 
-
+    /**
+     * Callback received when a permissions request has been completed.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -155,10 +149,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         }
     }
-    public static void hideKeyboard(Context context, View view) {
-        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
 
 
     private void attemptLogin() {
@@ -166,9 +156,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return;
         }
 
+        // Reset errors.
+        mEmailView.setError(null);
         mPasswordView.setError(null);
         mUserView.setError(null);
 
+        // Store values at the time of the login attempt.
+        String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         String user = mUserView.getText().toString();
 
@@ -176,23 +170,40 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         boolean cancel = false;
         View focusView = null;
 
+        // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
+        // Check for a valid user, if the user entered one.
         if (!TextUtils.isEmpty(user) && !isUserValid(user)) {
             mUserView.setError(getString(R.string.error_invalid_user));
             focusView = mUserView;
             cancel = true;
         }
 
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailView;
+            cancel = true;
+        }
+
         if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
             focusView.requestFocus();
         } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(user, password);
+            mAuthTask = new UserLoginTask(email, password,user);
             mAuthTask.execute((Void) null);
         }
     }
@@ -211,12 +222,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return user.length() > 4;
     }
 
-
+    /**
+     * Shows the progress UI and hides the login form.
+     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mCadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mCadastroFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mCadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mProgressView.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
@@ -226,20 +251,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             });
         } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mCadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return new CursorLoader(this,
+                // Retrieve data rows for the device user's 'profile' contact.
                 Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
                         ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
 
+                // Select only email addresses.
                 ContactsContract.Contacts.Data.MIMETYPE +
                         " = ?", new String[]{ContactsContract.CommonDataKinds.Email
                 .CONTENT_ITEM_TYPE},
 
+                // Show primary email addresses first. Note that there won't be
+                // a primary email address if the user hasn't specified one.
                 ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
     }
 
@@ -263,10 +295,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
+                new ArrayAdapter<>(AddUserActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        //mEmailView.setAdapter(adapter);
+        mEmailView.setAdapter(adapter);
     }
 
 
@@ -280,47 +312,38 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
+    /**
+     * Represents an asynchronous login/registration task used to authenticate
+     * the user.
+     */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private  String mUser;
-        private  String mPassword;
+        private final String mEmail;
+        private final String mPassword;
+        private final String mUser;
 
-        UserLoginTask(String user, String password) {
-            mUser = user;
+        UserLoginTask(String email, String password,String user) {
+            mEmail = email;
             mPassword = password;
+            mUser = user;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-
-            Query queryUsuario = RootReference.orderByChild("username").equalTo(mUser).limitToFirst(1);
-
-            queryUsuario.addChildEventListener(new ChildEventListener() {
+            final List<Usuario> listaUsuarios = new ArrayList<>();
+            listener = RootReference.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    listaUsuarios.removeAll(listaUsuarios);
                     if (dataSnapshot.exists()) {
-                        Usuario usuario = dataSnapshot.getValue(Usuario.class);
-                        if(usuario.getPassword().equals(mPassword)){
-                            USUARIO_OBJETO_LOGADO = usuario;
-                            LOGADO = dataSnapshot.getKey();//salvo achave mestre do usuario
+                        for (DataSnapshot u: dataSnapshot.getChildren()) {
+                            Usuario usuario = u.getValue(Usuario.class);
+                            listaUsuarios.add(usuario);
                         }
+
+
                     }
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
                 }
 
                 @Override
@@ -336,12 +359,49 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
 
+            for (Usuario usuario: listaUsuarios ) {
+                if(usuario.getLogin().equals(mUser)){
+                    passUser = false;
+                    return false;
 
-            if(USUARIO_OBJETO_LOGADO != null){
-                return true;
+                }else{
+                    if(usuario.getEmail().equals(mEmail)){
+                        passEmail = false;
+                        return false;
+                    }else{
+                        passUser = true;
+                        passEmail = true;
+                    }
+                }
+            }
+            //se nao tiver nenhum usuario cadastrado ele cadastra o primeiro normalmente
+            if(listaUsuarios.size() == 0){
+                passUser = true;
+                passEmail = true;
             }
 
-            return false;
+
+
+            if(passEmail && passUser) {
+//Usuario(String nome, String email, String contato, String login, String password, String cpf_cnpj, boolean admin)
+                Usuario novoUsuario = new Usuario("suelliton",mEmail,"8499123432",mUser, mPassword,"099182364536-23",false);
+
+                RootReference = database.getReference("usuarios/");
+                RootReference.child(novoUsuario.getLogin()).setValue(novoUsuario);
+
+                SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("usuarioLogado", novoUsuario.getLogin());
+                editor.apply();
+                LOGADO = novoUsuario.getLogin();
+                return true;
+
+            }else{
+
+                return  false;
+            }
+
+
         }
 
         @Override
@@ -350,21 +410,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("usuarioLogado", USUARIO_OBJETO_LOGADO.getLogin());
-                editor.apply();
-                //LOGADO = USUARIO_OBJETO_LOGADO.getUsername();
-                startActivity(new Intent(LoginActivity.this,EventosActivity.class));
+                Toast.makeText(AddUserActivity.this, "Usuário  cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+
+                startActivity(new Intent(AddUserActivity.this,EventosActivity.class));
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-                Toast.makeText(LoginActivity.this, "Usuário inválido", Toast.LENGTH_SHORT).show();
+                    if(!passUser){
+                        mUserView.requestFocus();
+                        Toast.makeText(AddUserActivity.this, "Username já existe tente outro", Toast.LENGTH_SHORT).show();
+                    }
+                    if(!passEmail){
+                        mEmailView.requestFocus();
+                        Toast.makeText(AddUserActivity.this, "Já existe um usuário para este email ", Toast.LENGTH_SHORT).show();
 
+                    }
+                //mPasswordView.setError(getString(R.string.error_incorrect_password));
+                //mPasswordView.requestFocus();
             }
         }
-
 
         @Override
         protected void onCancelled() {
@@ -376,8 +439,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onPause() {
         super.onPause();
-
-
+        if(listener != null){
+            RootReference.removeEventListener(listener);
+        }
     }
 }
 
