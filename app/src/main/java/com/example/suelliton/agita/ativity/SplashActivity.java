@@ -1,4 +1,4 @@
-package com.example.suelliton.agita;
+package com.example.suelliton.agita.ativity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,10 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
+
+import com.example.suelliton.agita.R;
+import com.example.suelliton.agita.ativity.EventoActivity;
+import com.example.suelliton.agita.ativity.LoginActivity;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.google.firebase.database.ChildEventListener;
@@ -59,7 +63,7 @@ public class SplashActivity extends AppCompatActivity {
                             if(usuario.isAdmin()){
                                 Toast.makeText(SplashActivity.this, "Usuario administrado, telas ainda nao criadas", Toast.LENGTH_SHORT).show();
                             }else {
-                                startActivity(new Intent(SplashActivity.this, EventosActivity.class));
+                                startActivity(new Intent(SplashActivity.this, EventoActivity.class));
                                 finish();
                             }
                         }

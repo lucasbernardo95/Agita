@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.suelliton.agita.ativity.EventoActivity;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.google.firebase.database.DataSnapshot;
@@ -43,7 +44,7 @@ import java.util.List;
 import static android.Manifest.permission.READ_CONTACTS;
 
 
-import static com.example.suelliton.agita.SplashActivity.LOGADO;
+import static com.example.suelliton.agita.ativity.SplashActivity.LOGADO;
 public class AddUserActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
     private static final int REQUEST_READ_CONTACTS = 0;
     private UserLoginTask mAuthTask = null;
@@ -412,7 +413,7 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
             if (success) {
                 Toast.makeText(AddUserActivity.this, "Usuário  cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
 
-                startActivity(new Intent(AddUserActivity.this,EventosActivity.class));
+                startActivity(new Intent(AddUserActivity.this,EventoActivity.class));
                 finish();
             } else {
                     if(!passUser){
