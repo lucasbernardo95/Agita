@@ -1,4 +1,4 @@
-package com.example.suelliton.agita.ativity;
+package com.example.suelliton.agita;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +9,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
-
-import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.google.firebase.database.ChildEventListener;
@@ -58,8 +56,12 @@ public class SplashActivity extends AppCompatActivity {
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if (usuario != null) {
                             //Toast.makeText(SplashActivity.this, "usuario logado : "+LOGADO, Toast.LENGTH_SHORT).show();
-//                            startActivity(new Intent(SplashActivity.this, ExperimentoActivity.class));
-                            finish();
+                            if(usuario.isAdmin()){
+                                Toast.makeText(SplashActivity.this, "Usuario administrado, telas ainda nao criadas", Toast.LENGTH_SHORT).show();
+                            }else {
+                                startActivity(new Intent(SplashActivity.this, EventosActivity.class));
+                                finish();
+                            }
                         }
 
                     } catch (Exception e) {
