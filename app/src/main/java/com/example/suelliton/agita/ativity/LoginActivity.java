@@ -1,14 +1,12 @@
-package com.example.suelliton.agita;
+package com.example.suelliton.agita.ativity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -33,8 +31,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.suelliton.limi.models.Usuario;
-import com.example.suelliton.limi.utils.MyDatabaseUtil;
+import com.example.suelliton.agita.R;
+import com.example.suelliton.agita.model.Usuario;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,7 +45,6 @@ import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-import static com.example.suelliton.limi.Splash.LOGADO;
 
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
     private static final int REQUEST_READ_CONTACTS = 0;
@@ -65,7 +62,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        database = MyDatabaseUtil.getDatabase();
+//        database = MyDatabaseUtil.getDatabase();
         RootReference = database.getReference("usuarios");
         mProgressView = (ProgressBar) findViewById(R.id.login_progress);
 
@@ -107,7 +104,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLinkCadastro.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this,AdicionaUsuarioActivity.class));
+//                startActivity(new Intent(LoginActivity.this,AdicionaUsuarioActivity.class));
                 finish();
             }
         });
@@ -133,14 +130,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mUserView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
+//            Snackbar.make(mUserView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+//                    .setAction(android.R.string.ok, new OnClickListener() {
+//                        @Override
+//                        @TargetApi(Build.VERSION_CODES.M)
+//                        public void onClick(View v) {
+//                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
+//                        }
+//                    });
         } else {
             requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
         }
@@ -179,13 +176,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
+//            mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
         if (!TextUtils.isEmpty(user) && !isUserValid(user)) {
-            mUserView.setError(getString(R.string.error_invalid_user));
+//            mUserView.setError(getString(R.string.error_invalid_user));
             focusView = mUserView;
             cancel = true;
         }
@@ -305,7 +302,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if(usuario.getPassword().equals(mPassword)){
                             USUARIO_OBJETO_LOGADO = usuario;
-                            LOGADO = dataSnapshot.getKey();
+//                            LOGADO = dataSnapshot.getKey();
                         }
                     }
                 }
@@ -354,13 +351,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (success) {
                 SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("usuarioLogado", USUARIO_OBJETO_LOGADO.getUsername());
+//                editor.putString("usuarioLogado", USUARIO_OBJETO_LOGADO.getUsername());
                 editor.apply();
                 //LOGADO = USUARIO_OBJETO_LOGADO.getUsername();
-                startActivity(new Intent(LoginActivity.this,ExperimentoActivity.class));
+//                startActivity(new Intent(LoginActivity.this,ExperimentoActivity.class));
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
                 Toast.makeText(LoginActivity.this, "Usuário inválido", Toast.LENGTH_SHORT).show();
 
