@@ -1,4 +1,4 @@
-package com.example.suelliton.agita.ativity;
+package com.example.suelliton.agita.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
