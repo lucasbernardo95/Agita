@@ -1,13 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <TextView
-        android:id="@+id/tv"
-        android:textSize="25dp"
-        android:gravity="center"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:id="@+id/form_cadastro"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Adiciona ai sabudega"/>
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="56dp">
+        <!-- nome  -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/nome_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nome"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+        <!-- data  -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/data_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="data"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+        <!-- hora  -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/hora_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="hora"
+                android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
+        <!-- local  -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/local_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="local"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+        <!-- estilo Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/estilo_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="estilo"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+        <!-- bandas Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/bandas_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="bandas"
+                android:inputType="text" />
+
+        </android.support.design.widget.TextInputLayout>
+        <!-- valor Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/valor_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="valor"
+                android:inputType="text" />
+
+        </android.support.design.widget.TextInputLayout>
+        <!-- descricao Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/descricao_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="descricao"
+                android:inputType="text" />
+
+        </android.support.design.widget.TextInputLayout>
+        <!-- casashow Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/casa_show_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="casa de show"
+                android:inputType="text" />
+
+        </android.support.design.widget.TextInputLayout>
+        <!-- liberado Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/liberado_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="liberado"
+                android:inputType="number" />
+
+        </android.support.design.widget.TextInputLayout>
+        <ProgressBar
+            android:id="@+id/progress_login"
+            style="?android:attr/progressBarStyle"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/salvar_evento"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="75dp"
+            android:layout_marginTop="24dp"
+            android:padding="12dp"
+            android:text="Cadastrar evento" />
+
+
+    </LinearLayout>
+
+
+</ScrollView>

@@ -99,21 +99,9 @@ public class Usuario {
         this.admin = admin;
     }
 
-    public List<Evento> getMeusEventos() {
-        return meusEventos;
-    }
 
-    public void setMeusEventos(List<Evento> meusEventos) {
-        this.meusEventos = meusEventos;
-    }
 
-    public List<String> getEventosInteresse() {
-        return eventosInteresse;
-    }
 
-    public void setEventosInteresse(List<String> eventosInteresse) {
-        this.eventosInteresse = eventosInteresse;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -125,14 +113,12 @@ public class Usuario {
                 Objects.equals(getContato(), usuario.getContato()) &&
                 Objects.equals(getLogin(), usuario.getLogin()) &&
                 Objects.equals(getPassword(), usuario.getPassword()) &&
-                Objects.equals(getCpf_cnpj(), usuario.getCpf_cnpj()) &&
-                Objects.equals(getMeusEventos(), usuario.getMeusEventos()) &&
-                Objects.equals(getEventosInteresse(), usuario.getEventosInteresse());
+                Objects.equals(getCpf_cnpj(), usuario.getCpf_cnpj()) ;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getNome(), getContato(), getLogin(), getPassword(), getCpf_cnpj(), isAdmin(), getMeusEventos(), getEventosInteresse());
+        return Objects.hash(getNome(), getContato(), getLogin(), getPassword(), getCpf_cnpj(), isAdmin());
     }
 }

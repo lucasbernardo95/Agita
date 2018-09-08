@@ -7,15 +7,15 @@
         <item
             android:id="@+id/nav_add_anuncio"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Adicionar anuncio" />
+            android:title="Adicionar evento" />
         <item
             android:id="@+id/nav_meus_anuncios"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Meus anuncios" />
+            android:title="Meus eventos" />
         <item
             android:id="@+id/nav_todos_anuncios"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Todos anuncios" />
+            android:title="Todos eventos" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_manage"

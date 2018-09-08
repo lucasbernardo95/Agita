@@ -16,6 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.suelliton.agita.R;
+import com.example.suelliton.agita.fragment.AddEventoFragment;
+import com.example.suelliton.agita.fragment.MeusEventoFragment;
+import com.example.suelliton.agita.fragment.TodosEventoFragment;
+
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 public class EventoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -30,7 +34,7 @@ public class EventoActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
            fm = getSupportFragmentManager();
            FragmentTransaction ft = fm.beginTransaction();
-           ft.add(R.id.fragment_content, new TodosAnunciosFragment());
+           ft.add(R.id.fragment_content, new TodosEventoFragment());
            ft.commit();
 
 
@@ -90,15 +94,15 @@ public class EventoActivity extends AppCompatActivity
 
         if (id == R.id.nav_add_anuncio) {
             FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.fragment_content, new AddAnuncioFragment());
+            ft.replace(R.id.fragment_content, new AddEventoFragment());
             ft.commit();
         } else if (id == R.id.nav_meus_anuncios) {
             FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.fragment_content, new MeusAnunciosFragment());
+            ft.replace(R.id.fragment_content, new MeusEventoFragment());
             ft.commit();
         } else if (id == R.id.nav_todos_anuncios) {
             FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.fragment_content, new TodosAnunciosFragment());
+            ft.replace(R.id.fragment_content, new TodosEventoFragment());
             ft.commit();
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);

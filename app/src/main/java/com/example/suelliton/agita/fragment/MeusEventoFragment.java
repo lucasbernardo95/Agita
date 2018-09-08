@@ -1,4 +1,5 @@
-package com.example.suelliton.agita.activity;
+package com.example.suelliton.agita.fragment;
+
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -8,9 +9,9 @@ import android.view.ViewGroup;
 
 import com.example.suelliton.agita.R;
 
-public class TodosAnunciosFragment extends Fragment {
+public class MeusEventoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.todos_anuncios_fragment, container, false);
+        return inflater.inflate(R.layout.meus_anuncios_fragment, container, false);
     }
 }

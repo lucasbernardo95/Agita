@@ -6,13 +6,13 @@ import java.util.Objects;
 
 public class Evento {
     private String nome;
-    private Date data;
+    private String data;
     private String hora;
     private String local;
     private String estilo;
     private Integer latitude;
     private Integer longitude;
-    private List<String> bandas;
+    private String bandas;
     private double valor;
     private String descricao;
     private String baner;
@@ -22,7 +22,7 @@ public class Evento {
     public Evento() {
     }
 
-    public Evento(String nome, Date data, String hora, String local, String estilo, Integer latitude, Integer longitude, List<String> bandas, double valor, String descricao, String baner, boolean liberado, String casashow) {
+    public Evento(String nome, String data, String hora, String local, String estilo, Integer latitude, Integer longitude, String bandas, double valor, String descricao, String baner, boolean liberado, String casashow) {
         this.nome = nome;
         this.data = data;
         this.hora = hora;
@@ -65,11 +65,11 @@ public class Evento {
         this.nome = nome;
     }
 
-    public Date getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(Date data) {
+    public void setData(String data) {
         this.data = data;
     }
 
@@ -113,11 +113,11 @@ public class Evento {
         this.longitude = longitude;
     }
 
-    public List<String> getBandas() {
+    public String getBandas() {
         return bandas;
     }
 
-    public void setBandas(List<String> bandas) {
+    public void setBandas(String bandas) {
         this.bandas = bandas;
     }
 
