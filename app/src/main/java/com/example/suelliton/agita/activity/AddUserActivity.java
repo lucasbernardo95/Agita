@@ -6,31 +6,20 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
@@ -41,23 +30,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
-import static android.Manifest.permission.READ_CONTACTS;
-
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
-public class AddUserActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-    private static final int REQUEST_READ_CONTACTS = 0;
+public class AddUserActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
     // UI references.
-    private EditText mUserView;
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mCadastroFormView;
-    private Usuario USUARIO_OBJETO_LOGADO;
+    private EditText ac_nome;
+    private EditText ac_email;
+    private EditText ed_contato;
+    private EditText ac_cpfcnpj;
+    private EditText ed_login;
+    private EditText ed_password;
+    private Button salvarUsuario;
+    private View progressView;
+    private View cadastroFormView;
 
     private FirebaseDatabase database ;
-    private DatabaseReference RootReference ;
+    private DatabaseReference usuarioReference;
     private ValueEventListener listener;
     boolean passUser = false;
     boolean passEmail = false;
@@ -65,12 +54,27 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_user);
-
         database = MyDatabaseUtil.getDatabase();
-        RootReference = database.getReference("usuarios");
+        usuarioReference = database.getReference("usuarios");
 
-        mUserView = (EditText) findViewById(R.id.user_cadastro);
-        mUserView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        findViews();
+        setViewListeners();
+    }
+
+    public void findViews(){
+        ac_nome = (EditText) findViewById(R.id.nome_cadastro);
+        ac_email = (EditText) findViewById(R.id.email_cadastro);
+        ed_contato = (EditText) findViewById(R.id.contato_cadastro);
+        ac_cpfcnpj = (EditText) findViewById(R.id.cpfcnpj_cadastro);
+        ed_login = (EditText) findViewById(R.id.login_cadastro);
+        ed_password = (EditText) findViewById(R.id.password_cadastro);
+
+        salvarUsuario = (Button) findViewById(R.id.salvar_usuario);
+        cadastroFormView = findViewById(R.id.form_cadastro);
+        progressView = findViewById(R.id.progress_login);
+    }
+    public void setViewListeners(){
+        ed_login.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -81,11 +85,7 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
             }
         });
 
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email_cadastro);
-        populateAutoComplete();
-
-        mPasswordView = (EditText) findViewById(R.id.password_cadastro);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        ed_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -96,59 +96,13 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.cadastro_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        salvarUsuario.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
 
-        mCadastroFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
-    }
-
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
     }
 
 
@@ -156,43 +110,45 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
         if (mAuthTask != null) {
             return;
         }
-
         // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-        mUserView.setError(null);
-
+        ac_nome.setError(null);
+        ac_email.setError(null);
+        ed_contato.setError(null);
+        ac_cpfcnpj.setError(null);
+        ed_login.setError(null);
+        ed_password.setError(null);
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-        String user = mUserView.getText().toString();
-
+        String nome = ac_nome.getText().toString();
+        String email = ac_email.getText().toString();
+        String contato = ed_contato.getText().toString();
+        String cpfcnpj = ac_cpfcnpj.getText().toString();
+        String login = ed_login.getText().toString();
+        String password = ed_password.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
-
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+            ed_password.setError(getString(R.string.error_invalid_password));
+            focusView = ed_password;
             cancel = true;
         }
 
         // Check for a valid user, if the user entered one.
-        if (!TextUtils.isEmpty(user) && !isUserValid(user)) {
-            mUserView.setError(getString(R.string.error_invalid_user));
-            focusView = mUserView;
+        if (!TextUtils.isEmpty(login) && !isUserValid(login)) {
+            ed_login.setError(getString(R.string.error_invalid_user));
+            focusView = ed_login;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+            ac_email.setError(getString(R.string.error_field_required));
+            focusView = ac_email;
             cancel = true;
         } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+            ac_email.setError(getString(R.string.error_invalid_email));
+            focusView = ac_email;
             cancel = true;
         }
 
@@ -204,7 +160,7 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password,user);
+            mAuthTask = new UserLoginTask(nome,email,contato,cpfcnpj,login, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -223,210 +179,106 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
         return user.length() > 4;
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mCadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mCadastroFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mCadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mCadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this,
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
-
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<>();
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.ADDRESS));
-            cursor.moveToNext();
-        }
-
-        addEmailsToAutoComplete(emails);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-
-    }
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(AddUserActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
-
-
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
-        };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
-        private final String mUser;
+        private final String nome;
+        private final String email;
+        private final String contato;
+        private final String cpfcnpj;
+        private final String login;
+        private final String password;
 
-        UserLoginTask(String email, String password,String user) {
-            mEmail = email;
-            mPassword = password;
-            mUser = user;
+        UserLoginTask(String nome,String email,String contato, String cpfcnpj, String login,String password) {
+            this.nome = nome;
+            this.email = email;
+            this.contato = contato;
+            this.cpfcnpj = cpfcnpj;
+            this.login = login;
+            this.password = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
             final List<Usuario> listaUsuarios = new ArrayList<>();
-            listener = RootReference.addValueEventListener(new ValueEventListener() {
+            //busca usuários
+            listener = usuarioReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     listaUsuarios.removeAll(listaUsuarios);
-                    if (dataSnapshot.exists()) {
-                        for (DataSnapshot u: dataSnapshot.getChildren()) {
-                            Usuario usuario = u.getValue(Usuario.class);
-                            listaUsuarios.add(usuario);
+                    if (dataSnapshot.exists()) {//verifica se a snapshot existe
+                        for (DataSnapshot u: dataSnapshot.getChildren()) {//itera sobre todos usuários
+                            Usuario usuario = u.getValue(Usuario.class);////instancia um novo usuario com a snapshot atual
+                            listaUsuarios.add(usuario);//adiciona na lista local o usuário vindo do firebase
                         }
-
-
                     }
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
             });
-
+            //tempo necessário para dar tempo do listener carregar os dados
             try {
-                // Simulate network access.
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 return false;
             }
-
+            //iterar sobre os usuários procurando se ja existe o login e o email cadastrados
             for (Usuario usuario: listaUsuarios ) {
-                if(usuario.getLogin().equals(mUser)){
-                    passUser = false;
+                if(usuario.getLogin().equals(login)){
+                    passUser = false;//variaveis de controle para validar o cadastro
                     return false;
-
                 }else{
-                    if(usuario.getEmail().equals(mEmail)){
+                    if(usuario.getEmail().equals(login)){
                         passEmail = false;
                         return false;
                     }else{
-                        passUser = true;
+                        passUser = true;//variaveis de controle para validar o cadastro
                         passEmail = true;
                     }
                 }
             }
-            //se nao tiver nenhum usuario cadastrado ele cadastra o primeiro normalmente
+            //se nao tiver nenhum usuario cadastrado com login e email, ele cadastra o atual
             if(listaUsuarios.size() == 0){
-                passUser = true;
+                passUser = true;//diz que pode cadastrar
                 passEmail = true;
             }
 
-
-
             if(passEmail && passUser) {
-//Usuario(String nome, String email, String contato, String login, String password, String cpf_cnpj, boolean admin)
-                Usuario novoUsuario = new Usuario("suelliton",mEmail,"8499123432",mUser, mPassword,"099182364536-23",false);
-
-                RootReference = database.getReference("usuarios/");
-                RootReference.child(novoUsuario.getLogin()).setValue(novoUsuario);
-
+                Usuario novoUsuario = new Usuario(nome,email,contato,cpfcnpj,login,password,false);
+                usuarioReference.child(novoUsuario.getLogin()).setValue(novoUsuario);
+                //coloca o usuario no shared preferences
                 SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("usuarioLogado", novoUsuario.getLogin());
                 editor.apply();
                 LOGADO = novoUsuario.getLogin();
-                return true;
-
+                return true;//salva usuario
             }else{
-
-                return  false;
+                return  false;//erro pra salvar
             }
-
-
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
                 Toast.makeText(AddUserActivity.this, "Usuário  cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
-
                 startActivity(new Intent(AddUserActivity.this,EventoActivity.class));
                 finish();
             } else {
                     if(!passUser){
-                        mUserView.requestFocus();
+                        ed_login.requestFocus();
                         Toast.makeText(AddUserActivity.this, "Username já existe tente outro", Toast.LENGTH_SHORT).show();
                     }
                     if(!passEmail){
-                        mEmailView.requestFocus();
+                        ac_email.requestFocus();
                         Toast.makeText(AddUserActivity.this, "Já existe um usuário para este email ", Toast.LENGTH_SHORT).show();
 
                     }
-                //mPasswordView.setError(getString(R.string.error_incorrect_password));
-                //mPasswordView.requestFocus();
             }
         }
 
@@ -441,8 +293,41 @@ public class AddUserActivity extends AppCompatActivity implements LoaderCallback
     protected void onPause() {
         super.onPause();
         if(listener != null){
-            RootReference.removeEventListener(listener);
+            usuarioReference.removeEventListener(listener);
         }
     }
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            cadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            cadastroFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    cadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            cadastroFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
 }
 

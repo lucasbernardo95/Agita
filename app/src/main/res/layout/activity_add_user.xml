@@ -5,7 +5,7 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout
-        android:id="@+id/login_form"
+        android:id="@+id/form_cadastro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -20,38 +20,71 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"
             android:src="@drawable/logo_agita" />
-        <!-- User Label -->
+        <!-- nome Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp">
-
-            <AutoCompleteTextView
-                android:id="@+id/user_cadastro"
+            <EditText
+                android:id="@+id/nome_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
-                android:hint="User"
+                android:hint="Nome"
                 android:inputType="textEmailAddress" />
         </android.support.design.widget.TextInputLayout>
-
         <!-- Email Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp">
-
-            <AutoCompleteTextView
+            <EditText
                 android:id="@+id/email_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:hint="Email"
                 android:inputType="textEmailAddress" />
         </android.support.design.widget.TextInputLayout>
-
+        <!-- contato Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/contato_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contato"
+                android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
+        <!-- cpfcnpj Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/cpfcnpj_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Cpf/cnpj"
+                android:inputType="textEmailAddress" />
+        </android.support.design.widget.TextInputLayout>
+        <!-- User Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/login_cadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Login"
+                android:inputType="textEmailAddress" />
+        </android.support.design.widget.TextInputLayout>
         <!-- Password Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -70,7 +103,7 @@
 
         </android.support.design.widget.TextInputLayout>
         <ProgressBar
-            android:id="@+id/login_progress"
+            android:id="@+id/progress_login"
             style="?android:attr/progressBarStyle"
             android:layout_gravity="center"
             android:visibility="gone"
@@ -79,7 +112,7 @@
             />
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/cadastro_button"
+            android:id="@+id/salvar_usuario"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"

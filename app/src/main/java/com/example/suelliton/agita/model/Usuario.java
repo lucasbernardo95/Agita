@@ -17,7 +17,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String contato, String login, String password, String cpf_cnpj, boolean admin) {
+    public Usuario(String nome, String email, String contato, String cpf_cnpj, String login, String password, boolean admin) {
         this.nome = nome;
         this.email = email;
         this.contato = contato;

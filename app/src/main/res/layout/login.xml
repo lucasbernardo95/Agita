@@ -5,7 +5,7 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout
-        android:id="@+id/login_form"
+        android:id="@+id/form_cadastro"
         android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
 
         </android.support.design.widget.TextInputLayout>
         <ProgressBar
-            android:id="@+id/login_progress"
+            android:id="@+id/progress_login"
             style="?android:attr/progressBarStyle"
             android:layout_gravity="center"
             android:visibility="gone"
@@ -63,7 +63,7 @@
             />
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/sign_in_button"
+            android:id="@+id/btn_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
