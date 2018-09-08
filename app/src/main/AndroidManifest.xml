@@ -20,7 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER"></category>
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.LoginActivity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activity.AddUserActivity"
             android:windowSoftInputMode="stateHidden"></activity>
         <activity

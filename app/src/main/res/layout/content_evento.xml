@@ -7,5 +7,9 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activity.EventoActivity"
     tools:showIn="@layout/app_bar_evento">
-
+    <FrameLayout
+        android:id="@+id/fragment_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

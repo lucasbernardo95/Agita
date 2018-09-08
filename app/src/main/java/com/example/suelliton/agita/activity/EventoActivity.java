@@ -1,9 +1,11 @@
 package com.example.suelliton.agita.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,34 +16,38 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.suelliton.agita.R;
-
+import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 public class EventoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    @Override
+    DrawerLayout drawer;
+    Toolbar toolbar;
+    FragmentManager fm;
+       @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        findViews();
         setSupportActionBar(toolbar);
+           fm = getSupportFragmentManager();
+           FragmentTransaction ft = fm.beginTransaction();
+           ft.add(R.id.fragment_content, new TodosAnunciosFragment());
+           ft.commit();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setViewListener();
+    }
+
+    public void findViews(){
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+    public void setViewListener(){
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -82,13 +88,26 @@ public class EventoActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        if (id == R.id.nav_add_anuncio) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new AddAnuncioFragment());
+            ft.commit();
+        } else if (id == R.id.nav_meus_anuncios) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new MeusAnunciosFragment());
+            ft.commit();
+        } else if (id == R.id.nav_todos_anuncios) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new TodosAnunciosFragment());
+            ft.commit();
+        } else if (id == R.id.nav_logout) {
+            SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("usuarioLogado", "");
+            editor.apply();
+            LOGADO="";
+            startActivity(new Intent(EventoActivity.this,LoginActivity.class));
+            finish();
 
         } else if (id == R.id.nav_share) {
 
