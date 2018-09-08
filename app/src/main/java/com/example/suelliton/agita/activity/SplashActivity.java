@@ -48,7 +48,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Query queryUsuario = usuarioReference.orderByChild("username").equalTo(LOGADO).limitToFirst(1);
+        Query queryUsuario = usuarioReference.orderByChild("login").equalTo(LOGADO).limitToFirst(1);
 
         if (!LOGADO.equals("")) {
             queryUsuario.addChildEventListener(new ChildEventListener() {
@@ -57,7 +57,7 @@ public class SplashActivity extends AppCompatActivity {
                     try {
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if (usuario != null) {
-                            //Toast.makeText(SplashActivity.this, "usuario logado : "+LOGADO, Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(SplashActivity.this, "usuario logado : "+usuario.getEmail(), Toast.LENGTH_SHORT).show();
                             if(usuario.isAdmin()){
                                 Toast.makeText(SplashActivity.this, "Usuario administrado, telas ainda nao criadas", Toast.LENGTH_SHORT).show();
                             }else {

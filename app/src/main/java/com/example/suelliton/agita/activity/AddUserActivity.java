@@ -231,7 +231,7 @@ public class AddUserActivity extends AppCompatActivity{
                     passUser = false;//variaveis de controle para validar o cadastro
                     return false;
                 }else{
-                    if(usuario.getEmail().equals(login)){
+                    if(usuario.getEmail().equals(email)){
                         passEmail = false;
                         return false;
                     }else{

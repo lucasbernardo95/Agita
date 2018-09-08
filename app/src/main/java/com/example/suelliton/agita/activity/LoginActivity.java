@@ -6,30 +6,21 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
@@ -39,8 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import java.util.ArrayList;
-import java.util.List;
+import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 
 public class LoginActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
@@ -181,27 +171,27 @@ public void findView(){
 
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private  String mUser;
-        private  String mPassword;
+        private  String login;
+        private  String password;
 
         UserLoginTask(String user, String password) {
-            mUser = user;
-            mPassword = password;
+            login = user;
+            this.password = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            Query queryUsuario = RootReference.orderByChild("username").equalTo(mUser).limitToFirst(1);
+            Query queryUsuario = RootReference.orderByChild("login").equalTo(login).limitToFirst(1);
 
             queryUsuario.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     if (dataSnapshot.exists()) {
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
-                        if(usuario.getPassword().equals(mPassword)){
+                        if(usuario.getPassword().equals(password)){
                             USUARIO_OBJETO_LOGADO = usuario;
-//                            LOGADO = dataSnapshot.getKey();
+                            LOGADO = dataSnapshot.getKey();
                         }
                     }
                 }
@@ -250,10 +240,9 @@ public void findView(){
             if (success) {
                 SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-//                editor.putString("usuarioLogado", USUARIO_OBJETO_LOGADO.getUsername());
+                editor.putString("usuarioLogado", LOGADO);
                 editor.apply();
-                //LOGADO = USUARIO_OBJETO_LOGADO.getUsername();
-//                startActivity(new Intent(LoginActivity.this,ExperimentoActivity.class));
+                startActivity(new Intent(LoginActivity.this,EventoActivity.class));
                 finish();
             } else {
 //                mPasswordView.setError(getString(R.string.error_incorrect_password));
