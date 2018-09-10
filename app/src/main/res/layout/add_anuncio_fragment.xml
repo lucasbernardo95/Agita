@@ -32,12 +32,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp">
+
             <EditText
                 android:id="@+id/data_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="data"
-                android:inputType="text" />
+                android:inputType="date" />
         </android.support.design.widget.TextInputLayout>
         <!-- hora  -->
         <android.support.design.widget.TextInputLayout
@@ -45,12 +46,13 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp">
+
             <EditText
                 android:id="@+id/hora_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="hora"
-                android:inputType="number" />
+                android:inputType="time" />
         </android.support.design.widget.TextInputLayout>
         <!-- local  -->
         <android.support.design.widget.TextInputLayout
@@ -103,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="valor"
-                android:inputType="text" />
+                android:inputType="numberDecimal" />
 
         </android.support.design.widget.TextInputLayout>
         <!-- descricao Label -->
@@ -137,15 +139,23 @@
         <!-- liberado Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="53dp"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp">
-            <EditText
+
+            <CheckedTextView
                 android:id="@+id/liberado_cadastro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="liberado"
-                android:inputType="number" />
+                android:layout_width="158dp"
+                android:layout_height="match_parent"
+                android:checkMark="@drawable/checked"
+                android:checked="true"
+                android:hint="liberado" />
+            <!--<EditText-->
+            <!--android:id="@+id/liberado_cadastro"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:hint="liberado"-->
+            <!--android:inputType="number" />-->
 
         </android.support.design.widget.TextInputLayout>
         <ProgressBar

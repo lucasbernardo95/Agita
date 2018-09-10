@@ -3,10 +3,12 @@ package com.example.suelliton.agita.fragment;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -30,7 +32,7 @@ public class AddEventoFragment extends Fragment {
     EditText ed_valor;
     EditText ed_descricao;
     EditText ed_casaShow;
-    EditText ed_liberado;
+    CheckedTextView ed_liberado;
     Button btnSalvarEvento;
     View view;
     @Override
@@ -55,7 +57,23 @@ public class AddEventoFragment extends Fragment {
         ed_valor = (EditText) view.findViewById(R.id.valor_cadastro);
         ed_descricao = (EditText) view.findViewById(R.id.descricao_cadastro);
         ed_casaShow = (EditText) view.findViewById(R.id.casa_show_cadastro);
-        ed_liberado = (EditText) view.findViewById(R.id.liberado_cadastro);
+        ed_liberado = (CheckedTextView) view.findViewById(R.id.liberado_cadastro);
+        ed_liberado.setChecked(true); //inicia como true
+
+
+        ed_liberado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ed_liberado.isChecked()){
+                    ed_liberado.setCheckMarkDrawable(R.drawable.unchecked);
+                    ed_liberado.setChecked(false);
+                }else{
+                    ed_liberado.setCheckMarkDrawable(R.drawable.checked);
+                    ed_liberado.setChecked(true);
+                }
+            }
+        });
+
         btnSalvarEvento = (Button) view.findViewById(R.id.salvar_evento);
     }
     public void setViewListeners(){
@@ -71,12 +89,9 @@ public class AddEventoFragment extends Fragment {
                 double valor = Double.parseDouble(ed_valor.getText().toString());
                 String descricao = ed_descricao.getText().toString();
                 String casa = ed_casaShow.getText().toString();
-                String liberado = ed_liberado.getText().toString();
-                boolean li = false;
-                if(!liberado.equals("0")){
-                    li = true;
-                }
-                Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,"UrlBanner",li,casa);
+                boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
+
+                Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,"UrlBanner",liberado,casa);
                 usuarioReference.child(LOGADO).child("meusEventos").child(evento.getNome()).setValue(evento);
                 Toast.makeText(view.getContext(), "Evento salvocom sucesso!", Toast.LENGTH_SHORT).show();
                 limpaCampos();
@@ -94,7 +109,7 @@ public class AddEventoFragment extends Fragment {
         ed_valor.setText("");
         ed_descricao.setText("");
         ed_casaShow.setText("");
-        ed_liberado.setText("");
+        ed_liberado.setChecked(false);//desmarca
         btnSalvarEvento.setText("");
     }
 
