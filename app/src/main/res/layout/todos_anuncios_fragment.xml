@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    <TextView
-        android:id="@+id/tv"
-        android:textSize="25dp"
-        android:gravity="center"
+
+    <android.support.v7.widget.RecyclerView class="android.support.v7.app.AlertController$RecycleListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Todos os anuncios paii"/>
+        android:id="@+id/anuncios_recycler">
+
+    </android.support.v7.widget.RecyclerView>
 </LinearLayout>
