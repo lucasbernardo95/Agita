@@ -45,18 +45,23 @@ public class MeuRecyclerViewClickListener implements RecyclerView.OnItemTouchLis
 
         });
     }
-
+    /**
+     *  Intercepta um evento de toque na tela.
+     *  Se retornar falso o evento também deverá ser tratado pela View que está por baixo.
+     */
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
         myGestureDetector.onTouchEvent(e);
         return false;
     }
 
+    //Chamado quando um toque na View é detectado
     @Override
     public void onTouchEvent(RecyclerView rv, MotionEvent e) {
 
     }
 
+    //Chamado quando uma View filha não quer que os eventos sejam interceptados.
     @Override
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
