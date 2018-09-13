@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.fragment.AddEventoFragment;
@@ -26,7 +28,8 @@ public class EventoActivity extends AppCompatActivity
     DrawerLayout drawer;
     Toolbar toolbar;
     FragmentManager fm;
-       @Override
+    FrameLayout frameLayout;
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento);
@@ -44,6 +47,7 @@ public class EventoActivity extends AppCompatActivity
     public void findViews(){
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        frameLayout = (FrameLayout) findViewById(R.id.frame);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -52,6 +56,13 @@ public class EventoActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        frameLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     @Override

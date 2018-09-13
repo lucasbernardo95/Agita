@@ -21,5 +21,15 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_evento"
         app:menu="@menu/activity_evento_drawer" />
+    <FrameLayout
+        android:id="@+id/frame"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+        <ImageView
+            android:src="@drawable/logo_agita"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 </android.support.v4.widget.DrawerLayout>

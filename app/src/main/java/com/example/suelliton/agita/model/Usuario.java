@@ -11,43 +11,17 @@ public class Usuario {
     private String cpf_cnpj;
     private boolean admin;
     private String email;
-    private List<Evento> meusEventos;
-    private List<String> eventosInteresse;
 
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String contato, String cpf_cnpj, String login, String password, boolean admin) {
+    public Usuario(String nome, String contato, String login, String password, String cpf_cnpj, boolean admin, String email) {
         this.nome = nome;
-        this.email = email;
         this.contato = contato;
         this.login = login;
         this.password = password;
         this.cpf_cnpj = cpf_cnpj;
         this.admin = admin;
-    }
-
-
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "nome='" + nome + '\'' +
-                ", contato='" + contato + '\'' +
-                ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
-                ", cpf_cnpj='" + cpf_cnpj + '\'' +
-                ", admin=" + admin +
-                ", meusEventos=" + meusEventos +
-                ", eventosInteresse=" + eventosInteresse +
-                '}';
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -99,26 +73,11 @@ public class Usuario {
         this.admin = admin;
     }
 
-
-
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario)) return false;
-        Usuario usuario = (Usuario) o;
-        return isAdmin() == usuario.isAdmin() &&
-                Objects.equals(getNome(), usuario.getNome()) &&
-                Objects.equals(getContato(), usuario.getContato()) &&
-                Objects.equals(getLogin(), usuario.getLogin()) &&
-                Objects.equals(getPassword(), usuario.getPassword()) &&
-                Objects.equals(getCpf_cnpj(), usuario.getCpf_cnpj()) ;
+    public String getEmail() {
+        return email;
     }
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(getNome(), getContato(), getLogin(), getPassword(), getCpf_cnpj(), isAdmin());
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

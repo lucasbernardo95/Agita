@@ -1,5 +1,6 @@
 package com.example.suelliton.agita.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -15,14 +16,16 @@ public class Evento {
     private String bandas;
     private double valor;
     private String descricao;
-    private String baner;
+    private String urlBanner;
     private boolean liberado;
     private String casashow;
-
+    private boolean cover;
+    private String dono;
+    private List<String> participantes;
     public Evento() {
     }
 
-    public Evento(String nome, String data, String hora, String local, String estilo, Integer latitude, Integer longitude, String bandas, double valor, String descricao, String baner, boolean liberado, String casashow) {
+    public Evento(String nome, String data, String hora, String local, String estilo, Integer latitude, Integer longitude, String bandas, double valor, String descricao, String urlBanner, boolean liberado, String casashow, boolean cover, String dono) {
         this.nome = nome;
         this.data = data;
         this.hora = hora;
@@ -33,28 +36,12 @@ public class Evento {
         this.bandas = bandas;
         this.valor = valor;
         this.descricao = descricao;
-        this.baner = baner;
+        this.urlBanner = urlBanner;
         this.liberado = liberado;
         this.casashow = casashow;
-    }
-
-    @Override
-    public String toString() {
-        return "Evento{" +
-                "nome='" + nome + '\'' +
-                ", data=" + data +
-                ", hora='" + hora + '\'' +
-                ", local='" + local + '\'' +
-                ", estilo='" + estilo + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", bandas=" + bandas +
-                ", valor=" + valor +
-                ", descricao='" + descricao + '\'' +
-                ", baner='" + baner + '\'' +
-                ", liberado=" + liberado +
-                ", casashow='" + casashow + '\'' +
-                '}';
+        this.cover = cover;
+        this.dono = dono;
+        this.participantes = new ArrayList<>();
     }
 
     public String getNome() {
@@ -137,12 +124,12 @@ public class Evento {
         this.descricao = descricao;
     }
 
-    public String getBaner() {
-        return baner;
+    public String getUrlBanner() {
+        return urlBanner;
     }
 
-    public void setBaner(String baner) {
-        this.baner = baner;
+    public void setUrlBanner(String urlBanner) {
+        this.urlBanner = urlBanner;
     }
 
     public boolean isLiberado() {
@@ -161,29 +148,27 @@ public class Evento {
         this.casashow = casashow;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Evento)) return false;
-        Evento evento = (Evento) o;
-        return Double.compare(evento.valor, valor) == 0 &&
-                liberado == evento.liberado &&
-                Objects.equals(nome, evento.nome) &&
-                Objects.equals(data, evento.data) &&
-                Objects.equals(hora, evento.hora) &&
-                Objects.equals(local, evento.local) &&
-                Objects.equals(estilo, evento.estilo) &&
-                Objects.equals(latitude, evento.latitude) &&
-                Objects.equals(longitude, evento.longitude) &&
-                Objects.equals(bandas, evento.bandas) &&
-                Objects.equals(descricao, evento.descricao) &&
-                Objects.equals(baner, evento.baner) &&
-                Objects.equals(casashow, evento.casashow);
+    public boolean isCover() {
+        return cover;
     }
 
-    @Override
-    public int hashCode() {
+    public void setCover(boolean cover) {
+        this.cover = cover;
+    }
 
-        return Objects.hash(nome, data, hora, local, estilo, latitude, longitude, bandas, valor, descricao, baner, liberado, casashow);
+    public String getDono() {
+        return dono;
+    }
+
+    public void setDono(String dono) {
+        this.dono = dono;
+    }
+
+    public List<String> getParticipantes() {
+        return participantes;
+    }
+
+    public void setParticipantes(List<String> participantes) {
+        this.participantes = participantes;
     }
 }

@@ -3,7 +3,6 @@ package com.example.suelliton.agita.fragment;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,7 @@ public class AddEventoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.add_anuncio_fragment, container, false);
+        view = inflater.inflate(R.layout.add_evento_fragment, container, false);
 
         database = MyDatabaseUtil.getDatabase();
         usuarioReference = database.getReference("usuarios");
@@ -90,7 +89,7 @@ public class AddEventoFragment extends Fragment {
                 String descricao = ed_descricao.getText().toString();
                 String casa = ed_casaShow.getText().toString();
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
-
+    //public Evento(String nome, String data, String hora, String local, String estilo, Integer latitude, Integer longitude, String bandas, double valor, String descricao, String urlBanner, boolean liberado, String casashow, boolean cover, String dono)
                 Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,"UrlBanner",liberado,casa);
                 usuarioReference.child(LOGADO).child("meusEventos").child(evento.getNome()).setValue(evento);
                 Toast.makeText(view.getContext(), "Evento salvocom sucesso!", Toast.LENGTH_SHORT).show();
