@@ -90,7 +90,7 @@ public class AddEventoFragment extends Fragment {
                 String casa = ed_casaShow.getText().toString();
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
     //public Evento(String nome, String data, String hora, String local, String estilo, Integer latitude, Integer longitude, String bandas, double valor, String descricao, String urlBanner, boolean liberado, String casashow, boolean cover, String dono)
-                Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,"UrlBanner",liberado,casa);
+                Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,"UrlBanner",liberado,casa, true, nome);
                 usuarioReference.child(LOGADO).child("meusEventos").child(evento.getNome()).setValue(evento);
                 Toast.makeText(view.getContext(), "Evento salvocom sucesso!", Toast.LENGTH_SHORT).show();
                 limpaCampos();

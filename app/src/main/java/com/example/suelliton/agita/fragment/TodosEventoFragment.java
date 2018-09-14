@@ -69,15 +69,15 @@ public class TodosEventoFragment extends Fragment {
         lista.add(new Evento("1", "20/09/2018", "20:35", "Macaíba",
                 "Brega", 231321, 1231231, "Rei da cancinbinha e chiclete com banana",
                 36.98, "Festa na piscina... com duda", "www.google.com/dudaDeBugre",
-                true, "alí onde o vento faz a curva"));
+                true, "alí onde o vento faz a curva", true, "bernardo"));
         lista.add(new Evento("222", "22/09/2018", "10:35", "Natal",
                 "Brega", 231321, 1231231, "Rei da cancinbinha e chiclete com banana",
                 36.98, "Festa na piscina... com duda", "www.google.com/dudaDeBugre",
-                true, "alí onde o vento faz a curva"));
+                true, "alí onde o vento faz a curva", false, "bernardo"));
         lista.add(new Evento("33333333333", "12/09/2018", "20:35", "Natal",
                 "Brega", 231321, 1231231, "Rei da cancinbinha e chiclete com banana",
                 36.98, "Festa na piscina... com duda", "www.google.com/dudaDeBugre",
-                true, "alí onde o vento faz a curva"));
+                true, "alí onde o vento faz a curva", true, "sueliton"));
 
     }
 
