@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,8 @@ public class TodosEventoFragment extends Fragment {
     private Evento evento;
     public static Evento eventoClicado;
     private List<Evento> listaEventos;
-    private RecyclerView myrecycler;
+    RecyclerView myrecycler;
     FrameLayout frame;
-
-
 
 
 
@@ -54,11 +53,11 @@ public class TodosEventoFragment extends Fragment {
         myrecycler = (RecyclerView) v.findViewById(R.id.anuncios_recycler);
 
 
-        listaEventos = new ArrayList<>();
+
         iniciaLista();
 
 
-        final EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, getContext());
+        EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, getContext());
         myrecycler.setLayoutManager(new GridLayoutManager(v.getContext(),2));
         myrecycler.setAdapter(eventoAdapter);
         eventoAdapter.notifyDataSetChanged();
@@ -92,18 +91,16 @@ public class TodosEventoFragment extends Fragment {
     }
 
 
-    public void iniciaLista() {
 
+    public void iniciaLista() {
+        listaEventos = new ArrayList<>();
         eventosReference.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-
-                evento = data.getValue(Evento.class);
-
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                evento = dataSnapshot.getValue(Evento.class);
                 if (evento != null){
                     listaEventos.add(evento);
                 }
-
             }
 
             @Override
@@ -126,7 +123,6 @@ public class TodosEventoFragment extends Fragment {
 
             }
         });
-
     }
 
 
