@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Evento {
+
     private String nome;
     private String data;
     private String hora;
@@ -170,5 +171,27 @@ public class Evento {
 
     public void setParticipantes(List<String> participantes) {
         this.participantes = participantes;
+    }
+
+    @Override
+    public String toString() {
+        return "Evento{" +
+                "nome='" + nome + '\'' +
+                ", data='" + data + '\'' +
+                ", hora='" + hora + '\'' +
+                ", local='" + local + '\'' +
+                ", estilo='" + estilo + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", bandas='" + bandas + '\'' +
+                ", valor=" + valor +
+                ", descricao='" + descricao + '\'' +
+                ", urlBanner='" + urlBanner + '\'' +
+                ", liberado=" + liberado +
+                ", casashow='" + casashow + '\'' +
+                ", cover=" + cover +
+                ", dono='" + dono + '\'' +
+                ", participantes=" + participantes +
+                '}';
     }
 }
