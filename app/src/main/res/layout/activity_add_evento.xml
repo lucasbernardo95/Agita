@@ -13,6 +13,13 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
         android:paddingTop="56dp">
+
+        <ImageView
+            android:id="@+id/imagem_galeria"
+            android:src="@drawable/imagem_galeria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <!-- nome  -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"

@@ -247,8 +247,7 @@ public class AddUserActivity extends AppCompatActivity{
             }
 
             if(passEmail && passUser) {
-                //está cadastrando todos como admin, verificar essa lógica depois
-                Usuario novoUsuario = new Usuario(nome,contato, login, password, cpfcnpj, true, email);
+                Usuario novoUsuario = new Usuario(nome,contato,cpfcnpj,login,password,false,email);
                 usuarioReference.child(novoUsuario.getLogin()).setValue(novoUsuario);
                 //coloca o usuario no shared preferences
                 SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
