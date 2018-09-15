@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="carrosselColorWhite">#FFFFFF</color>
+    <color name="carrosselColorBlack">#000000</color>
+    <color name="carrosselColorOffBlack">#181818</color>
+    <color name="carrosselColorGrey">#717171</color>
 </resources>

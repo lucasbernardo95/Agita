@@ -30,6 +30,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.ImageListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,14 +47,27 @@ public class TodosEventoFragment extends Fragment {
     RecyclerView myrecycler;
     FrameLayout frame;
 
+    CarouselView carrossel;
 
+    int[] imagens = {
+            R.drawable.img1,
+            R.drawable.img2,
+            R.drawable.img3,
+            R.drawable.img4,
+            R.drawable.img5,
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.todos_anuncios_fragment, container, false);//xml do fragment
         myrecycler = (RecyclerView) v.findViewById(R.id.anuncios_recycler);
 
-
+        carrossel = (CarouselView) v.findViewById(R.id.carrosselView);
+        /*informa a quantidade de elementos que irá conter no carrossel*/
+        carrossel.setPageCount(imagens.length);
+        /*implementa a listagem de imagens do carrossel.*/
+        carrossel.setImageListener(clickImagem);
+        carrossel.notifyAll();
 
         iniciaLista();
 
@@ -90,7 +105,13 @@ public class TodosEventoFragment extends Fragment {
         return v;
     }
 
-
+    //Método temporário para exibir as imagens no carrossel
+    ImageListener clickImagem = new ImageListener() {
+        @Override
+        public void setImageForPosition(int position, ImageView imageView) {
+            imageView.setImageResource(imagens[position]);//seta a imagem na posição informada
+        }
+    };
 
     public void iniciaLista() {
         listaEventos = new ArrayList<>();
