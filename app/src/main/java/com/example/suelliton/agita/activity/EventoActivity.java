@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,19 +19,31 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.example.suelliton.agita.R;
-import com.example.suelliton.agita.fragment.MeusEventoFragment;
-import com.example.suelliton.agita.fragment.TodosEventoFragment;
+import com.example.suelliton.agita.adapter.EventoAdapter;
+import com.example.suelliton.agita.model.Evento;
+import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.example.suelliton.agita.utils.PermissionUtils;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.ImageListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 public class EventoActivity extends AppCompatActivity
@@ -49,11 +62,22 @@ public class EventoActivity extends AppCompatActivity
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
-    }
+    private Evento evento;
+    public static Evento eventoClicado;
+    private List<Evento> listaEventos;
+    RecyclerView myrecycler;
+    FrameLayout frame;
+
+    CarouselView carrossel;
+
+    int[] imagens = {
+            R.drawable.img1,
+            //R.drawable.img2,
+            //R.drawable.img3,
+            //R.drawable.img4,
+            //R.drawable.img5,
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,27 +87,104 @@ public class EventoActivity extends AppCompatActivity
         usuarioReference = database.getReference("usuarios");
         eventosReference =  database.getReference("eventos");
         findViews();
-        setSupportActionBar(toolbar);
-           fm = getSupportFragmentManager();
-           FragmentTransaction ft = fm.beginTransaction();
-           ft.add(R.id.fragment_content, new TodosEventoFragment());
-           ft.commit();
-
         setViewListener();
-    }
+        iniciaLista();
+        setSupportActionBar(toolbar);
 
+           carrossel.setPageCount(imagens.length); /*informa a quantidade de elementos que irá conter no carrossel*/
+           carrossel.setImageListener(clickImagem);/*implementa a listagem de imagens do carrossel.*/
+           //carrossel.notifyAll();
+
+
+
+        EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
+        myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
+        myrecycler.setAdapter(eventoAdapter);
+        eventoAdapter.notifyDataSetChanged();
+
+
+    }
+    //Método temporário para exibir as imagens no carrossel
+    ImageListener clickImagem = new ImageListener() {
+        @Override
+        public void setImageForPosition(int position, ImageView imageView) {
+            imageView.setImageResource(imagens[position]);//seta a imagem na posição informada
+        }
+    };
+
+    public void iniciaLista() {
+        listaEventos = new ArrayList<>();
+        eventosReference.orderByKey().addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                evento = dataSnapshot.getValue(Evento.class);
+                if (evento != null){
+                    listaEventos.add(evento);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
     public void findViews(){
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         frameLayout = (FrameLayout) findViewById(R.id.frame);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        myrecycler = (RecyclerView) findViewById(R.id.eventos_recycler);
+        carrossel = (CarouselView) findViewById(R.id.carrosselView);
     }
     public void setViewListener(){
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+
+        myrecycler.addOnItemTouchListener(new MeuRecyclerViewClickListener(EventoActivity.this, myrecycler, new MeuRecyclerViewClickListener.OnItemClickListener() {
+
+            @Override
+            public void OnItemClick(View view, int i) {
+                eventoClicado = listaEventos.get(i);
+                startActivity(new Intent(EventoActivity.this,Detalhes.class));
+
+                //frame = getActivity().findViewById(R.id.frame);
+                //frame.setVisibility(View.VISIBLE);
+
+                //ImageView imageView = getActivity().findViewById(R.id.logo_evento);
+                //imageView.setImageBitmap();
+            }
+
+            @Override
+            public void OnItemLongClick(View view, int i) {
+
+            }
+
+            @Override
+            public void onItemClick(View view, int position) {
+
+            }
+        }));
+
 
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,13 +235,11 @@ public class EventoActivity extends AppCompatActivity
         if (id == R.id.nav_add_evento) {
             startActivity(new Intent(EventoActivity.this,AddEventoActivity.class));
         } else if (id == R.id.nav_meus_anuncios) {
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.fragment_content, new MeusEventoFragment());
-            ft.commit();
+           // FragmentTransaction ft = fm.beginTransaction();
+            //ft.replace(R.id.fragment_content, new MeusEventoFragment());
+            //ft.commit();
         } else if (id == R.id.nav_todos_anuncios) {
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.fragment_content, new TodosEventoFragment());
-            ft.commit();
+
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -198,6 +297,11 @@ public class EventoActivity extends AppCompatActivity
         });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
     }
 
 }

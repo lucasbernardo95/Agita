@@ -7,20 +7,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.suelliton.agita.R;
-import com.example.suelliton.agita.fragment.TodosEventoFragment;
 import com.example.suelliton.agita.model.Evento;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -64,7 +61,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         myHolder.horario.setText(escolhido.getHora());
         myHolder.nome.setText(escolhido.getNome());
 
-        StorageReference storageReference = storage.getReference();
+        StorageReference storageReference = storage.getReference("eventos");
 
         StorageReference islandRef = storageReference.child(escolhido.getNome());
         islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

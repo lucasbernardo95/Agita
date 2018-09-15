@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.example.suelliton.agita.R;
 
-import static com.example.suelliton.agita.fragment.TodosEventoFragment.eventoClicado;
+import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
 
 public class Detalhes extends AppCompatActivity {
 
