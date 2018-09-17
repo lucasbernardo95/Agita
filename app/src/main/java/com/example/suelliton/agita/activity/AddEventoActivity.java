@@ -6,8 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,11 +25,18 @@ import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.SuccessContinuation;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,6 +45,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventosReference;
+import static com.example.suelliton.agita.activity.EventoActivity.usuarioReference;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 
 public class AddEventoActivity extends AppCompatActivity {
@@ -51,10 +61,11 @@ public class AddEventoActivity extends AppCompatActivity {
     EditText ed_casaShow;
     CheckedTextView ed_liberado;
     Button btnSalvarEvento;
-    View view;
     ImageView imageView;
     FirebaseStorage storage;
+    StorageReference storageReference;
     Bitmap bannerGaleria;
+    String urlBanner = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,19 +91,6 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_liberado.setChecked(true); //inicia como true
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
 
-        ed_liberado.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ed_liberado.isChecked()){
-                    ed_liberado.setCheckMarkDrawable(R.drawable.unchecked);
-                    ed_liberado.setChecked(false);
-                }else{
-                    ed_liberado.setCheckMarkDrawable(R.drawable.checked);
-                    ed_liberado.setChecked(true);
-                }
-            }
-        });
-
         btnSalvarEvento = (Button) findViewById(R.id.salvar_evento);
     }
     public void setViewListeners(){
@@ -100,6 +98,12 @@ public class AddEventoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String nome = ed_nome.getText().toString();
+                try {
+                    uploadFirebaseBytes(bannerGaleria,nome);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
                 String hora = ed_hora.getText().toString();
                 String data = ed_data.getText().toString();
                 String local = ed_local.getText().toString();
@@ -109,13 +113,9 @@ public class AddEventoActivity extends AppCompatActivity {
                 String descricao = ed_descricao.getText().toString();
                 String casa = ed_casaShow.getText().toString();
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
-                Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,"UrlBanner",liberado,casa, false,LOGADO);
+                Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
                 eventosReference.push().setValue(evento);
-                try {
-                    uploadFirebaseBytes(bannerGaleria,nome);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+
                 Toast.makeText(AddEventoActivity.this, "Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();
                 limpaCampos();
                 finish();
@@ -128,6 +128,18 @@ public class AddEventoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(intent,REQUEST_GALERIA);
+            }
+        });
+        ed_liberado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ed_liberado.isChecked()){
+                    ed_liberado.setCheckMarkDrawable(R.drawable.unchecked);
+                    ed_liberado.setChecked(false);
+                }else{
+                    ed_liberado.setCheckMarkDrawable(R.drawable.checked);
+                    ed_liberado.setChecked(true);
+                }
             }
         });
     }
@@ -144,14 +156,14 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_liberado.setChecked(false);//desmarca
         btnSalvarEvento.setText("");
     }
-    public void uploadFirebaseBytes(Bitmap bitmap, String nomeEvento) throws FileNotFoundException {
-        StorageReference storageReference = storage.getReference("eventos/"+nomeEvento);
+    public void uploadFirebaseBytes(Bitmap bitmap, final String nomeEvento) throws FileNotFoundException {
+        storageReference = storage.getReference("eventos");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
 
-        UploadTask uploadTask = storageReference.putBytes(data);
+        final UploadTask uploadTask = storageReference.child(nomeEvento).putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -160,10 +172,55 @@ public class AddEventoActivity extends AppCompatActivity {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                StorageReference islandRef = storageReference.child(nomeEvento);
+                islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        urlBanner = uri.toString();
+                        Query query = eventosReference.orderByChild("nome").equalTo(nomeEvento);
+                        query.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                if(dataSnapshot.exists()) {
+                                    Toast.makeText(AddEventoActivity.this, ""+dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
+                                    eventosReference.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(urlBanner);
+                                }
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                       // Toast.makeText(AddEventoActivity.this, "uri: "+uri.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
             }
         });
+
+
+
+
+
+
     }
 
     @Override
