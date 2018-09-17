@@ -109,7 +109,6 @@ public class AddEventoActivity extends AppCompatActivity {
                 String descricao = ed_descricao.getText().toString();
                 String casa = ed_casaShow.getText().toString();
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
-                //String local, String estilo, Integer latitude, Integer longitude, String bandas, double valor, String descricao, String urlBanner, boolean liberado, String casashow, boolean cover, String dono)
                 Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,"UrlBanner",liberado,casa, false,LOGADO);
                 eventosReference.push().setValue(evento);
                 try {
