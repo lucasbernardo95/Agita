@@ -1,10 +1,16 @@
 package com.example.suelliton.agita.activity;
 
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.suelliton.agita.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
 
@@ -27,6 +33,19 @@ public class Detalhes extends AppCompatActivity {
         ((TextView) findViewById(R.id.textCasaEventoDetalhe)).setText(eventoClicado.getCasashow());
         ((TextView) findViewById(R.id.textDonoEventoDetalhe)).setText(eventoClicado.getDono());
         ((TextView) findViewById(R.id.textDescricaoEventoDetalhe)).setText(eventoClicado.getDescricao());
+
+        final ImageView imagem = (ImageView) findViewById(R.id.imageEventoDetalhe);
+
+        //Busca a imagem do evento selecionado
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
+        StorageReference islandRef = storageReference.child(eventoClicado.getNome());
+        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).into(imagem);
+            }
+        });
+
 
     }
 

@@ -190,6 +190,7 @@ public class EventoActivity extends AppCompatActivity
             }
         });
     }
+
     public void findViews(){
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -199,6 +200,7 @@ public class EventoActivity extends AppCompatActivity
         myrecycler = (RecyclerView) findViewById(R.id.eventos_recycler);
         carrossel = (CarouselView) findViewById(R.id.carrosselView);
     }
+
     public void setViewListener(){
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

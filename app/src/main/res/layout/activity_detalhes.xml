@@ -12,91 +12,91 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageEventoDetalhe"
-                android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/imageEventoDetalhe"
+            android:layout_width="280dp"
+            android:layout_height="220dp"
+            android:layout_gravity="center"
+            android:src="@drawable/img1" />
+
+        <LinearLayout
+            android:layout_width="345dp"
+            android:layout_height="269dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_evento_clicado"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/img1" />
+                android:gravity="center"
+                android:text="Nome do evento aqui" />
 
-            <LinearLayout
-                android:layout_width="345dp"
-                android:layout_height="269dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical">
+            <TextView
+                android:id="@+id/textHoraEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="20:30 PM" />
 
-                    <TextView
-                        android:id="@+id/tv_evento_clicado"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Nome do evento aqui" />
+            <TextView
+                android:id="@+id/textDataEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="02/09/2018" />
 
-                    <TextView
-                        android:id="@+id/textHoraEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="20:30 PM" />
+            <TextView
+                android:id="@+id/textValorEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="30.99 R$" />
 
-                    <TextView
-                        android:id="@+id/textDataEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="02/09/2018" />
+            <TextView
+                android:id="@+id/textLocalEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Local do evento" />
 
-                    <TextView
-                        android:id="@+id/textValorEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="30.99 R$" />
+            <TextView
+                android:id="@+id/textBandasEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Bandas do evento" />
 
-                    <TextView
-                        android:id="@+id/textLocalEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Local do evento" />
+            <TextView
+                android:id="@+id/textEstiloEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Estilo do evento" />
 
-                    <TextView
-                        android:id="@+id/textBandasEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Bandas do evento" />
+            <TextView
+                android:id="@+id/textCasaEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Casa de show" />
 
-                    <TextView
-                        android:id="@+id/textEstiloEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Estilo do evento" />
+            <TextView
+                android:id="@+id/textDonoEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Organizador" />
 
-                    <TextView
-                        android:id="@+id/textCasaEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Casa de show" />
+            <TextView
+                android:id="@+id/textDescricaoEventoDetalhe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Ao contrário do que se acredita, Lorem Ipsum não é simplesmente um texto randômico. Com mais de 2000 anos, suas raízes podem ser encontradas em uma obra de literatura latina clássica datada de 45 AC." />
 
-                    <TextView
-                        android:id="@+id/textDonoEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Organizador" />
-
-                    <TextView
-                        android:id="@+id/textDescricaoEventoDetalhe"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="Ao contrário do que se acredita, Lorem Ipsum não é simplesmente um texto randômico. Com mais de 2000 anos, suas raízes podem ser encontradas em uma obra de literatura latina clássica datada de 45 AC." />
-
-            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
