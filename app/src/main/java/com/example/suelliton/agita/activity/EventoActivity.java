@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,7 +22,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,14 +35,12 @@ import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.example.suelliton.agita.utils.PermissionUtils;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
@@ -77,7 +73,7 @@ public class EventoActivity extends AppCompatActivity
 
     CarouselView carrossel;
     FirebaseStorage storage;
-    String[] imagens ;/*
+    Evento[] eventosCarousel;/*
             {
             "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Ffesta%20qualquer?alt=media&token=076060d2-e2b7-4831-bf17-ad0f3bc9b1b9",
             "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2FLucas%20e%20%20duda?alt=media&token=a23208dc-1373-4f14-a11f-a754af52f259"
@@ -109,8 +105,8 @@ public class EventoActivity extends AppCompatActivity
             @Override
             public void run() {
                 carregaCarrossel();
-                carrossel.setImageListener(clickImagem);/*implementa a listagem de imagens do carrossel.*/
-                carrossel.setPageCount(imagens.length); /*informa a quantidade de elementos que irá conter no carrossel*/
+                carrossel.setImageListener(clickImagem);/*implementa a listagem de eventosCarousel do carrossel.*/
+                carrossel.setPageCount(eventosCarousel.length); /*informa a quantidade de elementos que irá conter no carrossel*/
                 //carrossel.notify();
             }
         },2000);
@@ -126,17 +122,24 @@ public class EventoActivity extends AppCompatActivity
 
 
     }
-    //Método temporário para exibir as imagens no carrossel
+    //Método temporário para exibir as eventosCarousel no carrossel
     ImageListener clickImagem = new ImageListener() {
         @Override
-        public void setImageForPosition(int position, ImageView imageView) {
+        public void setImageForPosition(final int position, ImageView imageView) {
             try {
-                Picasso.get().load(imagens[position]).into(imageView);
+                Picasso.get().load(eventosCarousel[position].getUrlBanner()).into(imageView);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        eventoClicado = eventosCarousel[position];
+                        startActivity(new Intent(EventoActivity.this,Detalhes.class));
+                    }
+                });
             }catch (Exception e){
 
             }
             //carrossel.notify();
-            //imageView.setImageResource(imagens[position]);//seta a imagem na posição informada
+            //imageView.setImageResource(eventosCarousel[position]);//seta a imagem na posição informada
         }
     };
 
@@ -148,10 +151,10 @@ public class EventoActivity extends AppCompatActivity
         }else{
             qtd = listaEventos.size();
         }
-        imagens = new String[qtd];
+        eventosCarousel = new Evento[qtd];
         for(int i = 0 ; i < qtd; i++){
             Evento evento = listaEventos.get(i);
-            imagens[i] = evento.getUrlBanner();
+            eventosCarousel[i] = evento;
 
         }
 
