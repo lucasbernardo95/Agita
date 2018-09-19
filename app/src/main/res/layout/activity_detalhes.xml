@@ -12,33 +12,22 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
+            android:layout_weight="10"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="match_parent">
             <ImageView
                 android:id="@+id/imageEventoDetalhe"
-                android:layout_width="249dp"
-                android:layout_height="200dp"
-                android:layout_alignParentTop="true"
-                android:layout_gravity="center"
-                android:layout_toStartOf="@+id/butonMap"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"/>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/butonMap"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="17dp"
-                app:srcCompat="@android:drawable/ic_dialog_map" />
-
-        </RelativeLayout>
+        </LinearLayout>
 
         <LinearLayout
+            android:layout_weight="10"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
@@ -112,6 +101,19 @@
                 android:text="Ao contrário do que se acredita, Lorem Ipsum não é simplesmente um texto randômico. Com mais de 2000 anos, suas raízes podem ser encontradas em uma obra de literatura latina clássica datada de 45 AC." />
 
         </LinearLayout>
+
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/butonMap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:layout_gravity="bottom|end"
+
+                app:srcCompat="@android:drawable/ic_dialog_map" />
+        </android.support.design.widget.CoordinatorLayout>
 
     </LinearLayout>
 
