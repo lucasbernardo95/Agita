@@ -13,8 +13,8 @@ public class Evento implements Serializable {
     private String hora;
     private String local;
     private String estilo;
-    private Integer latitude;
-    private Integer longitude;
+    private double latitude;
+    private double longitude;
     private String bandas;
     private double valor;
     private String descricao;
@@ -86,19 +86,19 @@ public class Evento implements Serializable {
         this.estilo = estilo;
     }
 
-    public Integer getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Integer latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Integer getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Integer longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

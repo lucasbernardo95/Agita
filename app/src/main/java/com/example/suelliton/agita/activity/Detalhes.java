@@ -1,9 +1,13 @@
 package com.example.suelliton.agita.activity;
 
+import android.content.Intent;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +47,17 @@ public class Detalhes extends AppCompatActivity {
         descricao = (TextView) findViewById(R.id.textDescricaoEventoDetalhe);
         imagem  = (ImageView) findViewById(R.id.imageEventoDetalhe);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.butonMap);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent in = new Intent(Detalhes.this, MapsActivity.class);
+                in.putExtra("eventoLocal", eventoRecebido);
+                startActivity(in);
+            }
+        });
+
     }
 
     @Override
@@ -53,7 +68,7 @@ public class Detalhes extends AppCompatActivity {
 
     private void setContent() {
         nome.setText(eventoRecebido.getNome());
-        nome.setText(String.valueOf(eventoRecebido.getHora()));
+        hora.setText(String.valueOf(eventoRecebido.getHora()));
         data.setText(String.valueOf(eventoRecebido.getData()));
         valor.setText(String.valueOf(eventoRecebido.getValor()));
         local.setText(eventoRecebido.getLocal());
