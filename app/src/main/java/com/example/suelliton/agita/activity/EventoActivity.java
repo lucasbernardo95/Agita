@@ -119,10 +119,6 @@ public class EventoActivity extends AppCompatActivity
 
 
 
-
-
-
-
         EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
         myrecycler.setAdapter(eventoAdapter);
@@ -134,7 +130,11 @@ public class EventoActivity extends AppCompatActivity
     ImageListener clickImagem = new ImageListener() {
         @Override
         public void setImageForPosition(int position, ImageView imageView) {
-            Picasso.get().load(imagens[position]).into(imageView);
+            try {
+                Picasso.get().load(imagens[position]).into(imageView);
+            }catch (Exception e){
+
+            }
             //carrossel.notify();
             //imageView.setImageResource(imagens[position]);//seta a imagem na posição informada
         }

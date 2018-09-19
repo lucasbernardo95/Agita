@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 
+import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
 public class MeusEventosActivity extends AppCompatActivity {
 
     private DatabaseReference usuarioReference;
@@ -92,8 +93,8 @@ public class MeusEventosActivity extends AppCompatActivity {
 
             @Override
             public void OnItemClick(View view, int i) {
-                eventoSelecionado = lista.get(i);
-                if (eventoSelecionado != null) {
+                eventoClicado = lista.get(i);
+                if (eventoClicado != null) {
                     Intent in = new Intent(MeusEventosActivity.this, Detalhes.class);
                     in.putExtra("evento", eventoSelecionado);
                     startActivity(in);
