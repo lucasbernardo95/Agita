@@ -18,6 +18,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
+
 public class Detalhes extends AppCompatActivity {
 
     private TextView nome,hora, data, valor, local,
@@ -31,9 +33,9 @@ public class Detalhes extends AppCompatActivity {
         setContentView(R.layout.activity_detalhes);
 
         //Recupera do bundle o evento clicado
-        Bundle pacote = getIntent().getExtras();
-        eventoRecebido = (Evento) pacote.getSerializable("evento");
-        Log.i("evento", "recebido: "+eventoRecebido.toString());
+        //Bundle pacote = getIntent().getExtras();
+        //eventoRecebido = (Evento) pacote.getSerializable("evento");
+        //Log.i("evento", "recebido: "+eventoRecebido.toString());
 
         nome = (TextView) findViewById(R.id.tv_evento_clicado);
         hora    = (TextView) findViewById(R.id.textHoraEventoDetalhe);
@@ -53,7 +55,7 @@ public class Detalhes extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent in = new Intent(Detalhes.this, MapsActivity.class);
-                in.putExtra("eventoLocal", eventoRecebido);
+               // in.putExtra("eventoLocal", eventoRecebido);
                 startActivity(in);
             }
         });
@@ -67,20 +69,20 @@ public class Detalhes extends AppCompatActivity {
     }
 
     private void setContent() {
-        nome.setText(eventoRecebido.getNome());
-        hora.setText(String.valueOf(eventoRecebido.getHora()));
-        data.setText(String.valueOf(eventoRecebido.getData()));
-        valor.setText(String.valueOf(eventoRecebido.getValor()));
-        local.setText(eventoRecebido.getLocal());
-        bandas.setText(eventoRecebido.getBandas());
-        estilo.setText(eventoRecebido.getEstilo());
-        casa.setText(eventoRecebido.getCasashow());
-        dono.setText(eventoRecebido.getDono());
-        descricao.setText(eventoRecebido.getDescricao());
+        nome.setText(eventoClicado.getNome());
+        hora.setText(String.valueOf(eventoClicado.getHora()));
+        data.setText(String.valueOf(eventoClicado.getData()));
+        valor.setText(String.valueOf(eventoClicado.getValor()));
+        local.setText(eventoClicado.getLocal());
+        bandas.setText(eventoClicado.getBandas());
+        estilo.setText(eventoClicado.getEstilo());
+        casa.setText(eventoClicado.getCasashow());
+        dono.setText(eventoClicado.getDono());
+        descricao.setText(eventoClicado.getDescricao());
 
         //Busca a imagem do evento selecionado
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
-        StorageReference islandRef = storageReference.child(eventoRecebido.getNome());
+        StorageReference islandRef = storageReference.child(eventoClicado.getNome());
         islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {

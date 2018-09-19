@@ -2,12 +2,16 @@ package com.example.suelliton.agita.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -45,8 +49,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    private static final int REQUEST_GPS = 3;
     private GoogleMap mapa;
     private static final int LOCATION_REQUEST = 500;//caso dê erro na solicitação
     private List<LatLng> listaPontos;
@@ -62,13 +69,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_fragment);
+
+
         gpsTracker = new GPSTracker(getApplicationContext()); //intancia a classe do GPS para pegar minha localização
         mlocation = gpsTracker.getLocation();
 
-        //Recupera do bundle o evento clicado
-        Bundle pacote = getIntent().getExtras();
-        eventoLocal = (Evento) pacote.getSerializable("evento");
 
+        //Recupera do bundle o evento clicado
+        //Bundle pacote = getIntent().getExtras();
+        //eventoLocal = (Evento) pacote.getSerializable("eventoLocal");
+        eventoLocal = eventoClicado;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -80,6 +90,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        boolean isOnGps = manager.isProviderEnabled( LocationManager.GPS_PROVIDER);
+
+        if(!isOnGps){
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            Toast.makeText(this, "Ative o GPS do dispositivo", Toast.LENGTH_SHORT).show();
+            startActivityForResult(intent,REQUEST_GPS);
+        }
+
+
         mapa = googleMap;
         mapa.getUiSettings().setZoomControlsEnabled(true);
 
@@ -109,23 +129,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //permite ativar minha localização
         mapa.setMyLocationEnabled(true);
 
-        Log.i("local:", "evento"+ eventoLocal.getLongitude() + " "+ eventoLocal.getLatitude() );
-        Log.i("local:", "dispositivo"+ mlocation.getLongitude() + " "+ mlocation.getLatitude() );
 
-        //CRIA A PRIMEIRA MARCA
-        //Seta o meu local com dado do gps
-        LatLng meuLocalAtual = new LatLng(mlocation.getLongitude(), mlocation.getLatitude());
-        mapa.addMarker(new MarkerOptions().position(meuLocalAtual).title("Estou aqui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-        mapa.moveCamera(CameraUpdateFactory.newLatLng(meuLocalAtual));
+        if(isOnGps) {
 
-        //Cria o ponto com o local de destino (evento)
-        LatLng localEvento = new LatLng( eventoLocal.getLongitude(), eventoLocal.getLatitude() );
-        mapa.addMarker(new MarkerOptions().position(localEvento).title(eventoLocal.getNome()+"!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        mapa.moveCamera(CameraUpdateFactory.newLatLng(localEvento));
 
-        String url = getRequestURL(meuLocalAtual, localEvento);
-        TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
-        taskRequestDirections.execute(url);
+            Log.i("local:", "evento" + eventoLocal.getLongitude() + " " + eventoLocal.getLatitude());
+            Log.i("local:", "dispositivo" + mlocation.getLongitude() + " " + mlocation.getLatitude());
+
+            //CRIA A PRIMEIRA MARCA
+            //Seta o meu local com dado do gps
+            LatLng meuLocalAtual = new LatLng(mlocation.getLongitude(), mlocation.getLatitude());
+            mapa.addMarker(new MarkerOptions().position(meuLocalAtual).title("Estou aqui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            mapa.moveCamera(CameraUpdateFactory.newLatLng(meuLocalAtual));
+
+            //Cria o ponto com o local de destino (evento)
+            LatLng localEvento = new LatLng(eventoLocal.getLongitude(), eventoLocal.getLatitude());
+            mapa.addMarker(new MarkerOptions().position(localEvento).title(eventoLocal.getNome() + "!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            mapa.moveCamera(CameraUpdateFactory.newLatLng(localEvento));
+
+            String url = getRequestURL(meuLocalAtual, localEvento);
+            TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
+            taskRequestDirections.execute(url);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_GPS){
+           startActivity(new Intent(MapsActivity.this,MapsActivity.class));
+            finish();
+        }
     }
 
     private String getRequestURL(LatLng origem, LatLng dest) {

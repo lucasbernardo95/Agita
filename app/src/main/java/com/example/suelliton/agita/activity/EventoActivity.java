@@ -70,7 +70,7 @@ public class EventoActivity extends AppCompatActivity
     };
 
     private Evento evento;
-    public Evento eventoClicado;
+    public static Evento eventoClicado;
     private List<Evento> listaEventos;
     RecyclerView myrecycler;
     FrameLayout frame;
@@ -216,8 +216,9 @@ public class EventoActivity extends AppCompatActivity
                 eventoClicado = listaEventos.get(i);
                 if (eventoClicado != null) {
                     Intent in = new Intent(EventoActivity.this, Detalhes.class);
-                    in.putExtra("evento", eventoClicado);
+                    //in.putExtra("evento", eventoClicado);
                     startActivity(in);
+
                 } else {
                     Toast.makeText(EventoActivity.this, "Erro ao tentar visualizar os detalhes do evento", Toast.LENGTH_LONG);
                 }
