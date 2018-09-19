@@ -49,16 +49,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+
 public class EventoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawer;
     Toolbar toolbar;
-    FragmentManager fm;
     FrameLayout frameLayout;
 
-    public static FirebaseDatabase database ;
-    public static DatabaseReference usuarioReference;
-    public static DatabaseReference eventosReference;
 
     private static String[] PERMISSIONS_STORAGE = {
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -69,7 +67,7 @@ public class EventoActivity extends AppCompatActivity
     public static Evento eventoClicado;
     private List<Evento> listaEventos;
     RecyclerView myrecycler;
-    FrameLayout frame;
+
 
     CarouselView carrossel;
     FirebaseStorage storage;
@@ -90,10 +88,7 @@ public class EventoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento);
         setSupportActionBar(toolbar);
-        database = MyDatabaseUtil.getDatabase();
-        storage = FirebaseStorage.getInstance();
-        usuarioReference = database.getReference("usuarios");
-        eventosReference =  database.getReference("eventos");
+
         iniciaLista();
         findViews();
         setViewListener();

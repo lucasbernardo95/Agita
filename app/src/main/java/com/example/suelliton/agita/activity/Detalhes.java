@@ -25,17 +25,10 @@ public class Detalhes extends AppCompatActivity {
     private TextView nome,hora, data, valor, local,
             bandas, estilo, casa, dono, descricao;
     private ImageView imagem;
-    private Evento eventoRecebido; //Representa o evento clicado na tela de visualização
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes);
-
-        //Recupera do bundle o evento clicado
-        //Bundle pacote = getIntent().getExtras();
-        //eventoRecebido = (Evento) pacote.getSerializable("evento");
-        //Log.i("evento", "recebido: "+eventoRecebido.toString());
 
         nome = (TextView) findViewById(R.id.tv_evento_clicado);
         hora    = (TextView) findViewById(R.id.textHoraEventoDetalhe);
@@ -54,9 +47,7 @@ public class Detalhes extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent in = new Intent(Detalhes.this, MapsActivity.class);
-               // in.putExtra("eventoLocal", eventoRecebido);
-                startActivity(in);
+                startActivity(new Intent(Detalhes.this, MapsActivity.class));
             }
         });
 

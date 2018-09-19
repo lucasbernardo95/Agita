@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class LoginActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
@@ -39,16 +40,13 @@ public class LoginActivity extends AppCompatActivity{
     private View progressView;
     private TextView linkCadastro;
     private EditText ed_login;
-    private FirebaseDatabase database ;
-    private DatabaseReference RootReference ;
     private Button btn_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        database = MyDatabaseUtil.getDatabase();
-        RootReference = database.getReference("usuarios");
+
         findView();
         setViewListeners();
     }
@@ -182,7 +180,7 @@ public void findView(){
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            Query queryUsuario = RootReference.orderByChild("login").equalTo(login).limitToFirst(1);
+            Query queryUsuario = usuarioReference.orderByChild("login").equalTo(login).limitToFirst(1);
 
             queryUsuario.addChildEventListener(new ChildEventListener() {
                 @Override

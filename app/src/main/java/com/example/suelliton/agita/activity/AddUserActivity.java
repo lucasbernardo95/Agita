@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
+
 public class AddUserActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
     // UI references.
@@ -45,8 +47,6 @@ public class AddUserActivity extends AppCompatActivity{
     private View progressView;
     private View cadastroFormView;
 
-    private FirebaseDatabase database ;
-    private DatabaseReference usuarioReference;
     private ValueEventListener listener;
     boolean passUser = false;
     boolean passEmail = false;
@@ -54,8 +54,6 @@ public class AddUserActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_user);
-        database = MyDatabaseUtil.getDatabase();
-        usuarioReference = database.getReference("usuarios");
 
         findViews();
         setViewListeners();

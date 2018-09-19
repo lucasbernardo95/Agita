@@ -44,9 +44,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import static com.example.suelliton.agita.activity.EventoActivity.eventosReference;
-import static com.example.suelliton.agita.activity.EventoActivity.usuarioReference;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 
 public class AddEventoActivity extends AppCompatActivity {
     private final int REQUEST_GALERIA = 2;

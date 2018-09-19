@@ -22,8 +22,9 @@ import com.google.firebase.database.Query;
 
 public class SplashActivity extends AppCompatActivity {
     public static String LOGADO;
-    private FirebaseDatabase database ;
-    private DatabaseReference usuarioReference;
+    public static FirebaseDatabase database ;
+    public static DatabaseReference usuarioReference;
+    public static DatabaseReference eventosReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +33,7 @@ public class SplashActivity extends AppCompatActivity {
         database = MyDatabaseUtil.getDatabase();
 
         usuarioReference = database.getReference("usuarios");
+        eventosReference = database.getReference("eventos");
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);

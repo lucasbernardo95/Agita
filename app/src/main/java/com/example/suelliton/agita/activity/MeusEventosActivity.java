@@ -27,23 +27,18 @@ import java.util.List;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
+import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+
 public class MeusEventosActivity extends AppCompatActivity {
 
-    private DatabaseReference usuarioReference;
-    private DatabaseReference eventosReference;
-    private FirebaseStorage storage;
     private RecyclerView myrecycler;
     private List<Evento> lista;
-    private Evento eventoSelecionado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meus_eventos);
 
-        usuarioReference = FirebaseDatabase.getInstance().getReference("usuarios");
-        eventosReference = FirebaseDatabase.getInstance().getReference("eventos");
-        storage = FirebaseStorage.getInstance();
 
         myrecycler = (RecyclerView) findViewById(R.id.meus_eventos_recycler);
         iniciaLista();
@@ -95,9 +90,7 @@ public class MeusEventosActivity extends AppCompatActivity {
             public void OnItemClick(View view, int i) {
                 eventoClicado = lista.get(i);
                 if (eventoClicado != null) {
-                    Intent in = new Intent(MeusEventosActivity.this, Detalhes.class);
-                    in.putExtra("evento", eventoSelecionado);
-                    startActivity(in);
+                    startActivity(new Intent(MeusEventosActivity.this, Detalhes.class));
                 } else {
                     Toast.makeText(MeusEventosActivity.this, "Erro ao tentar visualizar os detalhes do evento", Toast.LENGTH_LONG);
                 }
