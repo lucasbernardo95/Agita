@@ -9,4 +9,8 @@
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
          https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="navigation_drawer_width">240dp</dimen>
+
+    <!--Controle da margem do topo para o recyclerview da tela de meus eventos-->
+    <dimen name="marginToprecyclerView">-220dp</dimen>
+    <dimen name="dimem_layout_height_carrossel">200dp</dimen>
 </resources>

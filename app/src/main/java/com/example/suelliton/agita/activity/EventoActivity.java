@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
@@ -69,7 +70,7 @@ public class EventoActivity extends AppCompatActivity
     };
 
     private Evento evento;
-    public static Evento eventoClicado;
+    public Evento eventoClicado;
     private List<Evento> listaEventos;
     RecyclerView myrecycler;
     FrameLayout frame;
@@ -213,8 +214,13 @@ public class EventoActivity extends AppCompatActivity
             @Override
             public void OnItemClick(View view, int i) {
                 eventoClicado = listaEventos.get(i);
-                startActivity(new Intent(EventoActivity.this,Detalhes.class));
-
+                if (eventoClicado != null) {
+                    Intent in = new Intent(EventoActivity.this, Detalhes.class);
+                    in.putExtra("evento", eventoClicado);
+                    startActivity(in);
+                } else {
+                    Toast.makeText(EventoActivity.this, "Erro ao tentar visualizar os detalhes do evento", Toast.LENGTH_LONG);
+                }
                 //frame = getActivity().findViewById(R.id.frame);
                 //frame.setVisibility(View.VISIBLE);
 
@@ -283,11 +289,9 @@ public class EventoActivity extends AppCompatActivity
         if (id == R.id.nav_add_evento) {
             startActivity(new Intent(EventoActivity.this,AddEventoActivity.class));
         } else if (id == R.id.nav_meus_anuncios) {
-           // FragmentTransaction ft = fm.beginTransaction();
-            //ft.replace(R.id.fragment_content, new MeusEventoFragment());
-            //ft.commit();
+            startActivity(new Intent(EventoActivity.this,MeusEventosActivity.class));
         } else if (id == R.id.nav_todos_anuncios) {
-
+            startActivity(new Intent(EventoActivity.this,EventoActivity.class));
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -10,16 +10,19 @@
     tools:showIn="@layout/app_bar_evento">
 
     <LinearLayout
+        android:id="@+id/content_evento1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <!--permite a barra de rolagem vertical e horizontal-->
         <ScrollView
+            android:id="@+id/content_evento2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/layoutCarrosel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -31,7 +34,7 @@
                 <com.synnapps.carouselview.CarouselView
                     android:id="@+id/carrosselView"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="@dimen/dimem_layout_height_carrossel"
                     app:fillColor="@color/carrosselColorWhite"
                     app:pageColor="@color/carrosselColorGrey"
                     app:autoPlay="true"
@@ -48,18 +51,10 @@
         </ScrollView>
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/eventos_recycler">
         </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/fragment_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </FrameLayout>
-
-
 
 </RelativeLayout>
