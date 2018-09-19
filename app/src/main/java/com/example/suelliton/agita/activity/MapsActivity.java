@@ -74,7 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         gpsTracker = new GPSTracker(getApplicationContext()); //intancia a classe do GPS para pegar minha localização
         mlocation = gpsTracker.getLocation();
 
-
         //Recupera do bundle o evento clicado
         //Bundle pacote = getIntent().getExtras();
         //eventoLocal = (Evento) pacote.getSerializable("eventoLocal");
@@ -103,6 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapa = googleMap;
         mapa.getUiSettings().setZoomControlsEnabled(true);
 
+
         //estilo do mapa
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -128,23 +128,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         //permite ativar minha localização
         mapa.setMyLocationEnabled(true);
+        mapa.setMinZoomPreference(10f);
+        mapa.setMaxZoomPreference(500f);
 
 
         if(isOnGps) {
-
-
             Log.i("local:", "evento" + eventoLocal.getLongitude() + " " + eventoLocal.getLatitude());
             Log.i("local:", "dispositivo" + mlocation.getLongitude() + " " + mlocation.getLatitude());
 
             //CRIA A PRIMEIRA MARCA
             //Seta o meu local com dado do gps
-            LatLng meuLocalAtual = new LatLng(mlocation.getLongitude(), mlocation.getLatitude());
-            mapa.addMarker(new MarkerOptions().position(meuLocalAtual).title("Estou aqui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            LatLng meuLocalAtual = new LatLng(mlocation.getLatitude(),mlocation.getLongitude());
+            mapa.addMarker(new MarkerOptions().position(meuLocalAtual).title("Estou aqui!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             mapa.moveCamera(CameraUpdateFactory.newLatLng(meuLocalAtual));
 
             //Cria o ponto com o local de destino (evento)
-            LatLng localEvento = new LatLng(eventoLocal.getLongitude(), eventoLocal.getLatitude());
-            mapa.addMarker(new MarkerOptions().position(localEvento).title(eventoLocal.getNome() + "!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            LatLng localEvento = new LatLng(eventoLocal.getLatitude(),eventoLocal.getLongitude());
+            mapa.addMarker(new MarkerOptions().position(localEvento).title(eventoLocal.getNome() + "!").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             mapa.moveCamera(CameraUpdateFactory.newLatLng(localEvento));
 
             String url = getRequestURL(meuLocalAtual, localEvento);

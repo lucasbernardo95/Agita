@@ -112,9 +112,6 @@ public class EventoActivity extends AppCompatActivity
         },2000);
 
 
-
-
-
         EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
         myrecycler.setAdapter(eventoAdapter);
@@ -155,11 +152,7 @@ public class EventoActivity extends AppCompatActivity
         for(int i = 0 ; i < qtd; i++){
             Evento evento = listaEventos.get(i);
             eventosCarousel[i] = evento;
-
         }
-
-
-
     }
 
     public void iniciaLista() {
