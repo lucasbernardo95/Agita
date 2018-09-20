@@ -245,7 +245,7 @@ public class AddUserActivity extends AppCompatActivity{
             }
 
             if(passEmail && passUser) {
-                Usuario novoUsuario = new Usuario(nome,contato,cpfcnpj,login,password,false,email);
+                Usuario novoUsuario = new Usuario(nome,contato,login,password,cpfcnpj,false,email);
                 usuarioReference.child(novoUsuario.getLogin()).setValue(novoUsuario);
                 //coloca o usuario no shared preferences
                 SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
