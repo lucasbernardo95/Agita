@@ -8,6 +8,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activity.EventoActivity"
     tools:showIn="@layout/app_bar_evento">
+
     <ScrollView
         android:id="@+id/content_evento2"
         android:layout_width="match_parent"

@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
@@ -96,6 +97,7 @@ public class EventoActivity extends AppCompatActivity
                 //carrossel.notify();
             }
         },2000);
+
 
 
         EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
@@ -201,6 +203,8 @@ public class EventoActivity extends AppCompatActivity
         });
     }
 
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -303,6 +307,13 @@ public class EventoActivity extends AppCompatActivity
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        carrossel.requestFocus();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
