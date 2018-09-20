@@ -11,7 +11,7 @@
         <ImageView
             android:id="@+id/imgEvento"
             android:layout_gravity="center"
-            android:layout_width="380dp"
+            android:layout_width="320dp"
             android:layout_height="200dp" />
 
         <LinearLayout
@@ -27,21 +27,20 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold" />
 
-            <TextView
-                android:gravity="center"
-                android:id="@+id/textLocalEvento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold" />
-
-            <TextView
-                android:gravity="center"
-                android:id="@+id/textHorarioEvento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold" />
-
         </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp">
+
+            <ImageView
+                android:id="@+id/buttonLike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_action_nolike" />
+
+        </RelativeLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

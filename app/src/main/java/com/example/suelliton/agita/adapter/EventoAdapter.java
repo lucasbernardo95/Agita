@@ -1,25 +1,46 @@
 package com.example.suelliton.agita.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
+import com.example.suelliton.agita.activity.Detalhes;
+import com.example.suelliton.agita.activity.MeusEventosActivity;
+import com.example.suelliton.agita.activity.SplashActivity;
 import com.example.suelliton.agita.model.Evento;
+import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
+import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 /*
 * É necessário o uso de um adapter para:
 * fornecer dados para a lista de eventos e
@@ -55,11 +76,55 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
         final EventoHolder myHolder = (EventoHolder) holder;
 
-        Evento escolhido = eventos.get(position);
-//        myHolder.setImagem(R.);//tira a imagem até ter alguma no banco
-        myHolder.local.setText(escolhido.getLocal());
-        myHolder.horario.setText(escolhido.getHora());
+        final Evento escolhido = eventos.get(position);
         myHolder.nome.setText(escolhido.getNome());
+
+
+
+        myHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Query query = eventosReference.orderByChild("nome").equalTo(escolhido.getNome());
+                query.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
+                        Log.i("click", "achou: "+ data.getValue(Evento.class));
+                        Evento e = data.getValue(Evento.class);
+
+                        List<String> participante = new ArrayList<>();
+                        participante.add(LOGADO + ",");
+
+                        e.setParticipantes( participante );
+                        Map<String, Object> childUpdate = new HashMap<>();
+                        childUpdate.put(data.getKey()+ "/participantes", e);
+//                        eventosReference.updateChildren(childUpdate);
+                        Log.i("like", data.getKey()+ "/participantes");
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        });
 
         StorageReference storageReference = storage.getReference("eventos");
 
@@ -72,9 +137,13 @@ public class EventoAdapter extends RecyclerView.Adapter{
         });
 
 
-
-
-
+        myHolder.imagem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventoClicado = escolhido;
+                context.startActivity(new Intent(context, Detalhes.class));
+            }
+        });
     }
 
     @Override
@@ -88,18 +157,15 @@ public class EventoAdapter extends RecyclerView.Adapter{
     public class EventoHolder extends RecyclerView.ViewHolder {
 
         final ImageView imagem;
-        final TextView local;
-        final TextView horario;
         final TextView nome;
+        final ImageView botaoLike;
 
         public EventoHolder(View v) {
             super(v);
 
             imagem = (ImageView) v.findViewById(R.id.imgEvento);
-            //imagem.setImageResource(R.drawable.checked);
-            local = (TextView) v.findViewById(R.id.textLocalEvento);
-            horario = (TextView) v.findViewById(R.id.textHorarioEvento);
             nome = (TextView) v.findViewById(R.id.textNomeEvento);
+            botaoLike = (ImageView) v.findViewById(R.id.buttonLike);
 
         }
 

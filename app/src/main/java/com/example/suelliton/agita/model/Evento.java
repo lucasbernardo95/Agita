@@ -24,10 +24,11 @@ public class Evento implements Serializable {
     private boolean cover;
     private String dono;
     private List<String> participantes;
+
     public Evento() {
     }
 
-    public Evento(String nome, String data, String hora, String local, String estilo, Integer latitude, Integer longitude, String bandas, double valor, String descricao, String urlBanner, boolean liberado, String casashow, boolean cover, String dono) {
+    public Evento(String nome, String data, String hora, String local, String estilo, double latitude, double longitude, String bandas, double valor, String descricao, String urlBanner, boolean liberado, String casashow, boolean cover, String dono) {
         this.nome = nome;
         this.data = data;
         this.hora = hora;
@@ -173,6 +174,7 @@ public class Evento implements Serializable {
     public void setParticipantes(List<String> participantes) {
         this.participantes = participantes;
     }
+
 
     @Override
     public String toString() {

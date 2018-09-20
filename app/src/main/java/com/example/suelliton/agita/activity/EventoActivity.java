@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,17 +72,7 @@ public class EventoActivity extends AppCompatActivity
 
     CarouselView carrossel;
     FirebaseStorage storage;
-    Evento[] eventosCarousel;/*
-            {
-            "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Ffesta%20qualquer?alt=media&token=076060d2-e2b7-4831-bf17-ad0f3bc9b1b9",
-            "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2FLucas%20e%20%20duda?alt=media&token=a23208dc-1373-4f14-a11f-a754af52f259"
-            //R.drawable.img1,
-            //R.drawable.img2,
-            //R.drawable.img3,
-            //R.drawable.img4,
-            //R.drawable.img5,
-    };*/
-
+    Evento[] eventosCarousel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +103,8 @@ public class EventoActivity extends AppCompatActivity
         myrecycler.setAdapter(eventoAdapter);
         eventoAdapter.notifyDataSetChanged();
 
-
     }
+
     //Método temporário para exibir as eventosCarousel no carrossel
     ImageListener clickImagem = new ImageListener() {
         @Override
@@ -130,8 +121,6 @@ public class EventoActivity extends AppCompatActivity
             }catch (Exception e){
 
             }
-            //carrossel.notify();
-            //imageView.setImageResource(eventosCarousel[position]);//seta a imagem na posição informada
         }
     };
 
@@ -155,6 +144,7 @@ public class EventoActivity extends AppCompatActivity
         eventosReference.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.i("evento", "--->"+dataSnapshot.getValue(Evento.class));
                 evento = dataSnapshot.getValue(Evento.class);
                 if (evento != null){
                     listaEventos.add(evento);
@@ -198,39 +188,6 @@ public class EventoActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-
-        myrecycler.addOnItemTouchListener(new MeuRecyclerViewClickListener(EventoActivity.this, myrecycler, new MeuRecyclerViewClickListener.OnItemClickListener() {
-
-            @Override
-            public void OnItemClick(View view, int i) {
-                eventoClicado = listaEventos.get(i);
-                if (eventoClicado != null) {
-                    Intent in = new Intent(EventoActivity.this, Detalhes.class);
-                    //in.putExtra("evento", eventoClicado);
-                    startActivity(in);
-
-                } else {
-                    Toast.makeText(EventoActivity.this, "Erro ao tentar visualizar os detalhes do evento", Toast.LENGTH_LONG);
-                }
-                //frame = getActivity().findViewById(R.id.frame);
-                //frame.setVisibility(View.VISIBLE);
-
-                //ImageView imageView = getActivity().findViewById(R.id.logo_evento);
-                //imageView.setImageBitmap();
-            }
-
-            @Override
-            public void OnItemLongClick(View view, int i) {
-
-            }
-
-            @Override
-            public void onItemClick(View view, int position) {
-
-            }
-        }));
-
 
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
