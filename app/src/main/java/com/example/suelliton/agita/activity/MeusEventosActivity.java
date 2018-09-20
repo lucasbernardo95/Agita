@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
@@ -41,6 +42,7 @@ public class MeusEventosActivity extends AppCompatActivity {
 
 
         myrecycler = (RecyclerView) findViewById(R.id.meus_eventos_recycler);
+
         iniciaLista();
         preparaRecycler();
 

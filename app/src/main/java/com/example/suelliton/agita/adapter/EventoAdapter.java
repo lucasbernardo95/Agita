@@ -53,6 +53,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
     private Context context;
     FirebaseStorage storage;
     FrameLayout frame;
+    boolean like;
 
     public EventoAdapter(List<Evento> eventos, Context context) {
         this.eventos = eventos;
@@ -80,26 +81,49 @@ public class EventoAdapter extends RecyclerView.Adapter{
         myHolder.nome.setText(escolhido.getNome());
 
 
+        //Vai fazer essa verificação quando carregar os eventos na tela
+        //checa se o usuártio já deu like no evento atual ou não e seta a imagem correspondente
+        if (escolhido.getParticipantes().contains(LOGADO)){
+            like = true;//informa que deu lie
+            myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+        } else {
+            like = false; ///indica que não deu like
+            myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+        }
+
+        //implemmenta o click do botão like
 
         myHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                //sempre que ouver um click, altera o estado do botão e a variável like
+                //altera a imagem para LIKE, indicando que o usuário deu like no evento
+                if (!like) {//se não deu like ainda, muda a imagem para like
+                    myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                    like = true; //passa a ser verdade, indicando que deu like
+                }else {
+                    myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                    like = false;//indica que deu deslike
+                }
                 Query query = eventosReference.orderByChild("nome").equalTo(escolhido.getNome());
                 query.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                        Log.i("click", "achou: "+ data.getValue(Evento.class));
                         Evento e = data.getValue(Evento.class);
 
                         List<String> participante = new ArrayList<>();
-                        participante.add(LOGADO + ",");
-
-                        e.setParticipantes( participante );
+                        participante.add(LOGADO);
                         Map<String, Object> childUpdate = new HashMap<>();
-                        childUpdate.put(data.getKey()+ "/participantes", e);
-//                        eventosReference.updateChildren(childUpdate);
-                        Log.i("like", data.getKey()+ "/participantes");
+                        //se deu like, coloca o nome do usuário na lista de participantes, senão, remove
+                        if(like) {
+                            childUpdate.put(data.getKey() + "/participantes", participante);
+                            eventosReference.updateChildren(childUpdate);
+                        } else {
+                            // exemplo de url que essa linha abaixo faz ...eventos/-LMnZhJ62wp_uedUbOyd/participantes/indice/nome do usuário
+                            Log.i("click", "link: "+eventosReference.child(data.getKey()+ "/participantes/"+e.getParticipantes().indexOf(LOGADO)));
+                            eventosReference.child(data.getKey()+ "/participantes/"+e.getParticipantes().indexOf(LOGADO)).removeValue();
+                        }
                     }
 
                     @Override
@@ -144,7 +168,10 @@ public class EventoAdapter extends RecyclerView.Adapter{
                 context.startActivity(new Intent(context, Detalhes.class));
             }
         });
+
     }
+
+
 
     @Override
     public int getItemCount() {

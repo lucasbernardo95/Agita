@@ -23,7 +23,7 @@ public class Evento implements Serializable {
     private String casashow;
     private boolean cover;
     private String dono;
-    private List<String> participantes;
+    private List<String> participantes = new ArrayList<>();
 
     public Evento() {
     }
@@ -44,7 +44,7 @@ public class Evento implements Serializable {
         this.casashow = casashow;
         this.cover = cover;
         this.dono = dono;
-        this.participantes = new ArrayList<>();
+//        this.participantes = new ArrayList<>();
     }
 
     public String getNome() {
