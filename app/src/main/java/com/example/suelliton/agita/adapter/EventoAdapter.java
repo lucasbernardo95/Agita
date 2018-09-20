@@ -80,6 +80,10 @@ public class EventoAdapter extends RecyclerView.Adapter{
         final Evento escolhido = eventos.get(position);
         myHolder.nome.setText(escolhido.getNome());
 
+        //Oculta o botão de like se estiver na tela de meus eventos
+        if (MeusEventosActivity.class == context.getClass())
+            myHolder.botaoLike.setVisibility(View.GONE);
+
 
         //Vai fazer essa verificação quando carregar os eventos na tela
         //checa se o usuártio já deu like no evento atual ou não e seta a imagem correspondente
