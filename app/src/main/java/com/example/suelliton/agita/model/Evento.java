@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Evento implements Serializable {
-
+    private String key;
     private String nome;
     private String data;
     private String hora;
@@ -23,7 +23,7 @@ public class Evento implements Serializable {
     private String casashow;
     private boolean cover;
     private String dono;
-    private List<String> participantes = new ArrayList<>();
+    //private List<String> participantes = new ArrayList<>();
 
     public Evento() {
     }
@@ -44,7 +44,16 @@ public class Evento implements Serializable {
         this.casashow = casashow;
         this.cover = cover;
         this.dono = dono;
+        this.key = "";
 //        this.participantes = new ArrayList<>();
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getNome() {
@@ -167,34 +176,7 @@ public class Evento implements Serializable {
         this.dono = dono;
     }
 
-    public List<String> getParticipantes() {
-        return participantes;
-    }
-
-    public void setParticipantes(List<String> participantes) {
-        this.participantes = participantes;
-    }
 
 
-    @Override
-    public String toString() {
-        return "Evento{" +
-                "nome='" + nome + '\'' +
-                ", data='" + data + '\'' +
-                ", hora='" + hora + '\'' +
-                ", local='" + local + '\'' +
-                ", estilo='" + estilo + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", bandas='" + bandas + '\'' +
-                ", valor=" + valor +
-                ", descricao='" + descricao + '\'' +
-                ", urlBanner='" + urlBanner + '\'' +
-                ", liberado=" + liberado +
-                ", casashow='" + casashow + '\'' +
-                ", cover=" + cover +
-                ", dono='" + dono + '\'' +
-                ", participantes=" + participantes +
-                '}';
-    }
+
 }

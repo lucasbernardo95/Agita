@@ -8,7 +8,10 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activity.EventoActivity"
     tools:showIn="@layout/app_bar_evento">
-
+    <ScrollView
+        android:id="@+id/content_evento2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/content_evento1"
         android:layout_width="match_parent"
@@ -16,19 +19,17 @@
         android:orientation="vertical">
 
         <!--permite a barra de rolagem vertical e horizontal-->
-        <ScrollView
-            android:id="@+id/content_evento2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+
 
             <LinearLayout
                 android:id="@+id/layoutCarrosel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp">
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                >
 
                 <!--Carrossel com as imagens do evento. intervalo de 2s para transição-->
                 <com.synnapps.carouselview.CarouselView
@@ -48,13 +49,15 @@
 
             </LinearLayout>
 
-        </ScrollView>
+
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/eventos_recycler">
         </android.support.v7.widget.RecyclerView>
 
+
     </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

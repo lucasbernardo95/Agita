@@ -22,6 +22,7 @@ import com.example.suelliton.agita.activity.Detalhes;
 import com.example.suelliton.agita.activity.MeusEventosActivity;
 import com.example.suelliton.agita.activity.SplashActivity;
 import com.example.suelliton.agita.model.Evento;
+import com.example.suelliton.agita.model.Participante;
 import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -87,69 +88,69 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
         //Vai fazer essa verificação quando carregar os eventos na tela
         //checa se o usuártio já deu like no evento atual ou não e seta a imagem correspondente
-        if (escolhido.getParticipantes().contains(LOGADO)){
-            like = true;//informa que deu lie
-            myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-        } else {
-            like = false; ///indica que não deu like
-            myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-        }
+
 
         //implemmenta o click do botão like
+        Query query = eventosReference.child(escolhido.getKey()).child("participantes").child(LOGADO);
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                boolean existe = false;
+                if(dataSnapshot.exists()){
+                    existe = true;
+                    //Toast.makeText(context, "entrou", Toast.LENGTH_SHORT).show();
+                }
+                if(existe){
+                    like = true;
+                    myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                }else{
+                    like = false;
+                    myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
 
         myHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+                //Toast.makeText(context, "clicou", Toast.LENGTH_SHORT).show();
 
-                //sempre que ouver um click, altera o estado do botão e a variável like
-                //altera a imagem para LIKE, indicando que o usuário deu like no evento
-                if (!like) {//se não deu like ainda, muda a imagem para like
-                    myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                    like = true; //passa a ser verdade, indicando que deu like
-                }else {
+                if(like){
+                    eventosReference.child(escolhido.getKey()).child("participantes").child(LOGADO).removeValue();
                     myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-                    like = false;//indica que deu deslike
+                    like = false;
+                }else {
+                    Participante participante = new Participante(LOGADO);
+                    eventosReference.child(escolhido.getKey()).child("participantes").child(LOGADO).setValue(participante);
+                    myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                    like = true;
                 }
-                Query query = eventosReference.orderByChild("nome").equalTo(escolhido.getNome());
-                query.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                        Evento e = data.getValue(Evento.class);
 
-                        List<String> participante = new ArrayList<>();
-                        participante.add(LOGADO);
-                        Map<String, Object> childUpdate = new HashMap<>();
-                        //se deu like, coloca o nome do usuário na lista de participantes, senão, remove
-                        if(like) {
-                            childUpdate.put(data.getKey() + "/participantes", participante);
-                            eventosReference.updateChildren(childUpdate);
-                        } else {
-                            // exemplo de url que essa linha abaixo faz ...eventos/-LMnZhJ62wp_uedUbOyd/participantes/indice/nome do usuário
-                            Log.i("click", "link: "+eventosReference.child(data.getKey()+ "/participantes/"+e.getParticipantes().indexOf(LOGADO)));
-                            eventosReference.child(data.getKey()+ "/participantes/"+e.getParticipantes().indexOf(LOGADO)).removeValue();
-                        }
-                    }
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
 
             }
         });
@@ -163,6 +164,9 @@ public class EventoAdapter extends RecyclerView.Adapter{
                 Picasso.get().load(uri).into(myHolder.imagem);
             }
         });
+
+
+
 
 
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
@@ -181,7 +185,6 @@ public class EventoAdapter extends RecyclerView.Adapter{
     public int getItemCount() {
         return eventos == null ? 0 :  eventos.size();
     }
-
 
 
 

@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Cpf/cnpj"
-                android:inputType="textEmailAddress" />
+                android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
         <!-- User Label -->
         <android.support.design.widget.TextInputLayout

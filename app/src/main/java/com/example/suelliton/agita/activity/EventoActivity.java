@@ -147,7 +147,10 @@ public class EventoActivity extends AppCompatActivity
                 Log.i("evento", "--->"+dataSnapshot.getValue(Evento.class));
                 evento = dataSnapshot.getValue(Evento.class);
                 if (evento != null){
-
+                    if(evento.getKey().equals("")){
+                        evento.setKey(dataSnapshot.getRef().getKey());
+                        eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+                    }
                     listaEventos.add(evento);
                 }
             }
