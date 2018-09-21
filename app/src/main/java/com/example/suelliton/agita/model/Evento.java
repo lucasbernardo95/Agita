@@ -48,6 +48,14 @@ public class Evento implements Serializable {
 //        this.participantes = new ArrayList<>();
     }
 
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
+    }
+
     public String getKey() {
         return key;
     }
@@ -100,17 +108,11 @@ public class Evento implements Serializable {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
 
     public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 
     public String getBandas() {
         return bandas;

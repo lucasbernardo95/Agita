@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -40,7 +42,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
@@ -101,6 +106,7 @@ public class AddEventoActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+
                 String hora = ed_hora.getText().toString();
                 String data = ed_data.getText().toString();
                 String local = ed_local.getText().toString();
@@ -110,7 +116,18 @@ public class AddEventoActivity extends AppCompatActivity {
                 String descricao = ed_descricao.getText().toString();
                 String casa = ed_casaShow.getText().toString();
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
-                Evento evento = new Evento(nome,data,hora,local,estilo,1,1,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
+
+                Geocoder geocoder = new Geocoder(AddEventoActivity.this);
+                List<Address> enderecos = new ArrayList<>();
+                try {
+                    enderecos = geocoder.getFromLocationName(local,1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                double lat =  enderecos.get(0).getLatitude();
+                double lng =  enderecos.get(0).getLongitude();
+
+                Evento evento = new Evento(nome,data,hora,local,estilo,lat,lng,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
                 eventosReference.push().setValue(evento);
 
                 Toast.makeText(AddEventoActivity.this, "Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();
