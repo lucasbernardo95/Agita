@@ -258,10 +258,6 @@ public class EventoActivity extends AppCompatActivity
             startActivity(new Intent(EventoActivity.this,LoginActivity.class));
             finish();
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
