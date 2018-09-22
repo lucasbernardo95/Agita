@@ -75,6 +75,7 @@ public class EventoActivity extends AppCompatActivity
     CarouselView carrossel;
     FirebaseStorage storage;
     Evento[] eventosCarousel;
+    EventoAdapter eventoAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +84,7 @@ public class EventoActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         database =  MyDatabaseUtil.getDatabase();
         eventosReference = database.getReference("eventos");
-        iniciaLista();
+        iniciaLista("nome");
         findViews();
         setViewListener();
 
@@ -101,7 +102,7 @@ public class EventoActivity extends AppCompatActivity
 
 
 
-        EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
+        eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
         myrecycler.setAdapter(eventoAdapter);
         eventoAdapter.notifyDataSetChanged();
@@ -142,9 +143,9 @@ public class EventoActivity extends AppCompatActivity
         }
     }
 
-    public void iniciaLista() {
+    public void iniciaLista(String fieldOrder) {
         listaEventos = new ArrayList<>();
-        eventosReference.orderByKey().addChildEventListener(new ChildEventListener() {
+        eventosReference.orderByChild(fieldOrder).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.i("evento", "--->"+dataSnapshot.getValue(Evento.class));
@@ -225,17 +226,27 @@ public class EventoActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.opcao_filtro_data:
+                iniciaLista("data");
+                eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
+                eventoAdapter.notifyDataSetChanged();
+                myrecycler.notifyAll();
+                return true;
+            case R.id.opcao_filtro_nome:
+                iniciaLista("nome");
+                eventoAdapter.notifyDataSetChanged();
+                myrecycler.notifyAll();
+                return true;
+            case R.id.opcao_filtro_estilo:
+                iniciaLista("estilo");
+                eventoAdapter.notifyDataSetChanged();
+                myrecycler.notifyAll();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

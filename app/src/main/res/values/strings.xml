@@ -22,4 +22,9 @@
     <string name="action_settings">Settings</string>
 
 
+    <!--Textos do menu de filtros de listagens de eventos-->
+    <string name="filtro_data">Data</string>
+    <string name="filtro_nome">Nome</string>
+    <string name="filtro_estilo">Estilo</string>
+
 </resources>
