@@ -72,7 +72,6 @@ public class EventoActivity extends AppCompatActivity
     private List<Evento> listaEventos;
     RecyclerView myrecycler;
 
-
     CarouselView carrossel;
     FirebaseStorage storage;
     Evento[] eventosCarousel;
@@ -87,7 +86,6 @@ public class EventoActivity extends AppCompatActivity
         iniciaLista();
         findViews();
         setViewListener();
-
 
 
         Handler handler = new Handler();

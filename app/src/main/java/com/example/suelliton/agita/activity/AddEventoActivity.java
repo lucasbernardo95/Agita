@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckedTextView;
@@ -54,13 +56,14 @@ import java.util.TimeZone;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 
 public class AddEventoActivity extends AppCompatActivity {
     private final int REQUEST_GALERIA = 2;
     EditText ed_nome;
     CalendarView cv_data;
     EditText ed_hora;
-    EditText ed_local;
+    AutoCompleteTextView ed_local;
     EditText ed_estilo;
     EditText ed_bandas;
     EditText ed_valor;
@@ -73,6 +76,7 @@ public class AddEventoActivity extends AppCompatActivity {
     StorageReference storageReference;
     Bitmap bannerGaleria;
     String urlBanner = "";
+    List<String> listaLocais;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,14 +85,36 @@ public class AddEventoActivity extends AppCompatActivity {
         findViews();
         setViewListeners();
 
-    }
+        carregaLocais();
 
+    }
+    public void carregaLocais(){
+        listaLocais = new ArrayList<>();
+        locaisReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data:dataSnapshot.getChildren() ) {
+                    listaLocais.add(data.getRef().getKey());
+                    Log.i("locais",data.getRef().getKey());
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(AddEventoActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, listaLocais);
+                ed_local.setThreshold(1);
+                ed_local.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     public void findViews(){
         ed_nome = (EditText) findViewById(R.id.nome_cadastro);
         cv_data = (CalendarView) findViewById(R.id.cv_dataCadastro);
         ed_hora = (EditText) findViewById(R.id.hora_cadastro);
-        ed_local = (EditText) findViewById(R.id.local_cadastro);
+        ed_local = (AutoCompleteTextView) findViewById(R.id.local_cadastro);
         ed_estilo = (EditText) findViewById(R.id.estilo_cadastro);
         ed_bandas = (EditText) findViewById(R.id.bandas_cadastro);
         ed_valor = (EditText) findViewById(R.id.valor_cadastro);
@@ -114,7 +140,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
                 String hora = ed_hora.getText().toString();
                 String data = convertMillisToDate(cv_data.getDate());
-                String local = ed_local.getText().toString();
+                final String local = ed_local.getText().toString();
                 String estilo = ed_estilo.getText().toString();
                 String bandas = ed_bandas.getText().toString();
                 double valor = Double.parseDouble(ed_valor.getText().toString());
@@ -139,6 +165,10 @@ public class AddEventoActivity extends AppCompatActivity {
                 }
                 Evento evento = new Evento(nome,data,hora,local,estilo,lat,lng,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
                 eventosReference.push().setValue(evento);
+
+                locaisReference.child(local).setValue(local);
+
+
 
                 Toast.makeText(AddEventoActivity.this, "Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();
                 limpaCampos();

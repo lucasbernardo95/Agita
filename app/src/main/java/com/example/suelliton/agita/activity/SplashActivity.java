@@ -25,6 +25,7 @@ public class SplashActivity extends AppCompatActivity {
     public static FirebaseDatabase database ;
     public static DatabaseReference usuarioReference;
     public static DatabaseReference eventosReference;
+    public static DatabaseReference locaisReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +35,7 @@ public class SplashActivity extends AppCompatActivity {
 
         usuarioReference = database.getReference("usuarios");
         eventosReference = database.getReference("eventos");
+        locaisReference = database.getReference("locais");
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
