@@ -38,12 +38,16 @@
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp">
 
-            <EditText
-                android:id="@+id/data_cadastro"
+        <TextView
+                android:text="Data"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="data"
-                android:inputType="date" />
+                android:layout_height="wrap_content" />
+
+            <CalendarView
+                android:id="@+id/cv_dataCadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
         </android.support.design.widget.TextInputLayout>
         <!-- hora  -->
         <android.support.design.widget.TextInputLayout

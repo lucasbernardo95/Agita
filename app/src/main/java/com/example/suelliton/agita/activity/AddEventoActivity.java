@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,8 +45,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
@@ -53,7 +58,7 @@ import static com.example.suelliton.agita.activity.SplashActivity.eventosReferen
 public class AddEventoActivity extends AppCompatActivity {
     private final int REQUEST_GALERIA = 2;
     EditText ed_nome;
-    EditText ed_data;
+    CalendarView cv_data;
     EditText ed_hora;
     EditText ed_local;
     EditText ed_estilo;
@@ -81,7 +86,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
     public void findViews(){
         ed_nome = (EditText) findViewById(R.id.nome_cadastro);
-        ed_data = (EditText) findViewById(R.id.data_cadastro);
+        cv_data = (CalendarView) findViewById(R.id.cv_dataCadastro);
         ed_hora = (EditText) findViewById(R.id.hora_cadastro);
         ed_local = (EditText) findViewById(R.id.local_cadastro);
         ed_estilo = (EditText) findViewById(R.id.estilo_cadastro);
@@ -108,7 +113,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
 
                 String hora = ed_hora.getText().toString();
-                String data = ed_data.getText().toString();
+                String data = convertMillisToDate(cv_data.getDate());
                 String local = ed_local.getText().toString();
                 String estilo = ed_estilo.getText().toString();
                 String bandas = ed_bandas.getText().toString();
@@ -124,9 +129,14 @@ public class AddEventoActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                double lat =  enderecos.get(0).getLatitude();
-                double lng =  enderecos.get(0).getLongitude();
-
+                double lat,lng;
+                if(enderecos.size()!= 0) {//verifica se veio algum endereço
+                    lat = enderecos.get(0).getLatitude();
+                    lng = enderecos.get(0).getLongitude();
+                }else{
+                    lat = 11111;
+                    lng = 11111;
+                }
                 Evento evento = new Evento(nome,data,hora,local,estilo,lat,lng,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
                 eventosReference.push().setValue(evento);
 
@@ -159,7 +169,7 @@ public class AddEventoActivity extends AppCompatActivity {
     }
     public void limpaCampos(){
         ed_nome.setText("");
-        ed_data.setText("");
+
         ed_hora.setText("");
         ed_local.setText("");
         ed_estilo.setText("");
@@ -235,6 +245,19 @@ public class AddEventoActivity extends AppCompatActivity {
 
 
 
+    }
+    public String convertMillisToDate(long yourmilliseconds){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy", Locale.US);
+
+
+        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("US/Central"));
+        calendar.setTimeInMillis(yourmilliseconds);
+
+        Log.i("click","GregorianCalendar -"+sdf.format(calendar.getTime()));
+
+
+        return sdf.format(calendar.getTime());
     }
 
     @Override
