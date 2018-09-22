@@ -52,12 +52,14 @@ import java.util.List;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class EventoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawer;
     Toolbar toolbar;
     FrameLayout frameLayout;
+    FirebaseDatabase database ;
 
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -80,7 +82,8 @@ public class EventoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento);
         setSupportActionBar(toolbar);
-
+        database =  MyDatabaseUtil.getDatabase();
+        eventosReference = database.getReference("eventos");
         iniciaLista();
         findViews();
         setViewListener();
