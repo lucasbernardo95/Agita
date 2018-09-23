@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.EventoActivity">
+
+    <item
+        android:id="@+id/opcao_filtro_nome"
+        android:orderInCategory="100"
+        android:title="@string/filtro_nome"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_data"
+        android:orderInCategory="100"
+        android:title="@string/filtro_data"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_rock"
+        android:orderInCategory="100"
+        android:title="@string/filtro_rock"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_pop"
+        android:orderInCategory="100"
+        android:title="@string/filtro_pop"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_eletronica"
+        android:orderInCategory="100"
+        android:title="@string/filtro_eletronica"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_forro"
+        android:orderInCategory="100"
+        android:title="@string/filtro_forro"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_sertanejo"
+        android:orderInCategory="100"
+        android:title="@string/filtro_sertanejo"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_brega"
+        android:orderInCategory="100"
+        android:title="@string/filtro_brega"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_swingueira"
+        android:orderInCategory="100"
+        android:title="@string/filtro_swingueira"
+        app:showAsAction="never" />
+
+</menu>

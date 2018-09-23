@@ -110,7 +110,7 @@ public class Detalhes extends AppCompatActivity {
         dono.setText(eventoClicado.getDono());
         descricao.setText(eventoClicado.getDescricao());
 
-        //Busca a imagem do evento selecionado
+        //Busca a imagem do filtro_eventos selecionado
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
         StorageReference islandRef = storageReference.child(eventoClicado.getNome());
         islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {

@@ -66,7 +66,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.inflate_evento, parent, false);//evento que tem os view a serem inflados
+        View view = LayoutInflater.from(context).inflate(R.layout.inflate_evento, parent, false);//filtro_eventos que tem os view a serem inflados
 
         EventoHolder holder = new EventoHolder(view);
         return holder;
@@ -87,7 +87,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
 
         //Vai fazer essa verificação quando carregar os eventos na tela
-        //checa se o usuártio já deu like no evento atual ou não e seta a imagem correspondente
+        //checa se o usuártio já deu like no filtro_eventos atual ou não e seta a imagem correspondente
 
 
         //implemmenta o click do botão like

@@ -13,7 +13,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,20 +27,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
 import com.example.suelliton.agita.model.Evento;
-import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.example.suelliton.agita.utils.PermissionUtils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
@@ -52,12 +48,11 @@ import java.util.List;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
-import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class EventoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawer;
-    Toolbar toolbar;
+    Toolbar toolbar ;
     FrameLayout frameLayout;
     FirebaseDatabase database ;
 
@@ -81,13 +76,17 @@ public class EventoActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento);
-        setSupportActionBar(toolbar);
+
         database =  MyDatabaseUtil.getDatabase();
         eventosReference = database.getReference("eventos");
-        iniciaLista("nome");
-        findViews();
-        setViewListener();
 
+
+
+
+        findViews();
+        setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
+        setViewListener();
+        iniciaLista("nome");
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -102,10 +101,7 @@ public class EventoActivity extends AppCompatActivity
 
 
 
-        eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
-        myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
-        myrecycler.setAdapter(eventoAdapter);
-        eventoAdapter.notifyDataSetChanged();
+
 
     }
 
@@ -143,20 +139,36 @@ public class EventoActivity extends AppCompatActivity
         }
     }
 
-    public void iniciaLista(String fieldOrder) {
+    public void iniciaLista(final String fieldOrder) {
         listaEventos = new ArrayList<>();
-        eventosReference.orderByChild(fieldOrder).addChildEventListener(new ChildEventListener() {
+        eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
+        myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
+        myrecycler.setAdapter(eventoAdapter);
+        Query query = eventosReference.orderByChild(fieldOrder);
+
+        query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.i("evento", "--->"+dataSnapshot.getValue(Evento.class));
+                Log.i("filtro_todos_eventos", "--->"+dataSnapshot.getValue(Evento.class));
                 evento = dataSnapshot.getValue(Evento.class);
                 if (evento != null){
                     if(evento.getKey().equals("")){
                         evento.setKey(dataSnapshot.getRef().getKey());
                         eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
                     }
-                    listaEventos.add(evento);
+                    if(fieldOrder.equals("nome") || fieldOrder.equals("data")) {
+                        listaEventos.add(evento);
+                    }else{
+                        if(evento.getEstilo().equals(fieldOrder)){
+                            listaEventos.add(evento);
+                        }
+
+                    }
+
+
                 }
+                eventoAdapter.notifyDataSetChanged();
+
             }
 
             @Override
@@ -179,6 +191,7 @@ public class EventoActivity extends AppCompatActivity
 
             }
         });
+
     }
 
     public void findViews(){
@@ -220,7 +233,7 @@ public class EventoActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.evento, menu);
+        getMenuInflater().inflate(R.menu.filtro_todos_eventos, menu);
         return true;
     }
 
@@ -230,20 +243,32 @@ public class EventoActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.opcao_filtro_data:
                 iniciaLista("data");
-                eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
-                eventoAdapter.notifyDataSetChanged();
-                myrecycler.notifyAll();
                 return true;
             case R.id.opcao_filtro_nome:
                 iniciaLista("nome");
-                eventoAdapter.notifyDataSetChanged();
-                myrecycler.notifyAll();
                 return true;
-            case R.id.opcao_filtro_estilo:
-                iniciaLista("estilo");
-                eventoAdapter.notifyDataSetChanged();
-                myrecycler.notifyAll();
+            case R.id.opcao_filtro_rock:
+                iniciaLista("Rock");
                 return true;
+            case R.id.opcao_filtro_pop:
+                iniciaLista("Pop");
+                return true;
+            case R.id.opcao_filtro_eletronica:
+                iniciaLista("Eletrônica");
+                return true;
+            case R.id.opcao_filtro_forro:
+                iniciaLista("Forró");
+                return true;
+            case R.id.opcao_filtro_sertanejo:
+                iniciaLista("Sertanejo");
+                return true;
+            case R.id.opcao_filtro_brega:
+                iniciaLista("Brega");
+                return true;
+            case R.id.opcao_filtro_swingueira:
+                iniciaLista("Swingueira");
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

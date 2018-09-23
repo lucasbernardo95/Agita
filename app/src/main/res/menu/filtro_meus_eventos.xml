@@ -6,21 +6,17 @@
     tools:context=".activity.MeusEventosActivity">
 
     <item
-        android:id="@+id/opcao_filtro_data"
+        android:id="@+id/opcao_filtro_meus"
         android:orderInCategory="100"
-        android:title="@string/filtro_nome"
+        android:title="Meus Eventos"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/opcao_filtro_nome"
+        android:id="@+id/opcao_filtro_participarei"
         android:orderInCategory="100"
-        android:title="@string/filtro_data"
+        android:title="Eventos que participarei"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/opcao_filtro_estilo"
-        android:orderInCategory="100"
-        android:title="@string/filtro_estilo"
-        app:showAsAction="never" />
+
 
 </menu>

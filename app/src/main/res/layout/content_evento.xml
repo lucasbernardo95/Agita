@@ -32,7 +32,7 @@
                 android:layout_marginRight="5dp"
                 >
 
-                <!--Carrossel com as imagens do evento. intervalo de 2s para transição-->
+                <!--Carrossel com as imagens do filtro_todos_eventos. intervalo de 2s para transição-->
                 <com.synnapps.carouselview.CarouselView
                     android:id="@+id/carrosselView"
                     android:layout_width="match_parent"

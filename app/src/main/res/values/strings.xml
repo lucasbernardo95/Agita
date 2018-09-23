@@ -25,6 +25,13 @@
     <!--Textos do menu de filtros de listagens de eventos-->
     <string name="filtro_data">Data</string>
     <string name="filtro_nome">Nome</string>
-    <string name="filtro_estilo">Estilo</string>
+
+    <string name="filtro_rock">Rock</string>
+    <string name="filtro_pop">Pop</string>
+    <string name="filtro_eletronica">Eletrônica</string>
+    <string name="filtro_forro">Forró</string>
+    <string name="filtro_sertanejo">Sertanejo</string>
+    <string name="filtro_brega">Brega</string>
+    <string name="filtro_swingueira">Swingueira</string>
 
 </resources>

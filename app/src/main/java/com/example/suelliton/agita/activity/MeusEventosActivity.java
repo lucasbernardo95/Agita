@@ -9,25 +9,20 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
 import com.example.suelliton.agita.model.Evento;
+import com.example.suelliton.agita.model.Participante;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +35,11 @@ import static com.example.suelliton.agita.activity.SplashActivity.usuarioReferen
 public class MeusEventosActivity extends AppCompatActivity {
 
     private RecyclerView myrecycler;
-    private List<Evento> lista;
+    private List<Evento> listaEventos;
     private String filtroBusca;
     private boolean admin;
 
-
+    EventoAdapter eventoAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,122 +48,99 @@ public class MeusEventosActivity extends AppCompatActivity {
 
         myrecycler = (RecyclerView) findViewById(R.id.meus_eventos_recycler);
 
-        //verifica se o usuário é admin ou não
-        verificaUsuario();
 
-        if (admin)
-            iniciaListaAdmin();
-        else
-            iniciaListaUsuario("nome");
+        iniciaListaUsuario("meus");
 
         preparaRecycler();
 
-        EventoAdapter eventoAdapter = new EventoAdapter(lista, MeusEventosActivity.this);
+
+    }
+
+
+
+    private void iniciaListaUsuario(final String opcao) {
+        listaEventos = new ArrayList<>();
+        eventoAdapter = new EventoAdapter(listaEventos, MeusEventosActivity.this);
         myrecycler.setLayoutManager(new GridLayoutManager(MeusEventosActivity.this,2));
         myrecycler.setAdapter(eventoAdapter);
         eventoAdapter.notifyDataSetChanged();
-    }
 
-    private void verificaUsuario(){
-        usuarioReference.orderByChild("login").equalTo(LOGADO).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                Usuario u = data.getValue(Usuario.class);
-                admin = u.isAdmin();
-            }
+            final Query query = eventosReference;
+            query.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    final Evento evento = dataSnapshot.getValue(Evento.class);
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    if(opcao.equals("meus")) {
+                        if (evento.getDono().equals(LOGADO)) {
+                            listaEventos.add(dataSnapshot.getValue(Evento.class));
+                        }
+                     }else if(opcao.equals("participarei")){
+                        Query query1 = eventosReference.child(evento.getKey()).child("participantes");
+                        query1.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
+                                    Participante participante = dataSnapshot.getValue(Participante.class);
+                                    if(participante.getNome().equals(LOGADO)){
+                                        listaEventos.add(evento);
+                                        Log.i("part",participante.getNome());
+                                    }
+                                eventoAdapter.notifyDataSetChanged();
+                            }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
+                            }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-            }
+                            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
-        });
-    }
+                            }
 
-    private void iniciaListaAdmin() {
-        lista = new ArrayList<>();
-        eventosReference.orderByChild("dono").equalTo(LOGADO).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Evento evento = dataSnapshot.getValue(Evento.class);
-                if (evento != null){
-                    lista.add(evento);
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+
+                    }
+                    eventoAdapter.notifyDataSetChanged();
                 }
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
+                }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-            }
+                }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
+                }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-    }
+                }
+            });
 
-    private void iniciaListaUsuario(String campo) {
-        lista = new ArrayList<>();
 
-        Query query = eventosReference;
 
-        query.orderByChild(campo).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                Evento evento = dataSnapshot.getValue(Evento.class);
-                lista.add(dataSnapshot.getValue(Evento.class));
 
-                Log.i("busca",
-                        "\nroot:"+eventosReference +
-                "\nparent:"+eventosReference.child(dataSnapshot.getRef().getKey()).child("participantes").getParent()+
-                "\nkey: "+dataSnapshot.getKey());
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private void preparaRecycler() {
@@ -176,11 +148,11 @@ public class MeusEventosActivity extends AppCompatActivity {
 
             @Override
             public void OnItemClick(View view, int i) {
-                eventoClicado = lista.get(i);
+                eventoClicado = listaEventos.get(i);
                 if (eventoClicado != null) {
                     startActivity(new Intent(MeusEventosActivity.this, Detalhes.class));
                 } else {
-                    Toast.makeText(MeusEventosActivity.this, "Erro ao tentar visualizar os detalhes do evento", Toast.LENGTH_LONG);
+                    Toast.makeText(MeusEventosActivity.this, "Erro ao tentar visualizar os detalhes do filtro_todos_eventos", Toast.LENGTH_LONG);
                 }
             }
 
@@ -208,15 +180,13 @@ public class MeusEventosActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.opcao_filtro_data:
-
+            case R.id.opcao_filtro_meus:
+                iniciaListaUsuario("meus");
                 return true;
-            case R.id.opcao_filtro_nome:
-
+            case R.id.opcao_filtro_participarei:
+                iniciaListaUsuario("participarei");
                 return true;
-            case R.id.opcao_filtro_estilo:
 
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
