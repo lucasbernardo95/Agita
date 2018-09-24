@@ -11,8 +11,13 @@
             android:id="@+id/nav_meus_anuncios"
             android:title="Meus eventos" />
         <item
-            android:id="@+id/nav_todos_anuncios"
-            android:title="Todos eventos" />
+        android:id="@+id/nav_todos_anuncios"
+        android:title="Todos eventos" />
+
+        <item
+            android:id="@+id/nav_aprova_anuncios"
+            android:title="Avaliar eventos" />
+
         <item
             android:id="@+id/nav_logout"
 

@@ -286,6 +286,9 @@ public class EventoActivity extends AppCompatActivity
             startActivity(new Intent(EventoActivity.this,MeusEventosActivity.class));
         } else if (id == R.id.nav_todos_anuncios) {
             startActivity(new Intent(EventoActivity.this,EventoActivity.class));
+        } else if (id == R.id.nav_aprova_anuncios) {
+            Log.i("admin", "abrindo tela admin");
+            startActivity(new Intent(EventoActivity.this,AdminActivity.class));
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();

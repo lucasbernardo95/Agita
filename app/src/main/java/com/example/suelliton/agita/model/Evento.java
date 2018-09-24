@@ -23,6 +23,7 @@ public class Evento implements Serializable {
     private String casashow;
     private boolean cover;
     private String dono;
+    private boolean verificado = false;
     //private List<String> participantes = new ArrayList<>();
 
     public Evento() {
@@ -178,7 +179,11 @@ public class Evento implements Serializable {
         this.dono = dono;
     }
 
+    public boolean isVerificado() {
+        return verificado;
+    }
 
-
-
+    public void setVerificado(boolean verificado) {
+        this.verificado = verificado;
+    }
 }
