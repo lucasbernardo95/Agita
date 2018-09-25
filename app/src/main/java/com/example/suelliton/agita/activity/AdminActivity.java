@@ -59,7 +59,7 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void loadEventosNaoAprovados() {
-            final FirebaseRecyclerAdapter<Evento, AdminViewHolder> adapter = new FirebaseRecyclerAdapter<Evento, AdminViewHolder>(Evento.class, R.layout.admin_content_evento, AdminViewHolder.class, eventoAprova) {
+            final FirebaseRecyclerAdapter<Evento, AdminViewHolder> adapter = new FirebaseRecyclerAdapter<Evento, AdminViewHolder>(Evento.class, R.layout.admin_content_evento, AdminViewHolder.class, eventoAprova.orderByChild("verificado").equalTo(false)) {
 
                 @Override
                 protected void populateViewHolder(final AdminViewHolder viewHolder, final Evento model, int position) {
