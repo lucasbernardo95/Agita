@@ -41,11 +41,12 @@
         <activity
             android:name=".activity.EventoActivity"
             android:label="Eventos"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activity.Detalhes" />
         <activity android:name=".activity.AddEventoActivity" />
         <activity android:name=".activity.MeusEventosActivity" />
-        <activity android:name=".activity.AdminActivity"></activity>
+        <activity android:name=".activity.AdminActivity" />
+        <activity android:name=".activity.DeleteEventoActivity"></activity>
     </application>
 
 </manifest>

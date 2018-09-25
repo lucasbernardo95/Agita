@@ -1,5 +1,6 @@
 package com.example.suelliton.agita.activity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -73,8 +74,6 @@ public class AdminActivity extends AppCompatActivity {
                     viewHolder.local.setText(model.getLocal());
                     viewHolder.data.setText(String.valueOf(model.getData()));
                     viewHolder.valor.setText(String.valueOf(model.getValor()));
-                    viewHolder.aprova.setBackgroundResource(R.drawable.ic_aprova);
-                    viewHolder.noAprova.setBackgroundResource(R.drawable.ic_nao_aprova);
 
 
                     StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
@@ -99,7 +98,11 @@ public class AdminActivity extends AppCompatActivity {
                                     eventoAprova.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
                                         @Override
                                         public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                                            eventoAprova.child(data.getKey()).removeValue();
+                                            model.setVerificado(false); //seta como RE-aprovado
+                                            Map<String, Object> att = new HashMap<>();
+                                            att.put(data.getKey(), model);
+
+                                            eventoAprova.updateChildren(att);
                                         }
 
                                         @Override
@@ -163,7 +166,47 @@ public class AdminActivity extends AppCompatActivity {
                                 }
                             });
 
-                        }
+                            viewHolder.exclui.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    //EXEMPLO DE COMO CHAMAR O BOTÃO DE EXCLUIR EVENTO
+                                    //EventoActivity.eventoClicado = model;
+                                    //abre a tela para ver os detalhes do evento e o escluir
+                                    //startActivity(new Intent(AdminActivity.this, DeleteEventoActivity.class));
+                                    //FIM DO EXEMPLO
+
+                                    eventoAprova.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
+                                        @Override
+                                        public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
+                                            eventoAprova.child(data.getKey()).removeValue();
+                                        }
+
+                                        @Override
+                                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                        }
+
+                                        @Override
+                                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                        }
+
+                                        @Override
+                                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                }
+                            });
+
+                        } //chave do click geral
                     });
                 }
             };

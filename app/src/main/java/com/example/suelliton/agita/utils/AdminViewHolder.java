@@ -14,7 +14,7 @@ public class AdminViewHolder extends RecyclerView.ViewHolder implements View.OnC
     private ItemClickListener itemClickListener;
 
     public TextView nome, valor, local, data, hora, bandas, estilo, casa, dono, descricao;
-    public ImageView imagem, aprova, noAprova;
+    public ImageView imagem, aprova, noAprova, exclui;
 
     public AdminViewHolder(View itemView) {
         super(itemView);
@@ -32,6 +32,7 @@ public class AdminViewHolder extends RecyclerView.ViewHolder implements View.OnC
         imagem = (ImageView) itemView.findViewById(R.id.imageEventoAdmin);
         aprova = (ImageView) itemView.findViewById(R.id.botaoAprova);
         noAprova = (ImageView) itemView.findViewById(R.id.botaoRepprova);
+        exclui = (ImageView) itemView.findViewById(R.id.botaoExcluir);
 
         itemView.setOnClickListener(this);
     }

@@ -10,7 +10,8 @@
     android:layout_margin="5dp"
     app:cardCornerRadius="2dp"
     app:contentPadding="10dp"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activity.DeleteEventoActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -20,14 +21,15 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_weight="10"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="300dp"
+            android:layout_height="400dp"
+            android:layout_gravity="center">
 
             <ImageView
-                android:id="@+id/imageEventoAdmin"
+                android:id="@+id/imageEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"/>
+                />
 
         </LinearLayout>
 
@@ -38,100 +40,83 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/nomeEventoAdmin"
+                android:id="@+id/nomeEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/horaEventoAdmin"
+                android:id="@+id/horaEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/dataEventoAdmin"
+                android:id="@+id/dataEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/valorEventoAdmin"
+                android:id="@+id/valorEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/localEventoAdmin"
+                android:id="@+id/localEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/bandasEventoAdmin"
+                android:id="@+id/bandasEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/estiloEventoAdmin"
+                android:id="@+id/estiloEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/casaEventoAdmin"
+                android:id="@+id/casaEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/donoEventoAdmin"
+                android:id="@+id/donoEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
 
             <TextView
-                android:id="@+id/descricaoEventoAdmin"
+                android:id="@+id/descricaoEventoDelete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/botaoConfirma"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_confirma"
+                    />
+
+            </LinearLayout>
 
         </LinearLayout>
-        <TableLayout
-            android:shrinkColumns="*"
-            android:stretchColumns="*"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
 
-            <TableRow
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:gravity="center">
-
-                <ImageView
-                    android:id="@+id/botaoAprova"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    android:src="@drawable/ic_aprova" />
-
-                <ImageView
-                    android:id="@+id/botaoRepprova"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    android:src="@drawable/ic_nao_aprova"
-                     />
-
-                <ImageView
-                    android:id="@+id/botaoExcluir"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    android:src="@drawable/ic_excluir"
-                    />
-            </TableRow>
-
-        </TableLayout>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>
