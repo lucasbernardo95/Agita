@@ -65,6 +65,7 @@ public class MeusEventosActivity extends AppCompatActivity {
         myrecycler.setAdapter(eventoAdapter);
         eventoAdapter.notifyDataSetChanged();
 
+
             final Query query = eventosReference;
             query.addChildEventListener(new ChildEventListener() {
                 @Override

@@ -29,6 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nome"
+
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
         <!-- data  -->
@@ -60,7 +61,7 @@
                 android:id="@+id/hora_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="hora"
+                android:hint="Hora"
                 android:inputType="time" />
         </android.support.design.widget.TextInputLayout>
         <!-- local  -->
@@ -73,7 +74,7 @@
                 android:id="@+id/local_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="local"
+                android:hint="Logradouro, cidade, estado"
                 android:inputType="textAutoComplete" />
         </android.support.design.widget.TextInputLayout>
         <!-- estilo Label -->
@@ -86,7 +87,7 @@
                 android:id="@+id/estilo_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="estilo"
+                android:hint="Estilo musical"
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
         <!-- bandas Label -->
@@ -99,7 +100,7 @@
                 android:id="@+id/bandas_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="bandas"
+                android:hint="Banda 1, banda 2 ..."
                 android:inputType="text" />
 
         </android.support.design.widget.TextInputLayout>
@@ -113,7 +114,7 @@
                 android:id="@+id/valor_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="valor"
+                android:hint="Valor entrada"
                 android:inputType="numberDecimal" />
 
         </android.support.design.widget.TextInputLayout>
@@ -127,7 +128,7 @@
                 android:id="@+id/descricao_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="descricao"
+                android:hint="Descrição"
                 android:inputType="text" />
 
         </android.support.design.widget.TextInputLayout>
@@ -141,7 +142,7 @@
                 android:id="@+id/casa_show_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="casa de show"
+                android:hint="Casa de show"
                 android:inputType="text" />
 
         </android.support.design.widget.TextInputLayout>

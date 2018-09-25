@@ -27,17 +27,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
+import com.example.suelliton.agita.holders.EventoViewHolder;
+
 import com.example.suelliton.agita.model.Evento;
+import com.example.suelliton.agita.model.Participante;
+import com.example.suelliton.agita.model.Usuario;
+import com.example.suelliton.agita.utils.ItemClickListener;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.example.suelliton.agita.utils.PermissionUtils;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
@@ -48,6 +57,8 @@ import java.util.List;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class EventoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -70,8 +81,10 @@ public class EventoActivity extends AppCompatActivity
     CarouselView carrossel;
     FirebaseStorage storage;
     Evento[] eventosCarousel;
-    EventoAdapter eventoAdapter;
-
+    FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapter;
+    //EventoAdapter eventoAdapter;
+    boolean like ;
+    List<String> eventosParticiparei ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +92,8 @@ public class EventoActivity extends AppCompatActivity
 
         database =  MyDatabaseUtil.getDatabase();
         eventosReference = database.getReference("eventos");
+        atualizaUsuarioLogado();
+
 
 
 
@@ -141,9 +156,83 @@ public class EventoActivity extends AppCompatActivity
 
     public void iniciaLista(final String fieldOrder) {
         listaEventos = new ArrayList<>();
-        eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
+        //eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
-        myrecycler.setAdapter(eventoAdapter);
+        //eventoAdapter.notifyDataSetChanged();
+        Query query;
+        if(fieldOrder.equals("nome") || fieldOrder.equals("data")) {
+             query = eventosReference.orderByChild(fieldOrder);
+        }else{
+             query = eventosReference.child("estilo").equalTo(fieldOrder);
+        }
+
+        adapter = new FirebaseRecyclerAdapter<Evento, EventoViewHolder>(Evento.class,
+                R.layout.inflate_evento,
+                EventoViewHolder.class,
+                query){
+            @Override
+            protected void populateViewHolder(final EventoViewHolder viewHolder, final Evento model, int position) {
+                viewHolder.nome.setText(model.getNome());
+                Picasso.get().load(model.getUrlBanner()).into(viewHolder.imagem);
+                final Evento evento = model;
+
+                if(eventosParticiparei.contains(evento.getNome())){
+                    like = true;
+                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                }else{
+                    like = false;
+                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                }
+
+
+                viewHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //Toast.makeText(, "clicou", Toast.LENGTH_SHORT).show();
+                        if(like){
+                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                            eventosParticiparei.remove(evento.getNome());
+                        }else{
+                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                            eventosParticiparei.add(evento.getNome());
+                        }
+                        like = !like;
+
+                        usuarioLogado.setParticiparei(eventosParticiparei);
+                        usuarioReference.child(LOGADO).setValue(usuarioLogado);
+
+                    }
+                });
+
+
+
+
+                viewHolder.imagem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        eventoClicado = evento;
+                        startActivity(new Intent(EventoActivity.this, Detalhes.class));
+                    }
+                });
+
+
+            }
+
+        };
+
+        myrecycler.setAdapter(adapter);
+
+
+
+
+
+
+
+
+
+
+/*
+
         Query query = eventosReference.orderByChild(fieldOrder);
 
         query.addChildEventListener(new ChildEventListener() {
@@ -167,7 +256,7 @@ public class EventoActivity extends AppCompatActivity
 
 
                 }
-                eventoAdapter.notifyDataSetChanged();
+
 
             }
 
@@ -191,9 +280,31 @@ public class EventoActivity extends AppCompatActivity
 
             }
         });
+        myrecycler.setAdapter(eventoAdapter);
 
+        */
     }
 
+    public void atualizaUsuarioLogado(){
+        Query query = usuarioReference.child(LOGADO);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usuarioLogado = dataSnapshot.getValue(Usuario.class);
+                eventosParticiparei = usuarioLogado.getParticiparei();
+                Toast.makeText(EventoActivity.this, "nome "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
+                if(eventosParticiparei == null){
+                    eventosParticiparei = new ArrayList<>();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
     public void findViews(){
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);

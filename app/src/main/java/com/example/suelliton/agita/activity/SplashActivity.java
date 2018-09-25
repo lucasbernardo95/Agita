@@ -26,6 +26,7 @@ public class SplashActivity extends AppCompatActivity {
     public static DatabaseReference usuarioReference;
     public static DatabaseReference eventosReference;
     public static DatabaseReference locaisReference;
+    public static Usuario usuarioLogado;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +62,7 @@ public class SplashActivity extends AppCompatActivity {
                     try {
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if (usuario != null) {
+                            usuarioLogado = usuario;
                             //Toast.makeText(SplashActivity.this, "usuario logado : "+usuario.getEmail(), Toast.LENGTH_SHORT).show();
                             if(usuario.isAdmin()){
                                 Toast.makeText(SplashActivity.this, "Usuario administrado, telas ainda nao criadas", Toast.LENGTH_SHORT).show();
