@@ -20,7 +20,7 @@
             android:layout_height="72dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/logo_agita_burned" />
+            android:src="@drawable/logo_agita_resize" />
 
 
         <android.support.design.widget.TextInputLayout
