@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -57,9 +58,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 
 public class AddEventoActivity extends AppCompatActivity {
     private final int REQUEST_GALERIA = 2;
@@ -168,7 +169,10 @@ public class AddEventoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String nome = ed_nome.getText().toString();
                 try {
-                    uploadFirebaseBytes(bannerGaleria,nome);
+                    if(eventoEdit != null) {
+                        bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+                    }
+                    uploadFirebaseBytes(bannerGaleria, nome);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -199,8 +203,10 @@ public class AddEventoActivity extends AppCompatActivity {
                     lat = 11111;
                     lng = 11111;
                 }
-                final Evento evento = new Evento(nome,data,hora,local,estilo,lat,lng,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
+                final Evento evento;
+
                 if (eventoEdit == null ) {
+                    evento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
                     eventosReference.push().setValue(evento).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -235,13 +241,10 @@ public class AddEventoActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    Map<String, Object> att = new HashMap<>();
-                    att.put(eventoEdit.getKey(), evento);
-
-                    eventosReference.updateChildren(att);
+                    evento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
+                    eventosReference.child(eventoEdit.getKey()).setValue(evento);
                 }
-                locaisReference.child(local).setValue(local);
-
+                //locaisReference.child(local).setValue(local);
 
 
                 Toast.makeText(AddEventoActivity.this, "Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();

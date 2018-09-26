@@ -30,7 +30,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
@@ -192,7 +191,6 @@ public void findView(){
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if(usuario.getPassword().equals(password)){
                             usuarioLogado = usuario;
-                            LOGADO = dataSnapshot.getKey();
                         }
                     }
                 }
@@ -241,7 +239,7 @@ public void findView(){
             if (success) {
                 SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("usuarioLogado", LOGADO);
+                editor.putString("usuarioLogado", usuarioLogado.getLogin());
                 editor.apply();
                 startActivity(new Intent(LoginActivity.this,EventoActivity.class));
                 finish();

@@ -12,10 +12,6 @@ import com.example.suelliton.agita.activity.Detalhes;
 import com.example.suelliton.agita.model.Participante;
 import com.example.suelliton.agita.utils.ItemClickListener;
 
-import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
-import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
-import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
-
 public class EventoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     boolean like;
     public ImageView imagem;

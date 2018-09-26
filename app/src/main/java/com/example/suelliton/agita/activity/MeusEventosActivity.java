@@ -21,20 +21,23 @@ import com.example.suelliton.agita.model.Participante;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.ItemClickListener;
 import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
+import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
+import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
@@ -43,16 +46,15 @@ public class MeusEventosActivity extends AppCompatActivity {
 
     private RecyclerView myrecycler;
     private List<Evento> listaEventos;
-    private String filtroBusca;
-    private boolean admin;
-
     FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapter;
-    EventoAdapter eventoAdapter;
+    FirebaseDatabase database ;
+    DatabaseReference eventosReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meus_eventos);
-
+        database = MyDatabaseUtil.getDatabase();
+        eventosReference = database.getReference("eventos");
 
         myrecycler = (RecyclerView) findViewById(R.id.meus_eventos_recycler);
 
@@ -71,19 +73,42 @@ public class MeusEventosActivity extends AppCompatActivity {
         Query query = null;
         if(fieldOrder.equals("meus")) {
             query = eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
-            adapter = new FirebaseRecyclerAdapter<Evento, EventoViewHolder>(Evento.class,
-                    R.layout.inflate_evento,
-                    EventoViewHolder.class,
-                    query){
+            List<String> keyEventos = usuarioLogado.getParticiparei();
+            listaEventos = new ArrayList<>();
+            final EventoAdapter eventoAdapter = new EventoAdapter(listaEventos,MeusEventosActivity.this);
+            myrecycler.setAdapter(eventoAdapter);
+
+            query.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    listaEventos.add(dataSnapshot.getValue(Evento.class));
+                    Log.i("meus",dataSnapshot.getValue(Evento.class).getNome());
+                    eventoAdapter.notifyDataSetChanged();
+                }
 
                 @Override
-                protected void populateViewHolder(final EventoViewHolder viewHolder, final Evento model, int position) {
-
-                    setValuesViewHolder(viewHolder,model);//todos os eventos filtrados
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 }
-            };
-            myrecycler.setAdapter(adapter);
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+
 
         }else if(fieldOrder.equals("participarei")){
             List<String> keyEventos = usuarioLogado.getParticiparei();

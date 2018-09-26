@@ -31,8 +31,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
+
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 
 public class AddUserActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
@@ -252,7 +253,7 @@ public class AddUserActivity extends AppCompatActivity{
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("usuarioLogado", novoUsuario.getLogin());
                 editor.apply();
-                LOGADO = novoUsuario.getLogin();
+                usuarioLogado = novoUsuario;
                 return true;//salva usuario
             }else{
                 return  false;//erro pra salvar

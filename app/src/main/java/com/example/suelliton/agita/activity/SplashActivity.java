@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 public class SplashActivity extends AppCompatActivity {
-    public static String LOGADO;
+    public String LOGADO;
     public static FirebaseDatabase database ;
     public static DatabaseReference usuarioReference;
     public static DatabaseReference eventosReference;

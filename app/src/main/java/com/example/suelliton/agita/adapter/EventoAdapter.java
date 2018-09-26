@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
-import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 /*
@@ -104,7 +103,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
 
         //implemmenta o click do botão like
-        Query query = eventosReference.child(escolhido.getKey()).child("participantes").child(LOGADO);
+        Query query = eventosReference.child(escolhido.getKey()).child("participantes").child(usuarioLogado.getLogin());
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -153,12 +152,12 @@ public class EventoAdapter extends RecyclerView.Adapter{
                 //Toast.makeText(context, "clicou", Toast.LENGTH_SHORT).show();
 
                 if(like){
-                    eventosReference.child(escolhido.getKey()).child("participantes").child(LOGADO).removeValue();
+                    eventosReference.child(escolhido.getKey()).child("participantes").child(usuarioLogado.getLogin()).removeValue();
                     myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
                     like = false;
                 }else {
-                    Participante participante = new Participante(LOGADO);
-                    eventosReference.child(escolhido.getKey()).child("participantes").child(LOGADO).setValue(participante);
+                    Participante participante = new Participante(usuarioLogado.getLogin());
+                    eventosReference.child(escolhido.getKey()).child("participantes").child(usuarioLogado.getLogin()).setValue(participante);
                     myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
                     like = true;
                 }

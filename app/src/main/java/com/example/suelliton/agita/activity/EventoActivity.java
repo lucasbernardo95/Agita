@@ -57,7 +57,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
@@ -98,7 +98,7 @@ public class EventoActivity extends AppCompatActivity
         findViews();
         setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
         setViewListener();
-        atualizaUsuarioLogado();
+        if(usuarioLogado != null)atualizaUsuarioLogado();
         iniciaLista("nome");
 
         eventosCarousel = new ArrayList<>();
@@ -236,7 +236,7 @@ public class EventoActivity extends AppCompatActivity
                             eventosReference.child(evento.getKey()).child("qtdParticipantes").setValue(evento.getQtdParticipantes() + 1);
                         }
                         usuarioLogado.setParticiparei(eventosParticiparei);
-                        usuarioReference.child(LOGADO).setValue(usuarioLogado);
+                        usuarioReference.child(usuarioLogado.getLogin()).setValue(usuarioLogado);
                         view.requestFocus();
                     }else{
                         Toast.makeText(EventoActivity.this, "Faça login para curtir o evento", Toast.LENGTH_SHORT).show();
@@ -254,7 +254,7 @@ public class EventoActivity extends AppCompatActivity
         });
     }
     public void atualizaUsuarioLogado(){
-        Query query = usuarioReference.child(LOGADO);
+        Query query = usuarioReference.child(usuarioLogado.getLogin());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -378,7 +378,6 @@ public class EventoActivity extends AppCompatActivity
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("usuarioLogado", "");
             editor.apply();
-            LOGADO="";
             usuarioLogado = null;
             startActivity(new Intent(EventoActivity.this,EventoActivity.class));
             finish();
