@@ -38,6 +38,8 @@ public class SplashActivity extends AppCompatActivity {
         eventosReference = database.getReference("eventos");
         locaisReference = database.getReference("locais");
 
+        //Usuario admin = new Usuario("admin","","admin","admin","",true,"");
+        //usuarioReference.child(admin.getLogin()).setValue(admin);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
         //depois tirar esse trecho senao vai dar bode e nao guardar o usuario logado
@@ -64,12 +66,9 @@ public class SplashActivity extends AppCompatActivity {
                         if (usuario != null) {
                             usuarioLogado = usuario;
                             //Toast.makeText(SplashActivity.this, "usuario logado : "+usuario.getEmail(), Toast.LENGTH_SHORT).show();
-                            if(usuario.isAdmin()){
-                                Toast.makeText(SplashActivity.this, "Usuario administrado, telas ainda nao criadas", Toast.LENGTH_SHORT).show();
-                            }else {
-                                startActivity(new Intent(SplashActivity.this, EventoActivity.class));
-                                finish();
-                            }
+                            startActivity(new Intent(SplashActivity.this, EventoActivity.class));
+                            finish();
+
                         }
 
                     } catch (Exception e) {
@@ -107,7 +106,7 @@ public class SplashActivity extends AppCompatActivity {
             h.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                    startActivity(new Intent(SplashActivity.this, EventoActivity.class));
                     finish();
                 }
             },200);

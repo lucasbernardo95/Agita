@@ -33,9 +33,10 @@ import com.google.firebase.database.Query;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
+
 public class LoginActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
-    private Usuario USUARIO_OBJETO_LOGADO;
     private EditText ed_password;
     private View progressView;
     private TextView linkCadastro;
@@ -188,7 +189,7 @@ public void findView(){
                     if (dataSnapshot.exists()) {
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if(usuario.getPassword().equals(password)){
-                            USUARIO_OBJETO_LOGADO = usuario;
+                            usuarioLogado = usuario;
                             LOGADO = dataSnapshot.getKey();
                         }
                     }
@@ -223,7 +224,7 @@ public void findView(){
             }
 
 
-            if(USUARIO_OBJETO_LOGADO != null){
+            if(usuarioLogado != null){
                 return true;
             }
 

@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -52,6 +53,7 @@ import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,12 +81,11 @@ public class EventoActivity extends AppCompatActivity
     RecyclerView myrecycler;
 
     CarouselView carrossel;
-    FirebaseStorage storage;
-    Evento[] eventosCarousel;
+    List<Evento> eventosCarousel;
     FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapter;
-    //EventoAdapter eventoAdapter;
-    boolean like ;
+    int qtdAnterior = 0;
     List<String> eventosParticiparei ;
+    int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,10 +93,6 @@ public class EventoActivity extends AppCompatActivity
 
         database =  MyDatabaseUtil.getDatabase();
         eventosReference = database.getReference("eventos");
-        atualizaUsuarioLogado();
-
-
-
 
 
         findViews();
@@ -103,188 +100,156 @@ public class EventoActivity extends AppCompatActivity
         setViewListener();
         iniciaLista("nome");
 
+        eventosCarousel = new ArrayList<>();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                carregaCarrossel();
+                //populateCarousel();
                 carrossel.setImageListener(clickImagem);/*implementa a listagem de eventosCarousel do carrossel.*/
-                carrossel.setPageCount(eventosCarousel.length); /*informa a quantidade de elementos que irá conter no carrossel*/
+                carrossel.setPageCount(eventosCarousel.size()); /*informa a quantidade de elementos que irá conter no carrossel*/
                 //carrossel.notify();
+
             }
         },2000);
 
-
-
-
-
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu nav_Menu = navigationView.getMenu();
+        if(usuarioLogado == null){//se o usuario for fantasma
+            nav_Menu.findItem(R.id.nav_meus_anuncios).setVisible(false);
+            nav_Menu.findItem(R.id.nav_add_evento).setVisible(false);
+            nav_Menu.findItem(R.id.nav_logout).setVisible(false);
+            nav_Menu.findItem(R.id.nav_login).setVisible(true);
+            nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
+            nav_Menu.findItem(R.id.nav_todos_anuncios).setVisible(false);
+        }else if(usuarioLogado.isAdmin()) {//se for administrador
+            nav_Menu.findItem(R.id.nav_login).setVisible(false);
+            atualizaUsuarioLogado();
+        }else {//se for usuário normal
+            nav_Menu.findItem(R.id.nav_login).setVisible(false);
+            nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
+            atualizaUsuarioLogado();
+        }
     }
-
     //Método temporário para exibir as eventosCarousel no carrossel
     ImageListener clickImagem = new ImageListener() {
         @Override
         public void setImageForPosition(final int position, ImageView imageView) {
             try {
-                Picasso.get().load(eventosCarousel[position].getUrlBanner()).into(imageView);
+                Picasso.get().load(eventosCarousel.get(position).getUrlBanner()).into(imageView);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        eventoClicado = eventosCarousel[position];
+                        eventoClicado = eventosCarousel.get(position);
                         startActivity(new Intent(EventoActivity.this,Detalhes.class));
                     }
                 });
             }catch (Exception e){
-
             }
         }
     };
 
-    public void carregaCarrossel(){
-
+    public void populateCarousel(){
         int qtd = 0;
         if(listaEventos.size()>5){
             qtd = 5;
         }else{
             qtd = listaEventos.size();
         }
-        eventosCarousel = new Evento[qtd];
+        eventosCarousel = new ArrayList<>();
         for(int i = 0 ; i < qtd; i++){
             Evento evento = listaEventos.get(i);
-            eventosCarousel[i] = evento;
+            eventosCarousel.add(evento);
         }
     }
 
     public void iniciaLista(final String fieldOrder) {
         listaEventos = new ArrayList<>();
-        //eventoAdapter = new EventoAdapter(listaEventos, EventoActivity.this);
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
-        //eventoAdapter.notifyDataSetChanged();
+
         Query query;
         if(fieldOrder.equals("nome") || fieldOrder.equals("data")) {
-             query = eventosReference.orderByChild(fieldOrder);
+            query = eventosReference.orderByChild(fieldOrder);
         }else{
-             query = eventosReference.child("estilo").equalTo(fieldOrder);
+            query = eventosReference.orderByChild("estilo").startAt(fieldOrder).endAt(fieldOrder);
         }
 
         adapter = new FirebaseRecyclerAdapter<Evento, EventoViewHolder>(Evento.class,
                 R.layout.inflate_evento,
                 EventoViewHolder.class,
                 query){
+
             @Override
             protected void populateViewHolder(final EventoViewHolder viewHolder, final Evento model, int position) {
-                viewHolder.nome.setText(model.getNome());
-                Picasso.get().load(model.getUrlBanner()).into(viewHolder.imagem);
-                final Evento evento = model;
 
-                if(eventosParticiparei.contains(evento.getNome())){
-                    like = true;
-                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                }else{
-                    like = false;
-                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                setValuesViewHolder(viewHolder,model);//todos os eventos filtrados
+                //myrecycler.invalidate();
+
+                    if (model.getQtdParticipantes() >= qtdAnterior && count < 6) {
+                        eventosCarousel.add(model);
+                        qtdAnterior = model.getQtdParticipantes();
+                        count++;
+                    }
                 }
-
-
-                viewHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //Toast.makeText(, "clicou", Toast.LENGTH_SHORT).show();
-                        if(like){
-                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-                            eventosParticiparei.remove(evento.getNome());
-                        }else{
-                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                            eventosParticiparei.add(evento.getNome());
-                        }
-                        like = !like;
-
-                        usuarioLogado.setParticiparei(eventosParticiparei);
-                        usuarioReference.child(LOGADO).setValue(usuarioLogado);
-
-                    }
-                });
-
-
-
-
-                viewHolder.imagem.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        eventoClicado = evento;
-                        startActivity(new Intent(EventoActivity.this, Detalhes.class));
-                    }
-                });
-
-
-            }
-
         };
 
         myrecycler.setAdapter(adapter);
 
 
-
-
-
-
-
-
-
-
-/*
-
-        Query query = eventosReference.orderByChild(fieldOrder);
-
-        query.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.i("filtro_todos_eventos", "--->"+dataSnapshot.getValue(Evento.class));
-                evento = dataSnapshot.getValue(Evento.class);
-                if (evento != null){
-                    if(evento.getKey().equals("")){
-                        evento.setKey(dataSnapshot.getRef().getKey());
-                        eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
-                    }
-                    if(fieldOrder.equals("nome") || fieldOrder.equals("data")) {
-                        listaEventos.add(evento);
-                    }else{
-                        if(evento.getEstilo().equals(fieldOrder)){
-                            listaEventos.add(evento);
-                        }
-
-                    }
-
-
-                }
-
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        myrecycler.setAdapter(eventoAdapter);
-
-        */
     }
 
+    public void setValuesViewHolder(final EventoViewHolder viewHolder,Evento model){
+        viewHolder.nome.setText(model.getNome());
+        Picasso.get().load(model.getUrlBanner()).into(viewHolder.imagem);
+        final Evento evento = model;
+        final boolean[] like = new boolean[1];
+
+        if(usuarioLogado != null) {
+            if (eventosParticiparei != null){
+                if (eventosParticiparei.contains(evento.getNome())) {
+                    like[0] = true;
+                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                } else {
+                    like[0] = false;
+                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                }
+            }
+
+        }
+            viewHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if(usuarioLogado !=null) {
+                        if (like[0]) {
+                            like[0] = false;
+                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                            eventosParticiparei.remove(evento.getNome());
+                            eventosReference.child(evento.getKey()).child("qtdParticipantes").setValue(evento.getQtdParticipantes() - 1);
+                        } else {
+                            like[0] = true;
+                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                            eventosParticiparei.add(evento.getNome());
+                            eventosReference.child(evento.getKey()).child("qtdParticipantes").setValue(evento.getQtdParticipantes() + 1);
+                        }
+                        usuarioLogado.setParticiparei(eventosParticiparei);
+                        usuarioReference.child(LOGADO).setValue(usuarioLogado);
+                        view.requestFocus();
+                    }else{
+                        Toast.makeText(EventoActivity.this, "Faça login para curtir o evento", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+
+        viewHolder.imagem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventoClicado = evento;
+                startActivity(new Intent(EventoActivity.this, Detalhes.class));
+            }
+        });
+    }
     public void atualizaUsuarioLogado(){
         Query query = usuarioReference.child(LOGADO);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -292,7 +257,7 @@ public class EventoActivity extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuarioLogado = dataSnapshot.getValue(Usuario.class);
                 eventosParticiparei = usuarioLogado.getParticiparei();
-                Toast.makeText(EventoActivity.this, "nome "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(EventoActivity.this, "nome "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
                 if(eventosParticiparei == null){
                     eventosParticiparei = new ArrayList<>();
                 }
@@ -345,7 +310,9 @@ public class EventoActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.filtro_todos_eventos, menu);
-        return true;
+
+        return super.onCreateOptionsMenu(menu);
+        //return true;
     }
 
     @Override
@@ -385,10 +352,13 @@ public class EventoActivity extends AppCompatActivity
         }
     }
 
+
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
         int id = item.getItemId();
 
         if (id == R.id.nav_add_evento) {
@@ -406,13 +376,17 @@ public class EventoActivity extends AppCompatActivity
             editor.putString("usuarioLogado", "");
             editor.apply();
             LOGADO="";
+            usuarioLogado = null;
+            startActivity(new Intent(EventoActivity.this,EventoActivity.class));
+            finish();
+        }else if(id == R.id.nav_login){
             startActivity(new Intent(EventoActivity.this,LoginActivity.class));
             finish();
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
@@ -459,6 +433,7 @@ public class EventoActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         carrossel.requestFocus();
+
     }
 
     @Override

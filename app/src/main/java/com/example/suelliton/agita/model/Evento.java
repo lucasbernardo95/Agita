@@ -24,6 +24,7 @@ public class Evento implements Serializable {
     private boolean cover;
     private String dono;
     private boolean verificado = false;
+    private int qtdParticipantes;
     //private List<String> participantes = new ArrayList<>();
 
     public Evento() {
@@ -46,7 +47,16 @@ public class Evento implements Serializable {
         this.cover = cover;
         this.dono = dono;
         this.key = "";
+        this.qtdParticipantes = 0;
 //        this.participantes = new ArrayList<>();
+    }
+
+    public int getQtdParticipantes() {
+        return qtdParticipantes;
+    }
+
+    public void setQtdParticipantes(int qtdParticipantes) {
+        this.qtdParticipantes = qtdParticipantes;
     }
 
     public void setLatitude(float latitude) {
