@@ -34,4 +34,6 @@
     <string name="filtro_brega">Brega</string>
     <string name="filtro_swingueira">Swingueira</string>
 
+    <string name="botaoEditarEvento">Editar</string>
+
 </resources>

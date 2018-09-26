@@ -46,7 +46,7 @@
         <activity android:name=".activity.AddEventoActivity" />
         <activity android:name=".activity.MeusEventosActivity" />
         <activity android:name=".activity.AdminActivity" />
-        <activity android:name=".activity.DeleteEventoActivity"></activity>
+        <activity android:name=".activity.DeleteEventoActivity" />
     </application>
 
 </manifest>

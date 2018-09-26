@@ -51,8 +51,10 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
@@ -78,6 +80,8 @@ public class AddEventoActivity extends AppCompatActivity {
     Bitmap bannerGaleria;
     String urlBanner = "";
     List<String> listaLocais;
+    private Evento eventoEdit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,9 +90,39 @@ public class AddEventoActivity extends AppCompatActivity {
         findViews();
         setViewListeners();
 
+        Bundle pacote = getIntent().getExtras();
+
+        if (pacote != null) {
+            eventoEdit = (Evento) pacote.getSerializable("eventoEdit");
+            setEventoEdit();
+        }
+
         carregaLocais();
 
     }
+
+    private void setEventoEdit(){
+        ed_nome.setText(eventoEdit.getNome());
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
+
+        StorageReference islandRef = storageReference.child(eventoEdit.getNome());
+        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Picasso.get().load(uri).into(imageView);
+            }
+        });
+        ed_hora.setText(eventoEdit.getHora());
+        ed_local.setText(eventoEdit.getLocal());
+        ed_estilo.setText(eventoEdit.getEstilo());
+        ed_bandas.setText(eventoEdit.getBandas());
+        ed_valor.setText(String.valueOf(eventoEdit.getValor()));
+        ed_descricao.setText(eventoEdit.getDescricao());
+        ed_casaShow.setText(eventoEdit.getCasashow());
+        ed_liberado.setChecked(false);//desmarca
+        btnSalvarEvento.setText(R.string.botaoEditarEvento);
+    }
+
     public void carregaLocais(){
         listaLocais = new ArrayList<>();
         locaisReference.addValueEventListener(new ValueEventListener() {
@@ -127,6 +161,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
         btnSalvarEvento = (Button) findViewById(R.id.salvar_evento);
     }
+
     public void setViewListeners(){
         btnSalvarEvento.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,40 +200,46 @@ public class AddEventoActivity extends AppCompatActivity {
                     lng = 11111;
                 }
                 final Evento evento = new Evento(nome,data,hora,local,estilo,lat,lng,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
-                eventosReference.push().setValue(evento).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Query query = eventosReference.orderByChild("nome").startAt(evento.getNome()).endAt(evento.getNome()).limitToFirst(1);
-                        query.addChildEventListener(new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+                if (eventoEdit == null ) {
+                    eventosReference.push().setValue(evento).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Query query = eventosReference.orderByChild("nome").startAt(evento.getNome()).endAt(evento.getNome()).limitToFirst(1);
+                            query.addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
 
-                            }
+                                }
 
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                @Override
+                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                @Override
+                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                @Override
+                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        });
-                    }
-                });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Map<String, Object> att = new HashMap<>();
+                    att.put(eventoEdit.getKey(), evento);
 
+                    eventosReference.updateChildren(att);
+                }
                 locaisReference.child(local).setValue(local);
 
 

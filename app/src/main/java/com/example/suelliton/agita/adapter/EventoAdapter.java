@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
+import com.example.suelliton.agita.activity.AddEventoActivity;
 import com.example.suelliton.agita.activity.Detalhes;
 import com.example.suelliton.agita.activity.MeusEventosActivity;
 import com.example.suelliton.agita.activity.SplashActivity;
@@ -42,6 +43,7 @@ import java.util.Map;
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 /*
 * É necessário o uso de um adapter para:
 * fornecer dados para a lista de eventos e
@@ -82,9 +84,20 @@ public class EventoAdapter extends RecyclerView.Adapter{
         myHolder.nome.setText(escolhido.getNome());
 
         //Oculta o botão de like se estiver na tela de meus eventos
-        if (MeusEventosActivity.class == context.getClass())
+        if (MeusEventosActivity.class == context.getClass()) {
             myHolder.botaoLike.setVisibility(View.GONE);
+            //Se o evento pertencer ao usuário logado ele pode editar
+            if(usuarioLogado.getLogin().equals(escolhido.getDono())) {
+                myHolder.botaoEditar.setVisibility(View.VISIBLE);
+            }
+        }
 
+        myHolder.botaoEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                context.startActivity(new Intent(context, AddEventoActivity.class).putExtra("eventoEdit",escolhido));
+            }
+        });
 
         //Vai fazer essa verificação quando carregar os eventos na tela
         //checa se o usuártio já deu like no filtro_eventos atual ou não e seta a imagem correspondente
@@ -193,6 +206,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         final ImageView imagem;
         final TextView nome;
         final ImageView botaoLike;
+        final ImageButton botaoEditar;
 
         public EventoHolder(View v) {
             super(v);
@@ -200,6 +214,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
             imagem = (ImageView) v.findViewById(R.id.imgEvento);
             nome = (TextView) v.findViewById(R.id.textNomeEvento);
             botaoLike = (ImageView) v.findViewById(R.id.buttonLike);
+            botaoEditar = (ImageButton) v.findViewById(R.id.buttonEdit);
 
         }
 
