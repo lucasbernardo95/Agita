@@ -200,7 +200,9 @@ public class EventoActivity extends AppCompatActivity
 
     public void setValuesViewHolder(final EventoViewHolder viewHolder,Evento model){
         viewHolder.nome.setText(model.getNome());
-        Picasso.get().load(model.getUrlBanner()).into(viewHolder.imagem);
+        if(!model.getUrlBanner().equals("")) {
+            Picasso.get().load(model.getUrlBanner()).into(viewHolder.imagem);
+        }
         final Evento evento = model;
         final boolean[] like = new boolean[1];
 

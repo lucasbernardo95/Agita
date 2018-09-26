@@ -29,6 +29,7 @@ import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.SuccessContinuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -163,8 +164,40 @@ public class AddEventoActivity extends AppCompatActivity {
                     lat = 11111;
                     lng = 11111;
                 }
-                Evento evento = new Evento(nome,data,hora,local,estilo,lat,lng,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
-                eventosReference.push().setValue(evento);
+                final Evento evento = new Evento(nome,data,hora,local,estilo,lat,lng,bandas,valor,descricao,urlBanner,liberado,casa, false,LOGADO);
+                eventosReference.push().setValue(evento).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Query query = eventosReference.orderByChild("nome").startAt(evento.getNome()).endAt(evento.getNome()).limitToFirst(1);
+                        query.addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                });
 
                 locaisReference.child(local).setValue(local);
 
@@ -237,7 +270,7 @@ public class AddEventoActivity extends AppCompatActivity {
                             @Override
                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                 if(dataSnapshot.exists()) {
-                                    Toast.makeText(AddEventoActivity.this, ""+dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(AddEventoActivity.this, ""+dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
                                     eventosReference.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(urlBanner);
                                 }
                             }
