@@ -120,9 +120,11 @@ public class MeusEventosActivity extends AppCompatActivity {
                 query.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        listaEventos.add(dataSnapshot.getValue(Evento.class));
-                        Log.i("part",dataSnapshot.getValue(Evento.class).getNome());
-                        eventoAdapter.notifyDataSetChanged();
+                        if(dataSnapshot.getValue(Evento.class) != null) {
+                            listaEventos.add(dataSnapshot.getValue(Evento.class));
+                            Log.i("part", dataSnapshot.getValue(Evento.class).getNome());
+                            eventoAdapter.notifyDataSetChanged();
+                        }
                     }
 
                     @Override

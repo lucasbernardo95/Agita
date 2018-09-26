@@ -242,6 +242,7 @@ public class AddEventoActivity extends AppCompatActivity {
                     });
                 } else {
                     evento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
+                    evento.setKey(eventoEdit.getKey());
                     eventosReference.child(eventoEdit.getKey()).setValue(evento);
                 }
                 //locaisReference.child(local).setValue(local);
