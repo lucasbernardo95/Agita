@@ -112,28 +112,31 @@ public class MeusEventosActivity extends AppCompatActivity {
 
         }else if(fieldOrder.equals("participarei")){
             List<String> keyEventos = usuarioLogado.getParticiparei();
-            listaEventos = new ArrayList<>();
-            final EventoAdapter eventoAdapter = new EventoAdapter(listaEventos,MeusEventosActivity.this);
-            myrecycler.setAdapter(eventoAdapter);
-            for (String key:keyEventos ) {//parei aqui
-                query = eventosReference.child(key);
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.getValue(Evento.class) != null) {
-                            listaEventos.add(dataSnapshot.getValue(Evento.class));
-                            Log.i("part", dataSnapshot.getValue(Evento.class).getNome());
-                            eventoAdapter.notifyDataSetChanged();
+            Log.i("teste", "nome: "+usuarioLogado.getNome());
+            if (usuarioLogado.getParticiparei().size() > 0 ) { //lista se não estiver vazio para evitar erros
+                listaEventos = new ArrayList<>();
+                final EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, MeusEventosActivity.this);
+                myrecycler.setAdapter(eventoAdapter);
+
+                for (String key : keyEventos) {//parei aqui
+                    query = eventosReference.child(key);
+                    query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue(Evento.class) != null) {
+                                listaEventos.add(dataSnapshot.getValue(Evento.class));
+                                Log.i("part", dataSnapshot.getValue(Evento.class).getNome());
+                                eventoAdapter.notifyDataSetChanged();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+                }
             }
-
         }
 
     }

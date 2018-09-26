@@ -2,7 +2,6 @@ package com.example.suelliton.agita.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,30 +14,24 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.activity.AddEventoActivity;
+import com.example.suelliton.agita.activity.DeleteEventoActivity;
 import com.example.suelliton.agita.activity.Detalhes;
 import com.example.suelliton.agita.activity.MeusEventosActivity;
-import com.example.suelliton.agita.activity.SplashActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.model.Participante;
-import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
@@ -85,9 +78,11 @@ public class EventoAdapter extends RecyclerView.Adapter{
         //Oculta o botão de like se estiver na tela de meus eventos
         if (MeusEventosActivity.class == context.getClass()) {
             myHolder.botaoLike.setVisibility(View.GONE);
-            //Se o evento pertencer ao usuário logado ele pode editar
+            //Se o evento pertencer ao usuário logado, ele pode editar e/ou excluir
             if(usuarioLogado.getLogin().equals(escolhido.getDono())) {
                 myHolder.botaoEditar.setVisibility(View.VISIBLE);
+                myHolder.botaoExcluir.setVisibility(View.VISIBLE);
+//                myHolder.nome.setVisibility(View.GONE);//oculta o nome para melhor visualização dos botões
             }
         }
 
@@ -98,9 +93,16 @@ public class EventoAdapter extends RecyclerView.Adapter{
             }
         });
 
+        myHolder.botaoExcluir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //abre a tela para ver os detalhes do evento e o escluir
+                context.startActivity(new Intent(context, DeleteEventoActivity.class).putExtra("eventoDelete",escolhido));
+            }
+        });
+
         //Vai fazer essa verificação quando carregar os eventos na tela
         //checa se o usuártio já deu like no filtro_eventos atual ou não e seta a imagem correspondente
-
 
         //implemmenta o click do botão like
         Query query = eventosReference.child(escolhido.getKey()).child("participantes").child(usuarioLogado.getLogin());
@@ -178,9 +180,6 @@ public class EventoAdapter extends RecyclerView.Adapter{
         });
 
 
-
-
-
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,7 +204,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         final ImageView imagem;
         final TextView nome;
         final ImageView botaoLike;
-        final ImageButton botaoEditar;
+        final ImageButton botaoEditar, botaoExcluir;
 
         public EventoHolder(View v) {
             super(v);
@@ -214,6 +213,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
             nome = (TextView) v.findViewById(R.id.textNomeEvento);
             botaoLike = (ImageView) v.findViewById(R.id.buttonLike);
             botaoEditar = (ImageButton) v.findViewById(R.id.buttonEdit);
+            botaoExcluir = (ImageButton) v.findViewById(R.id.buttonDelete);
 
         }
 

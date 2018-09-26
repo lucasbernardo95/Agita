@@ -1,5 +1,6 @@
 package com.example.suelliton.agita.activity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,11 +37,22 @@ public class DeleteEventoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_delete_evento);
 
         //recebe o evento clicado
-        evento = EventoActivity.eventoClicado;
-        eventoAprova = FirebaseDatabase.getInstance().getReference("eventos");
+        Bundle pacote = getIntent().getExtras();
+
         findViews();
-        setContentEvent();
-        setClickBotoes();
+
+        if (pacote != null) {
+            evento = (Evento) pacote.getSerializable("eventoDelete");
+
+            eventoAprova = FirebaseDatabase.getInstance().getReference("eventos");
+
+            setContentEvent();
+            setClickBotoes();
+
+        } else {
+            nome.setText(R.string.smsErroLoad);
+        }
+
     }
 
     private void findViews() {
@@ -90,6 +102,7 @@ public class DeleteEventoActivity extends AppCompatActivity {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         eventoAprova.child(dataSnapshot.getKey()).removeValue();
+                        startActivity(new Intent(DeleteEventoActivity.this, MeusEventosActivity.class));
                     }
 
                     @Override
@@ -117,5 +130,4 @@ public class DeleteEventoActivity extends AppCompatActivity {
 
 
     }
-
 }

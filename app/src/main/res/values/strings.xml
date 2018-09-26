@@ -35,5 +35,5 @@
     <string name="filtro_swingueira">Swingueira</string>
 
     <string name="botaoEditarEvento">Editar</string>
-
+    <string name="smsErroLoad">Erro ao tentar carregar o conteúdo do evento selecionado!</string>
 </resources>

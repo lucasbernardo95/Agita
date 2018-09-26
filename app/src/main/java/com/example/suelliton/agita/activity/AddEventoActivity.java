@@ -168,6 +168,8 @@ public class AddEventoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String nome = ed_nome.getText().toString();
+                Log.i("edit", "nome: " + nome);
+                Log.i("edit", "bannerGaleria: " + bannerGaleria);
                 try {
                     if(eventoEdit != null) {
                         bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();

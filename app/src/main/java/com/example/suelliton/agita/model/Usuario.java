@@ -12,7 +12,7 @@ public class Usuario {
     private String cpf_cnpj;
     private boolean admin;
     private String email;
-    private List<String> participarei;
+    private List<String> participarei =  new ArrayList<>();;
 
 
     public Usuario() {
@@ -26,7 +26,7 @@ public class Usuario {
         this.cpf_cnpj = cpf_cnpj;
         this.admin = admin;
         this.email = email;
-        this.participarei =  new ArrayList<>();
+//        this.participarei =  new ArrayList<>();
     }
 
     public List<String> getParticiparei() {
