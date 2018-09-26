@@ -286,7 +286,6 @@ public class AddEventoActivity extends AppCompatActivity {
     }
     public void uploadFirebaseBytes(Bitmap bitmap, final String nomeEvento) throws FileNotFoundException {
         storageReference = storage.getReference("eventos");
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();

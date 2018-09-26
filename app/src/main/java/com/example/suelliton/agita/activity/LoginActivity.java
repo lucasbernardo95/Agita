@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
+import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
@@ -47,6 +48,7 @@ public class LoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        usuarioReference = database.getReference("usuarios");
 
         findView();
         setViewListeners();
@@ -218,7 +220,7 @@ public void findView(){
 
             try {
                 // Simulate network access.
-                Thread.sleep(1000);
+                Thread.sleep(1500);
             } catch (InterruptedException e) {
                 return false;
             }

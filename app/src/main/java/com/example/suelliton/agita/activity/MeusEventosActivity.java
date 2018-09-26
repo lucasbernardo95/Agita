@@ -15,14 +15,20 @@ import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
+import com.example.suelliton.agita.holders.EventoViewHolder;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.model.Participante;
 import com.example.suelliton.agita.model.Usuario;
+import com.example.suelliton.agita.utils.ItemClickListener;
 import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +36,7 @@ import static com.example.suelliton.agita.activity.SplashActivity.LOGADO;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class MeusEventosActivity extends AppCompatActivity {
@@ -39,6 +46,7 @@ public class MeusEventosActivity extends AppCompatActivity {
     private String filtroBusca;
     private boolean admin;
 
+    FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapter;
     EventoAdapter eventoAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,126 +57,80 @@ public class MeusEventosActivity extends AppCompatActivity {
         myrecycler = (RecyclerView) findViewById(R.id.meus_eventos_recycler);
 
 
-        iniciaListaUsuario("meus");
+        iniciaLista("meus");
 
-        preparaRecycler();
 
 
     }
 
 
 
-    private void iniciaListaUsuario(final String opcao) {
-        listaEventos = new ArrayList<>();
-        eventoAdapter = new EventoAdapter(listaEventos, MeusEventosActivity.this);
+    public void iniciaLista(final String fieldOrder) {
         myrecycler.setLayoutManager(new GridLayoutManager(MeusEventosActivity.this,2));
-        myrecycler.setAdapter(eventoAdapter);
-        eventoAdapter.notifyDataSetChanged();
 
+        Query query = null;
+        if(fieldOrder.equals("meus")) {
+            query = eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
+            adapter = new FirebaseRecyclerAdapter<Evento, EventoViewHolder>(Evento.class,
+                    R.layout.inflate_evento,
+                    EventoViewHolder.class,
+                    query){
 
-            final Query query = eventosReference;
-            query.addChildEventListener(new ChildEventListener() {
                 @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    final Evento evento = dataSnapshot.getValue(Evento.class);
+                protected void populateViewHolder(final EventoViewHolder viewHolder, final Evento model, int position) {
 
-                    if(opcao.equals("meus")) {
-                        if (evento.getDono().equals(LOGADO)) {
-                            listaEventos.add(dataSnapshot.getValue(Evento.class));
-                        }
-                     }else if(opcao.equals("participarei")){
-                        Query query1 = eventosReference.child(evento.getKey()).child("participantes");
-                        query1.addChildEventListener(new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    setValuesViewHolder(viewHolder,model);//todos os eventos filtrados
 
-                                    Participante participante = dataSnapshot.getValue(Participante.class);
-                                    if(participante.getNome().equals(LOGADO)){
-                                        listaEventos.add(evento);
-                                        Log.i("part",participante.getNome());
-                                    }
-                                eventoAdapter.notifyDataSetChanged();
-                            }
+                }
+            };
+            myrecycler.setAdapter(adapter);
 
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        }else if(fieldOrder.equals("participarei")){
+            List<String> keyEventos = usuarioLogado.getParticiparei();
+            listaEventos = new ArrayList<>();
+            final EventoAdapter eventoAdapter = new EventoAdapter(listaEventos,MeusEventosActivity.this);
+            myrecycler.setAdapter(eventoAdapter);
+            for (String key:keyEventos ) {//parei aqui
+                query = eventosReference.child(key);
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        listaEventos.add(dataSnapshot.getValue(Evento.class));
+                        Log.i("part",dataSnapshot.getValue(Evento.class).getNome());
+                        eventoAdapter.notifyDataSetChanged();
+                    }
 
-                            }
-
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                            }
-
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
-                    eventoAdapter.notifyDataSetChanged();
-                }
+                });
+            }
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        }
 
-                }
+    }
 
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+    public void setValuesViewHolder(final EventoViewHolder viewHolder,Evento model){
+        viewHolder.nome.setText(model.getNome());
+        if(!model.getUrlBanner().equals("")) {
+            Picasso.get().load(model.getUrlBanner()).into(viewHolder.imagem);
+        }
+        final Evento evento = model;
+        final boolean[] like = new boolean[1];
 
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-
+        viewHolder.imagem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventoClicado = evento;
+                startActivity(new Intent(MeusEventosActivity.this,Detalhes.class));
+            }
+        });
 
 
 
     }
 
-    private void preparaRecycler() {
-        myrecycler.addOnItemTouchListener(new MeuRecyclerViewClickListener(MeusEventosActivity.this, myrecycler, new MeuRecyclerViewClickListener.OnItemClickListener() {
-
-            @Override
-            public void OnItemClick(View view, int i) {
-                eventoClicado = listaEventos.get(i);
-                if (eventoClicado != null) {
-                    startActivity(new Intent(MeusEventosActivity.this, Detalhes.class));
-                } else {
-                    Toast.makeText(MeusEventosActivity.this, "Erro ao tentar visualizar os detalhes do filtro_todos_eventos", Toast.LENGTH_LONG);
-                }
-            }
-
-            @Override
-            public void OnItemLongClick(View view, int i) {
-
-            }
-
-            @Override
-            public void onItemClick(View view, int position) {
-
-            }
-        }));
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -182,12 +144,11 @@ public class MeusEventosActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.opcao_filtro_meus:
-                iniciaListaUsuario("meus");
+                iniciaLista("meus");
                 return true;
             case R.id.opcao_filtro_participarei:
-                iniciaListaUsuario("participarei");
+                iniciaLista("participarei");
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }

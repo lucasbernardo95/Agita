@@ -98,6 +98,7 @@ public class EventoActivity extends AppCompatActivity
         findViews();
         setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
         setViewListener();
+        atualizaUsuarioLogado();
         iniciaLista("nome");
 
         eventosCarousel = new ArrayList<>();
@@ -164,7 +165,7 @@ public class EventoActivity extends AppCompatActivity
     }
 
     public void iniciaLista(final String fieldOrder) {
-        listaEventos = new ArrayList<>();
+
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
 
         Query query;
@@ -208,7 +209,7 @@ public class EventoActivity extends AppCompatActivity
 
         if(usuarioLogado != null) {
             if (eventosParticiparei != null){
-                if (eventosParticiparei.contains(evento.getNome())) {
+                if (eventosParticiparei.contains(evento.getKey())) {
                     like[0] = true;
                     viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
                 } else {
@@ -226,12 +227,12 @@ public class EventoActivity extends AppCompatActivity
                         if (like[0]) {
                             like[0] = false;
                             viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-                            eventosParticiparei.remove(evento.getNome());
+                            eventosParticiparei.remove(evento.getKey());
                             eventosReference.child(evento.getKey()).child("qtdParticipantes").setValue(evento.getQtdParticipantes() - 1);
                         } else {
                             like[0] = true;
                             viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                            eventosParticiparei.add(evento.getNome());
+                            eventosParticiparei.add(evento.getKey());
                             eventosReference.child(evento.getKey()).child("qtdParticipantes").setValue(evento.getQtdParticipantes() + 1);
                         }
                         usuarioLogado.setParticiparei(eventosParticiparei);
