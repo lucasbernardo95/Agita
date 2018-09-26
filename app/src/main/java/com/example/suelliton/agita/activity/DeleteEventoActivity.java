@@ -108,7 +108,7 @@ public class DeleteEventoActivity extends AppCompatActivity {
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    }
+                    }//alterando
 
                     @Override
                     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
