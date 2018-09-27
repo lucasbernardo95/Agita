@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.activity.AddEventoActivity;
 import com.example.suelliton.agita.activity.Detalhes;
+import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.activity.MeusEventosActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.model.Participante;
@@ -79,8 +80,8 @@ public class EventoAdapter extends RecyclerView.Adapter{
         final Evento escolhido = eventos.get(position);
         myHolder.nome.setText(escolhido.getNome());
 
-        //Oculta o botão de like se estiver na tela de meus eventos
-        if (MeusEventosActivity.class == context.getClass()) {
+        //Oculta o botão de like se estiver na tela de todos eventos
+        if (EventoActivity.class == context.getClass()) {
             myHolder.botaoLike.setVisibility(View.GONE);
             //Se o evento pertencer ao usuário logado, ele pode editar e/ou excluir
             if(usuarioLogado.getLogin().equals(escolhido.getDono())) {

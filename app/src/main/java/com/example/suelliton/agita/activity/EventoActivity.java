@@ -23,7 +23,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -35,25 +34,20 @@ import com.example.suelliton.agita.adapter.EventoAdapter;
 import com.example.suelliton.agita.holders.EventoViewHolder;
 
 import com.example.suelliton.agita.model.Evento;
-import com.example.suelliton.agita.model.Participante;
 import com.example.suelliton.agita.model.Usuario;
-import com.example.suelliton.agita.utils.ItemClickListener;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.example.suelliton.agita.utils.PermissionUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,10 +73,10 @@ public class EventoActivity extends AppCompatActivity
     public static Evento eventoClicado;
     private List<Evento> listaEventos;
     RecyclerView myrecycler;
-
+    EventoAdapter eventoAdapter;
     CarouselView carrossel;
     List<Evento> eventosCarousel;
-    FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapter;
+    FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapterFirebase;
     int qtdAnterior = 0;
     List<String> eventosParticiparei ;
     int count = 0;
@@ -99,7 +93,7 @@ public class EventoActivity extends AppCompatActivity
         setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
         setViewListener();
         if(usuarioLogado != null)atualizaUsuarioLogado();
-        iniciaLista("nome");
+        iniciaLista("data");
 
         eventosCarousel = new ArrayList<>();
         Handler handler = new Handler();
@@ -112,17 +106,18 @@ public class EventoActivity extends AppCompatActivity
                 //carrossel.notify();
 
             }
-        },2000);
+        },300);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu nav_Menu = navigationView.getMenu();
         if(usuarioLogado == null){//se o usuario for fantasma
-            nav_Menu.findItem(R.id.nav_meus_anuncios).setVisible(false);
+            nav_Menu.findItem(R.id.nav_meus_eventos).setVisible(false);
             nav_Menu.findItem(R.id.nav_add_evento).setVisible(false);
             nav_Menu.findItem(R.id.nav_logout).setVisible(false);
             nav_Menu.findItem(R.id.nav_login).setVisible(true);
             nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
-            nav_Menu.findItem(R.id.nav_todos_anuncios).setVisible(false);
+            nav_Menu.findItem(R.id.nav_todos_eventos).setVisible(false);
+            nav_Menu.findItem(R.id.nav_eventos_irei).setVisible(false);
         }else if(usuarioLogado.isAdmin()) {//se for administrador
             nav_Menu.findItem(R.id.nav_login).setVisible(false);
             atualizaUsuarioLogado();
@@ -170,24 +165,97 @@ public class EventoActivity extends AppCompatActivity
 
     public void iniciaLista(final String fieldOrder) {
 
+        if(fieldOrder.equals("meus") || fieldOrder.equals("participarei")){//parte administrativa
 
-        Query query;
-        if(fieldOrder.equals("nome") || fieldOrder.equals("data")) {
-            query = eventosReference.orderByChild(fieldOrder);
-        }else{
-            query = eventosReference.orderByChild("estilo").startAt(fieldOrder).endAt(fieldOrder);
-        }
+            Query query = null;
+            if(fieldOrder.equals("meus")) {
+                query = eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
+                listaEventos = new ArrayList<>();
+                eventoAdapter = new EventoAdapter(listaEventos,EventoActivity.this);
+                myrecycler.setAdapter(eventoAdapter);
 
-        adapter = new FirebaseRecyclerAdapter<Evento, EventoViewHolder>(Evento.class,
-                R.layout.inflate_evento,
-                EventoViewHolder.class,
-                query){
+                query.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        listaEventos.add(dataSnapshot.getValue(Evento.class));
+                        eventoAdapter.notifyDataSetChanged();
+                    }
 
-            @Override
-            protected void populateViewHolder(final EventoViewHolder viewHolder, final Evento model, int position) {
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                setValuesViewHolder(viewHolder,model);//todos os eventos filtrados
-                //myrecycler.invalidate();
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        for(int i=0;i<listaEventos.size();i++){
+                            if(listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())){
+                                listaEventos.remove(listaEventos.get(i));
+                            }
+                        }
+                        eventoAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }else if(fieldOrder.equals("participarei")){
+                List<String> keyEventos = usuarioLogado.getParticiparei();
+                if(keyEventos == null) keyEventos = new ArrayList<>();
+                listaEventos = new ArrayList<>();
+                eventoAdapter = new EventoAdapter(listaEventos,EventoActivity.this);
+                myrecycler.setAdapter(eventoAdapter);
+                for (String key : keyEventos ) {//parei aqui
+                    query = eventosReference.child(key);
+                    query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.getValue(Evento.class) != null) {
+                                listaEventos.add(dataSnapshot.getValue(Evento.class));
+                                Log.i("part", dataSnapshot.getValue(Evento.class).getNome());
+                                eventoAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+            }
+
+
+        }else {
+
+            Query query;
+            if (fieldOrder.equals("nome") || fieldOrder.equals("data")) {
+                query = eventosReference.orderByChild(fieldOrder);
+                //query = eventosReference.orderByChild("verificado").equalTo(true).orderByChild(fieldOrder);
+            } else {
+                query = eventosReference.orderByChild("estilo").startAt(fieldOrder).endAt(fieldOrder);
+            }
+
+            adapterFirebase = new FirebaseRecyclerAdapter<Evento, EventoViewHolder>(Evento.class,
+                    R.layout.inflate_evento,
+                    EventoViewHolder.class,
+                    query) {
+
+                @Override
+                protected void populateViewHolder(final EventoViewHolder viewHolder, final Evento model, int position) {
+
+                    setValuesViewHolder(viewHolder, model);//todos os eventos filtrados
+                    //myrecycler.invalidate();
 
                     if (model.getQtdParticipantes() >= qtdAnterior && count < 6) {
                         eventosCarousel.add(model);
@@ -195,9 +263,12 @@ public class EventoActivity extends AppCompatActivity
                         count++;
                     }
                 }
-        };
+            };
 
-        myrecycler.setAdapter(adapter);
+            myrecycler.setAdapter(adapterFirebase);
+
+
+        }
 
 
     }
@@ -324,6 +395,7 @@ public class EventoActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
+        carrossel.setVisibility(View.GONE);
         switch (item.getItemId()) {
             case R.id.opcao_filtro_data:
                 iniciaLista("data");
@@ -369,12 +441,16 @@ public class EventoActivity extends AppCompatActivity
 
         if (id == R.id.nav_add_evento) {
             startActivity(new Intent(EventoActivity.this,AddEventoActivity.class));
-        } else if (id == R.id.nav_meus_anuncios) {
-            startActivity(new Intent(EventoActivity.this,MeusEventosActivity.class));
-        } else if (id == R.id.nav_todos_anuncios) {
-            startActivity(new Intent(EventoActivity.this,EventoActivity.class));
+        } else if (id == R.id.nav_meus_eventos) {
+            carrossel.setVisibility(View.GONE);
+            iniciaLista("meus");
+        } else if (id == R.id.nav_eventos_irei) {
+            carrossel.setVisibility(View.GONE);
+            iniciaLista("participarei");
+        } else if (id == R.id.nav_todos_eventos) {
+            carrossel.setVisibility(View.VISIBLE);
+            iniciaLista("data");
         } else if (id == R.id.nav_aprova_anuncios) {
-            Log.i("admin", "abrindo tela admin");
             startActivity(new Intent(EventoActivity.this,AdminActivity.class));
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
@@ -438,12 +514,12 @@ public class EventoActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         carrossel.requestFocus();
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        iniciaLista("data");//responsável por atualizar a lista depois de o evento editado
         PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
     }
 
