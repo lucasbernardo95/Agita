@@ -170,12 +170,6 @@ public class AdminActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View view) {
 
-                                    //EXEMPLO DE COMO CHAMAR O BOTÃO DE EXCLUIR EVENTO
-                                    //EventoActivity.eventoClicado = model;
-                                    //abre a tela para ver os detalhes do evento e o escluir
-                                    //startActivity(new Intent(AdminActivity.this, DeleteEventoActivity.class));
-                                    //FIM DO EXEMPLO
-
                                     eventoAprova.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
                                         @Override
                                         public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {

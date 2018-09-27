@@ -93,7 +93,8 @@ public class MeusEventosActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                    listaEventos.add(dataSnapshot.getValue(Evento.class));
+                    eventoAdapter.notifyDataSetChanged();
                 }
 
                 @Override
@@ -106,8 +107,6 @@ public class MeusEventosActivity extends AppCompatActivity {
 
                 }
             });
-
-
 
 
         }else if(fieldOrder.equals("participarei")){

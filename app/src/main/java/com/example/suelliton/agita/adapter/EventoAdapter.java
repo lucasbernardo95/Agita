@@ -1,12 +1,13 @@
 package com.example.suelliton.agita.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,6 @@ import android.widget.TextView;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.activity.AddEventoActivity;
-import com.example.suelliton.agita.activity.DeleteEventoActivity;
 import com.example.suelliton.agita.activity.Detalhes;
 import com.example.suelliton.agita.activity.MeusEventosActivity;
 import com.example.suelliton.agita.model.Evento;
@@ -26,6 +26,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -49,10 +51,12 @@ public class EventoAdapter extends RecyclerView.Adapter{
     FirebaseStorage storage;
     FrameLayout frame;
     boolean like;
+    private DatabaseReference eventoRef;
 
     public EventoAdapter(List<Evento> eventos, Context context) {
         this.eventos = eventos;
         this.context = context;
+        eventoRef = FirebaseDatabase.getInstance().getReference("eventos");
         storage = FirebaseStorage.getInstance();
     }
 
@@ -96,8 +100,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         myHolder.botaoExcluir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //abre a tela para ver os detalhes do evento e o escluir
-                context.startActivity(new Intent(context, DeleteEventoActivity.class).putExtra("eventoDelete",escolhido));
+                alertEventoDelet(context, escolhido);
             }
         });
 
@@ -218,6 +221,49 @@ public class EventoAdapter extends RecyclerView.Adapter{
         }
 
 
+    }
+
+    private void alertEventoDelet(Context context, final Evento evento) {
+        new AlertDialog.Builder(context)
+                .setTitle("Deletando "+evento.getNome())
+                .setMessage("Tem certeza que deseja deletar esse evento?")
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteEvent(evento);
+                    }
+                })
+                .setNegativeButton("Não", null)
+                .show();
+    }
+
+    private void deleteEvent(Evento evento) {
+        eventoRef.orderByChild("nome").equalTo(evento.getNome()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
+                eventoRef.child(data.getKey()).removeValue();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }
