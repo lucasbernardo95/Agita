@@ -82,7 +82,6 @@ public class MeusEventosActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     listaEventos.add(dataSnapshot.getValue(Evento.class));
-                    Log.i("meus",dataSnapshot.getValue(Evento.class).getNome());
                     eventoAdapter.notifyDataSetChanged();
                 }
 
