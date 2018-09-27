@@ -80,8 +80,8 @@ public class AddEventoActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     Bitmap bannerGaleria;
-    String urlBanner = "";
-    List<String> listaLocais;
+    private String urlBanner = "";
+    private List<String> listaLocais;
     private Evento eventoEdit, novoEvento;
     ProgressBar progress;
     private DatabaseReference referenceEventoTemporario = null;
@@ -171,6 +171,7 @@ public class AddEventoActivity extends AppCompatActivity {
     }
 
     public void setViewListeners(){
+
         btnSalvarEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,6 +276,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 startActivityForResult(intent,REQUEST_GALERIA);
             }
         });
+
         ed_liberado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
