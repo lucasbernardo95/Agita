@@ -67,6 +67,7 @@ public class EventoActivity extends AppCompatActivity
     private static String[] PERMISSIONS_STORAGE = {
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
+            //android.Manifest.permission.WRITE_SETTINGS
     };
 
     private Evento evento;

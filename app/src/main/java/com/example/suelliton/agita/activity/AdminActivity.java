@@ -193,23 +193,60 @@ public class AdminActivity extends AppCompatActivity {
                 .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Evento novo = new Evento(
-                                model.getNome(),      model.getData(),      model.getHora(),
-                                model.getLocal(),     model.getEstilo(),    model.getLatitude(),
-                                model.getLongitude(), model.getBandas(),    model.getValor(),
-                                model.getDescricao(), model.getUrlBanner(), model.isLiberado(),
-                                model.getCasashow(),  model.isCover(),      model.getDono()
-                        );
+
                         //seta como verificado
-                        novo.setVerificado(true);
+                        model.setVerificado(true);
                         //Salva o evento em outra tabela
-                        eventoAprovado.push().setValue(novo);
-                        //apaga o evento antigo
+                        eventoAprovado.push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Query query = eventoAprovado.orderByChild("nome").startAt(model.getNome()).endAt(model.getNome()).limitToFirst(1);
+                                query.addChildEventListener(new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        eventoAprovado.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+                                    }
+
+                                    @Override
+                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                    }
+
+                                    @Override
+                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                    }
+
+                                    @Override
+                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        });
+
+
+
+
+
+                                //apaga o evento antigo
                         eventoTemporario.child(key).removeValue();
-                    }
+
+
+
+
+
+                            }
+
                 })
                 .setNegativeButton("Não", null)
                 .show();
     }
 
 }
+

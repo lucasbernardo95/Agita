@@ -1,5 +1,7 @@
 package com.example.suelliton.agita.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -79,13 +81,15 @@ public class AddEventoActivity extends AppCompatActivity {
     ImageView imageView;
     FirebaseStorage storage;
     StorageReference storageReference;
-    Bitmap bannerGaleria;
+    Bitmap bannerGaleria = null;
     private String urlBanner = "";
     private List<String> listaLocais;
     private Evento eventoEdit, novoEvento;
     ProgressBar progress;
     private DatabaseReference referenceEventoTemporario = null;
-
+    boolean semFoto = false;
+    //atributo da classe.
+    private AlertDialog alerta;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -176,13 +180,34 @@ public class AddEventoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 progress.setVisibility(View.VISIBLE);
-
                 String nome = ed_nome.getText().toString();
+
+                if(eventoEdit != null) {
+                    bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+                }else if(bannerGaleria == null){
+                    Toast.makeText(AddEventoActivity.this, "heeeyyyy", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AddEventoActivity.this);
+                    builder.setTitle("Está esquecendo de algo?");
+                    builder.setMessage("Você não escolheu nenhum banner para o evento, deseja prosseguir?");
+                    builder.setPositiveButton("Positivo", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            semFoto = true;
+                            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
+
+                        }
+                    });
+                    builder.setNegativeButton("Negativo", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface arg0, int arg1) {
+
+                        }
+                    });
+                    alerta = builder.create();
+                    alerta.show();
+                }
                 try {
-                    if(eventoEdit != null) {
-                        bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+                    if (!semFoto) {
+                        uploadFirebaseBytes(bannerGaleria, nome);
                     }
-                    uploadFirebaseBytes(bannerGaleria, nome);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
