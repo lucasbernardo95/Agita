@@ -118,6 +118,7 @@ public class EventoActivity extends AppCompatActivity
             nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
             nav_Menu.findItem(R.id.nav_todos_eventos).setVisible(false);
             nav_Menu.findItem(R.id.nav_eventos_irei).setVisible(false);
+            nav_Menu.findItem(R.id.nav_edit_user).setVisible(false);
         }else if(usuarioLogado.isAdmin()) {//se for administrador
             nav_Menu.findItem(R.id.nav_login).setVisible(false);
             atualizaUsuarioLogado();
@@ -452,6 +453,8 @@ public class EventoActivity extends AppCompatActivity
             iniciaLista("data");
         } else if (id == R.id.nav_aprova_anuncios) {
             startActivity(new Intent(EventoActivity.this,AdminActivity.class));
+        } else if (id == R.id.nav_edit_user) {
+            startActivity(new Intent(EventoActivity.this, AddUserActivity.class).putExtra("code",true));
         } else if (id == R.id.nav_logout) {
             SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();

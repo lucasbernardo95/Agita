@@ -22,6 +22,10 @@
             android:title="Avaliar eventos" />
 
         <item
+            android:id="@+id/nav_edit_user"
+            android:title="Editar meus dados" />
+
+        <item
             android:id="@+id/nav_logout"
             android:title="Logout" />
         <item

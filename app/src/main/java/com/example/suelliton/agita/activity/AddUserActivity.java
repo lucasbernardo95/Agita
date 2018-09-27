@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,13 +52,38 @@ public class AddUserActivity extends AppCompatActivity{
     private ValueEventListener listener;
     boolean passUser = false;
     boolean passEmail = false;
+    private boolean editUser = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_user);
 
+        Bundle pacote = getIntent().getExtras();
+
         findViews();
+
+        if (pacote != null) {
+            editUser = pacote.getBoolean("code");
+            Log.i("edit", "editar: " + editUser);
+            if (editUser){
+                setValueUserEdit();
+            }
+        }
+
         setViewListeners();
+    }
+
+    public void setValueUserEdit() {
+        ac_nome.setText(usuarioLogado.getNome());
+        ac_email.setText(usuarioLogado.getEmail());
+        ed_contato.setText(usuarioLogado.getContato());
+        ac_cpfcnpj.setText(usuarioLogado.getCpf_cnpj());
+        ed_login.setText(usuarioLogado.getLogin()); //É interessante que o login não mude, pois poderá
+//        ed_login.setActivated(false);
+        ed_login.setEnabled(false);
+//        ed_login.setClickable(false);
+        ed_password.setText(usuarioLogado.getPassword());
     }
 
     public void findViews(){
@@ -200,63 +226,85 @@ public class AddUserActivity extends AppCompatActivity{
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-            final List<Usuario> listaUsuarios = new ArrayList<>();
-            //busca usuários
-            listener = usuarioReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    listaUsuarios.removeAll(listaUsuarios);
-                    if (dataSnapshot.exists()) {//verifica se a snapshot existe
-                        for (DataSnapshot u: dataSnapshot.getChildren()) {//itera sobre todos usuários
-                            Usuario usuario = u.getValue(Usuario.class);////instancia um novo usuario com a snapshot atual
-                            listaUsuarios.add(usuario);//adiciona na lista local o usuário vindo do firebase
+
+            //só precisa verificar o usuário se estiver cadastrando
+            if (!editUser) {
+                final List<Usuario> listaUsuarios = new ArrayList<>();
+                //busca usuários se for opção de cadastro
+                listener = usuarioReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        listaUsuarios.removeAll(listaUsuarios);
+                        if (dataSnapshot.exists()) {//verifica se a snapshot existe
+                            for (DataSnapshot u : dataSnapshot.getChildren()) {//itera sobre todos usuários
+                                Usuario usuario = u.getValue(Usuario.class);////instancia um novo usuario com a snapshot atual
+                                listaUsuarios.add(usuario);//adiciona na lista local o usuário vindo do firebase
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+                //tempo necessário para dar tempo do listener carregar os dados
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    return false;
+                }
+                //iterar sobre os usuários procurando se ja existe o login e o email cadastrados
+                for (Usuario usuario : listaUsuarios) {
+                    if (usuario.getLogin().equals(login)) {
+                        passUser = false;//variaveis de controle para validar o cadastro
+                        return false;
+                    } else {
+                        if (usuario.getEmail().equals(email)) {
+                            passEmail = false;
+                            return false;
+                        } else {
+                            passUser = true;//variaveis de controle para validar o cadastro
+                            passEmail = true;
                         }
                     }
                 }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
+                //se nao tiver nenhum usuario cadastrado com login e email, ele cadastra o atual
+                if (listaUsuarios.size() == 0) {
+                    passUser = true;//diz que pode cadastrar
+                    passEmail = true;
                 }
-            });
-            //tempo necessário para dar tempo do listener carregar os dados
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-            //iterar sobre os usuários procurando se ja existe o login e o email cadastrados
-            for (Usuario usuario: listaUsuarios ) {
-                if(usuario.getLogin().equals(login)){
-                    passUser = false;//variaveis de controle para validar o cadastro
-                    return false;
-                }else{
-                    if(usuario.getEmail().equals(email)){
-                        passEmail = false;
-                        return false;
-                    }else{
-                        passUser = true;//variaveis de controle para validar o cadastro
-                        passEmail = true;
-                    }
-                }
-            }
-            //se nao tiver nenhum usuario cadastrado com login e email, ele cadastra o atual
-            if(listaUsuarios.size() == 0){
-                passUser = true;//diz que pode cadastrar
-                passEmail = true;
-            }
 
-            if(passEmail && passUser) {
-                Usuario novoUsuario = new Usuario(nome,contato,login,password,cpfcnpj,false,email);
-                usuarioReference.child(novoUsuario.getLogin()).setValue(novoUsuario);
-                //coloca o usuario no shared preferences
+                if (passEmail && passUser) {
+
+                    Usuario novoUsuario = new Usuario(nome, contato, login, password, cpfcnpj, false, email);
+                    usuarioReference.child(novoUsuario.getLogin()).setValue(novoUsuario);
+                    //coloca o usuario no shared preferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("usuarioLogado", novoUsuario.getLogin());
+                    editor.apply();
+                    usuarioLogado = novoUsuario;
+                    return true;//salva usuario
+                } else {
+                    return false;//erro pra salvar
+                }
+            } else {
+
+                usuarioLogado.setNome(nome);
+                usuarioLogado.setContato(contato);
+                usuarioLogado.setPassword(password);
+                usuarioLogado.setCpf_cnpj(cpfcnpj);
+                usuarioLogado.setEmail(email);
+
+                usuarioReference.child(usuarioLogado.getLogin()).setValue(usuarioLogado);
                 SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("usuarioLogado", novoUsuario.getLogin());
+                editor.putString("usuarioLogado", usuarioLogado.getLogin());
                 editor.apply();
-                usuarioLogado = novoUsuario;
-                return true;//salva usuario
-            }else{
-                return  false;//erro pra salvar
+                return true;
             }
         }
 
@@ -264,6 +312,7 @@ public class AddUserActivity extends AppCompatActivity{
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
+            //Se ocorreu com sucesso para cadastrar
             if (success) {
                 Toast.makeText(AddUserActivity.this, "Usuário  cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AddUserActivity.this,EventoActivity.class));
