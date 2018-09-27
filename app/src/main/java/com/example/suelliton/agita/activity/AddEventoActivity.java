@@ -22,6 +22,7 @@ import android.widget.CalendarView;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
@@ -82,7 +83,7 @@ public class AddEventoActivity extends AppCompatActivity {
     String urlBanner = "";
     List<String> listaLocais;
     private Evento eventoEdit;
-
+    ProgressBar progress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +148,7 @@ public class AddEventoActivity extends AppCompatActivity {
     }
 
     public void findViews(){
+        progress = (ProgressBar) findViewById(R.id.progress);
         ed_nome = (EditText) findViewById(R.id.nome_cadastro);
         cv_data = (CalendarView) findViewById(R.id.cv_dataCadastro);
         ed_hora = (EditText) findViewById(R.id.hora_cadastro);
@@ -167,6 +169,8 @@ public class AddEventoActivity extends AppCompatActivity {
         btnSalvarEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progress.setVisibility(View.VISIBLE);
+
                 String nome = ed_nome.getText().toString();
                 Log.i("edit", "nome: " + nome);
                 Log.i("edit", "bannerGaleria: " + bannerGaleria);
@@ -252,6 +256,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
                 Toast.makeText(AddEventoActivity.this, "Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();
                 limpaCampos();
+                progress.setVisibility(View.INVISIBLE);
                 finish();
             }
 
@@ -293,7 +298,7 @@ public class AddEventoActivity extends AppCompatActivity {
     public void uploadFirebaseBytes(Bitmap bitmap, final String nomeEvento) throws FileNotFoundException {
         storageReference = storage.getReference("eventos");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] data = baos.toByteArray();
 
         final UploadTask uploadTask = storageReference.child(nomeEvento).putBytes(data);

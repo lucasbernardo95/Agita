@@ -169,7 +169,7 @@
 
         </android.support.design.widget.TextInputLayout>
         <ProgressBar
-            android:id="@+id/progress_login"
+            android:id="@+id/progress"
             style="?android:attr/progressBarStyle"
             android:layout_gravity="center"
             android:visibility="gone"

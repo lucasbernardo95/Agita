@@ -49,6 +49,7 @@ public class MeusEventosActivity extends AppCompatActivity {
     FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapter;
     FirebaseDatabase database ;
     DatabaseReference eventosReference;
+    EventoAdapter eventoAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +60,16 @@ public class MeusEventosActivity extends AppCompatActivity {
         myrecycler = (RecyclerView) findViewById(R.id.meus_eventos_recycler);
 
 
-        iniciaLista("meus");
-
 
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        iniciaLista("meus");
 
+    }
 
     public void iniciaLista(final String fieldOrder) {
         myrecycler.setLayoutManager(new GridLayoutManager(MeusEventosActivity.this,2));
@@ -75,7 +79,7 @@ public class MeusEventosActivity extends AppCompatActivity {
             query = eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
             List<String> keyEventos = usuarioLogado.getParticiparei();
             listaEventos = new ArrayList<>();
-            final EventoAdapter eventoAdapter = new EventoAdapter(listaEventos,MeusEventosActivity.this);
+            eventoAdapter = new EventoAdapter(listaEventos,MeusEventosActivity.this);
             myrecycler.setAdapter(eventoAdapter);
 
             query.addChildEventListener(new ChildEventListener() {
@@ -92,7 +96,11 @@ public class MeusEventosActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    listaEventos.add(dataSnapshot.getValue(Evento.class));
+                    for(int i=0;i<listaEventos.size();i++){
+                        if(listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())){
+                            listaEventos.remove(listaEventos.get(i));
+                        }
+                    }
                     eventoAdapter.notifyDataSetChanged();
                 }
 
@@ -110,31 +118,29 @@ public class MeusEventosActivity extends AppCompatActivity {
 
         }else if(fieldOrder.equals("participarei")){
             List<String> keyEventos = usuarioLogado.getParticiparei();
-            Log.i("teste", "nome: "+usuarioLogado.getNome());
-            if (usuarioLogado.getParticiparei().size() > 0 ) { //lista se não estiver vazio para evitar erros
-                listaEventos = new ArrayList<>();
-                final EventoAdapter eventoAdapter = new EventoAdapter(listaEventos, MeusEventosActivity.this);
-                myrecycler.setAdapter(eventoAdapter);
-
-                for (String key : keyEventos) {//parei aqui
-                    query = eventosReference.child(key);
-                    query.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.getValue(Evento.class) != null) {
-                                listaEventos.add(dataSnapshot.getValue(Evento.class));
-                                Log.i("part", dataSnapshot.getValue(Evento.class).getNome());
-                                eventoAdapter.notifyDataSetChanged();
-                            }
+            if(keyEventos == null) keyEventos = new ArrayList<>();
+            listaEventos = new ArrayList<>();
+            eventoAdapter = new EventoAdapter(listaEventos,MeusEventosActivity.this);
+            myrecycler.setAdapter(eventoAdapter);
+            for (String key : keyEventos ) {//parei aqui
+                query = eventosReference.child(key);
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.getValue(Evento.class) != null) {
+                            listaEventos.add(dataSnapshot.getValue(Evento.class));
+                            Log.i("part", dataSnapshot.getValue(Evento.class).getNome());
+                            eventoAdapter.notifyDataSetChanged();
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
-                }
+                    }
+                });
             }
+
         }
 
     }

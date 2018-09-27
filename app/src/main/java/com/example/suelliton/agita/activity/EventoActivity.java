@@ -131,6 +131,10 @@ public class EventoActivity extends AppCompatActivity
             nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
             atualizaUsuarioLogado();
         }
+
+        myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
+
+
     }
     //Método temporário para exibir as eventosCarousel no carrossel
     ImageListener clickImagem = new ImageListener() {
@@ -166,7 +170,6 @@ public class EventoActivity extends AppCompatActivity
 
     public void iniciaLista(final String fieldOrder) {
 
-        myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
 
         Query query;
         if(fieldOrder.equals("nome") || fieldOrder.equals("data")) {
