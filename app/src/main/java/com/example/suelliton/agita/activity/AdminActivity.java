@@ -1,5 +1,8 @@
 package com.example.suelliton.agita.activity;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -37,7 +40,7 @@ public class AdminActivity extends AppCompatActivity {
     private RecyclerView recyler;
     private RecyclerView.LayoutManager layoutManager;
     private TextView nome, data, valor, local;
-    private DatabaseReference eventoAprova;
+    private DatabaseReference eventoAprovado, eventoTemporario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +52,8 @@ public class AdminActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyler.setLayoutManager(layoutManager);
 
-        eventoAprova = FirebaseDatabase.getInstance().getReference("eventos");
+        eventoAprovado = FirebaseDatabase.getInstance().getReference("eventos");
+        eventoTemporario = FirebaseDatabase.getInstance().getReference("eventoTemporario");
         loadEventosNaoAprovados();
     }
 
@@ -60,7 +64,7 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void loadEventosNaoAprovados() {
-            final FirebaseRecyclerAdapter<Evento, AdminViewHolder> adapter = new FirebaseRecyclerAdapter<Evento, AdminViewHolder>(Evento.class, R.layout.admin_content_evento, AdminViewHolder.class, eventoAprova.orderByChild("verificado").equalTo(false)) {
+            final FirebaseRecyclerAdapter<Evento, AdminViewHolder> adapter = new FirebaseRecyclerAdapter<Evento, AdminViewHolder>(Evento.class, R.layout.admin_content_evento, AdminViewHolder.class, eventoTemporario) {
 
                 @Override
                 protected void populateViewHolder(final AdminViewHolder viewHolder, final Evento model, int position) {
@@ -91,55 +95,14 @@ public class AdminActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view, int position, boolean isLongClick) {
 
-                            viewHolder.noAprova.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
-                                    eventoAprova.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
-                                        @Override
-                                        public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                                            model.setVerificado(false); //seta como RE-aprovado
-                                            Map<String, Object> att = new HashMap<>();
-                                            att.put(data.getKey(), model);
-
-                                            eventoAprova.updateChildren(att);
-                                        }
-
-                                        @Override
-                                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                        }
-
-                                        @Override
-                                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                                        }
-
-                                        @Override
-                                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                }
-                            });
-
                             viewHolder.aprova.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    eventoAprova.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
+                                    eventoTemporario.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
                                         @Override
                                         public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
 
-                                            model.setVerificado(true); //seta como aprovado
-                                            Map<String, Object> att = new HashMap<>();
-                                            att.put(data.getKey(), model);
-
-                                            eventoAprova.updateChildren(att);
+                                            aletEventVerify(AdminActivity.this, model, data.getKey());
 
                                         }
 
@@ -170,10 +133,10 @@ public class AdminActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(View view) {
 
-                                    eventoAprova.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
+                                    eventoTemporario.orderByChild("nome").equalTo(model.getNome()).addChildEventListener(new ChildEventListener() {
                                         @Override
                                         public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                                            eventoAprova.child(data.getKey()).removeValue();
+                                            alertEventoDelet(AdminActivity.this, model, data.getKey());
                                         }
 
                                         @Override
@@ -207,6 +170,46 @@ public class AdminActivity extends AppCompatActivity {
 
             recyler.setAdapter(adapter);
 
+    }
+
+    private void alertEventoDelet(Context context, final Evento evento, final String key) {
+        new AlertDialog.Builder(context)
+                .setTitle("Deletando "+evento.getNome())
+                .setMessage("Tem certeza que deseja deletar esse evento?")
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        eventoTemporario.child(key).removeValue();
+                    }
+                })
+                .setNegativeButton("Não", null)
+                .show();
+    }
+
+    private void aletEventVerify(Context context, final Evento model, final  String key) {
+        new AlertDialog.Builder(context)
+                .setTitle("Confirmação de validação")
+                .setMessage("Tem certeza que deseja prosseguir?")
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Evento novo = new Evento(
+                                model.getNome(),      model.getData(),      model.getHora(),
+                                model.getLocal(),     model.getEstilo(),    model.getLatitude(),
+                                model.getLongitude(), model.getBandas(),    model.getValor(),
+                                model.getDescricao(), model.getUrlBanner(), model.isLiberado(),
+                                model.getCasashow(),  model.isCover(),      model.getDono()
+                        );
+                        //seta como verificado
+                        novo.setVerificado(true);
+                        //Salva o evento em outra tabela
+                        eventoAprovado.push().setValue(novo);
+                        //apaga o evento antigo
+                        eventoTemporario.child(key).removeValue();
+                    }
+                })
+                .setNegativeButton("Não", null)
+                .show();
     }
 
 }

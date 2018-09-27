@@ -82,8 +82,10 @@ public class AddEventoActivity extends AppCompatActivity {
     Bitmap bannerGaleria;
     String urlBanner = "";
     List<String> listaLocais;
-    private Evento eventoEdit;
+    private Evento eventoEdit, novoEvento;
     ProgressBar progress;
+    private DatabaseReference referenceEventoTemporario = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,12 +99,15 @@ public class AddEventoActivity extends AppCompatActivity {
         if (pacote != null) {
             eventoEdit = (Evento) pacote.getSerializable("eventoEdit");
             setEventoEdit();
+        } else { //se é cadastro, cria uma nova referência para a tabela de eventos temporários
+            referenceEventoTemporario = FirebaseDatabase.getInstance().getReference("eventoTemporario");
         }
 
         carregaLocais();
 
     }
 
+    //Seta os valores do evento a ser editado nos edittext's
     private void setEventoEdit(){
         ed_nome.setText(eventoEdit.getNome());
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
@@ -172,8 +177,6 @@ public class AddEventoActivity extends AppCompatActivity {
                 progress.setVisibility(View.VISIBLE);
 
                 String nome = ed_nome.getText().toString();
-                Log.i("edit", "nome: " + nome);
-                Log.i("edit", "bannerGaleria: " + bannerGaleria);
                 try {
                     if(eventoEdit != null) {
                         bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
@@ -209,19 +212,18 @@ public class AddEventoActivity extends AppCompatActivity {
                     lat = 11111;
                     lng = 11111;
                 }
-                final Evento evento;
 
                 if (eventoEdit == null ) {
-                    evento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
-                    eventosReference.push().setValue(evento).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    novoEvento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
+                    //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
+                    referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Query query = eventosReference.orderByChild("nome").startAt(evento.getNome()).endAt(evento.getNome()).limitToFirst(1);
+                            Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
                             query.addChildEventListener(new ChildEventListener() {
                                 @Override
                                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
-
+                                    referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
                                 }
 
                                 @Override
@@ -247,9 +249,13 @@ public class AddEventoActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    evento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
-                    evento.setKey(eventoEdit.getKey());
-                    eventosReference.child(eventoEdit.getKey()).setValue(evento);
+                    novoEvento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
+                    novoEvento.setKey(eventoEdit.getKey());
+                    //Se não for um evento verificado, muda a referência para a tabela temporária
+                    if (eventoEdit.isVerificado())
+                        eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
+                    else
+                        referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
                 }
                 //locaisReference.child(local).setValue(local);
 
@@ -316,13 +322,23 @@ public class AddEventoActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Uri uri) {
                         urlBanner = uri.toString();
-                        Query query = eventosReference.orderByChild("nome").equalTo(nomeEvento);
+                        Query query = null;
+
+                        //Se não for um evento verificado, muda a referência para a tabela temporária
+                        if (novoEvento.isVerificado()){
+                            query = eventosReference.orderByChild("nome").equalTo(nomeEvento);
+                        }else {
+                            query = referenceEventoTemporario.orderByChild("nome").equalTo(nomeEvento);
+                        }
                         query.addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                 if(dataSnapshot.exists()) {
-                                    //Toast.makeText(AddEventoActivity.this, ""+dataSnapshot.getKey(), Toast.LENGTH_SHORT).show();
-                                    eventosReference.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(urlBanner);
+                                    if (novoEvento.isVerificado()) {
+                                        eventosReference.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(urlBanner);
+                                    } else {
+                                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(urlBanner);
+                                    }
                                 }
                             }
 

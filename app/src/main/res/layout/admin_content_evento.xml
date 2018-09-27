@@ -117,13 +117,6 @@
                     android:src="@drawable/ic_aprova" />
 
                 <ImageView
-                    android:id="@+id/botaoRepprova"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    android:src="@drawable/ic_nao_aprova"
-                     />
-
-                <ImageView
                     android:id="@+id/botaoExcluir"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"
