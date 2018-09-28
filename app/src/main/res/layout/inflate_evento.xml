@@ -46,6 +46,12 @@
                 android:gravity="center"
                 android:text="nome evento"
                 android:textStyle="bold" />
+            <ImageButton
+                android:visibility="gone"
+                android:id="@+id/buttonAlert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_alert" />
             <ImageView
                 android:id="@+id/buttonLike"
                 android:layout_width="wrap_content"
@@ -66,21 +72,6 @@
         </android.support.v7.widget.LinearLayoutCompat>
 
         </LinearLayout>
-
-        <FrameLayout
-            android:id="@+id/frame"
-            android:layout_weight="100"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:text="Não Aprovado"
-                android:textColor="#ff0000"
-                android:textSize="25dp"
-                android:layout_gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
 
     </LinearLayout>
 

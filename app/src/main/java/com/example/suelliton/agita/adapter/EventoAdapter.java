@@ -78,15 +78,6 @@ public class EventoAdapter extends RecyclerView.Adapter{
         final Evento escolhido = eventos.get(position);
         myHolder.nome.setText(escolhido.getNome());
 
-        if(escolhido.isVerificado()){
-
-            myHolder.frameLayout.setVisibility(View.GONE);
-        }else{
-
-            myHolder.frameLayout.setVisibility(View.VISIBLE);
-            myHolder.frameLayout.setBackground(new ColorDrawable(Color.TRANSPARENT));
-        }
-
 
         //Oculta o botão de like se estiver na tela de todos eventos
         if (EventoActivity.class == context.getClass()) {
@@ -95,7 +86,16 @@ public class EventoAdapter extends RecyclerView.Adapter{
             if(usuarioLogado.getLogin().equals(escolhido.getDono())) {
                 myHolder.botaoEditar.setVisibility(View.VISIBLE);
                 myHolder.botaoExcluir.setVisibility(View.VISIBLE);
-//                myHolder.nome.setVisibility(View.GONE);//oculta o nome para melhor visualização dos botões
+
+                //Se o evento ainda não foi verificado, mostra um botão de alerta
+                if (escolhido.isVerificado()) {
+                    myHolder.botaoAlerta.setVisibility(View.GONE);
+                } else {
+                    //Oculta o nome do evento para evitar bugs visuais
+                    myHolder.nome.setVisibility(View.GONE);
+                    myHolder.botaoAlerta.setVisibility(View.VISIBLE);
+                }
+
             }
         }
 
@@ -110,6 +110,20 @@ public class EventoAdapter extends RecyclerView.Adapter{
             @Override
             public void onClick(View view) {
                 alertEventoDelet(context, escolhido);
+            }
+        });
+
+        myHolder.botaoAlerta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(context)
+                        .setTitle("Aguardando aprovação!")
+                        .setMessage("Este evento ainda não foi aprovado pela administração do Agita.\nO evento só estará disponível para o público após sua aprovação.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
             }
         });
 
@@ -210,8 +224,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         final ImageView imagem;
         final TextView nome;
         final ImageView botaoLike;
-        final ImageButton botaoEditar, botaoExcluir;
-        final FrameLayout frameLayout;
+        final ImageButton botaoEditar, botaoExcluir, botaoAlerta;
 
         public EventoHolder(View v) {
             super(v);
@@ -221,7 +234,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
             botaoLike = (ImageView) v.findViewById(R.id.buttonLike);
             botaoEditar = (ImageButton) v.findViewById(R.id.buttonEdit);
             botaoExcluir = (ImageButton) v.findViewById(R.id.buttonDelete);
-            frameLayout = (FrameLayout) v.findViewById(R.id.frame);
+            botaoAlerta = (ImageButton) v.findViewById(R.id.buttonAlert);
 
         }
 
