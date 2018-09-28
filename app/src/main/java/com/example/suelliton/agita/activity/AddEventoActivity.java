@@ -264,6 +264,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 } else {
                     novoEvento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
                     novoEvento.setKey(eventoEdit.getKey());
+                    novoEvento.setVerificado(eventoEdit.isVerificado());
                     //Se não for um evento verificado, muda a referência para a tabela temporária
                     if (eventoEdit.isVerificado())
                         eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);

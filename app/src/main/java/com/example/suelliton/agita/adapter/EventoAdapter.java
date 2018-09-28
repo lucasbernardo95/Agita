@@ -39,6 +39,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
+import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 /*
@@ -51,16 +52,14 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
     private List<Evento> eventos; //eventos do banco
     private Context context;
-    FirebaseStorage storage;
+
     FrameLayout frame;
     boolean like;
-    private DatabaseReference eventoRef;
 
     public EventoAdapter(List<Evento> eventos, Context context) {
         this.eventos = eventos;
         this.context = context;
-        eventoRef = FirebaseDatabase.getInstance().getReference("eventos");
-        storage = FirebaseStorage.getInstance();
+
     }
 
     //ok
@@ -83,8 +82,10 @@ public class EventoAdapter extends RecyclerView.Adapter{
         myHolder.nome.setText(escolhido.getNome());
 
         if(escolhido.isVerificado()){
+
             myHolder.frameLayout.setVisibility(View.GONE);
-        }else {
+        }else{
+
             myHolder.frameLayout.setVisibility(View.VISIBLE);
             myHolder.frameLayout.setBackground(new ColorDrawable(Color.TRANSPARENT));
         }
@@ -245,32 +246,13 @@ public class EventoAdapter extends RecyclerView.Adapter{
     }
 
     private void deleteEvent(Evento evento) {
-        eventoRef.orderByChild("nome").equalTo(evento.getNome()).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                eventoRef.child(data.getKey()).removeValue();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        DatabaseReference workReference;
+        if(evento.isVerificado()){
+            workReference = database.getReference("eventos");
+        }else{
+            workReference = database.getReference("eventoTemporario");
+        }
+        workReference.child(evento.getKey()).removeValue();
     }
 
 }
