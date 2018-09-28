@@ -52,14 +52,11 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
     private List<Evento> eventos; //eventos do banco
     private Context context;
-
-    FrameLayout frame;
     boolean like;
 
     public EventoAdapter(List<Evento> eventos, Context context) {
         this.eventos = eventos;
         this.context = context;
-
     }
 
     //ok

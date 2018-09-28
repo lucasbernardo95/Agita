@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
@@ -63,7 +64,6 @@ public class EventoActivity extends AppCompatActivity
     DrawerLayout drawer;
     Toolbar toolbar ;
     FrameLayout frameLayout;
-    FirebaseDatabase database ;
 
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -83,14 +83,12 @@ public class EventoActivity extends AppCompatActivity
     List<String> eventosParticiparei ;
     int count = 0;
     DatabaseReference naoAprovadoReference;
-
+    String opcaoBusca = "data";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento);
 
-        database =  MyDatabaseUtil.getDatabase();
-        eventosReference = database.getReference("eventos");
         naoAprovadoReference = database.getReference("eventoTemporario");
 
 
@@ -98,7 +96,7 @@ public class EventoActivity extends AppCompatActivity
         setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
         setViewListener();
         if(usuarioLogado != null)atualizaUsuarioLogado();
-        iniciaLista("data");
+        iniciaLista(opcaoBusca);
 
         eventosCarousel = new ArrayList<>();
         Handler handler = new Handler();
@@ -170,6 +168,7 @@ public class EventoActivity extends AppCompatActivity
     }
 
     public void iniciaLista(final String fieldOrder) {
+        opcaoBusca = fieldOrder;//guarda a ultima forma de busca para quando voltar de outra activity carregar a opção correta
 
         if(fieldOrder.equals("meus") || fieldOrder.equals("participarei")){//parte administrativa
 
@@ -569,7 +568,7 @@ public class EventoActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        iniciaLista("data");//responsável por atualizar a lista depois de o evento editado
+        iniciaLista(opcaoBusca);//responsável por atualizar a lista depois de o evento editado
         PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
     }
 
