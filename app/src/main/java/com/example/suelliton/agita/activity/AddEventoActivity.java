@@ -218,17 +218,15 @@ public class AddEventoActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 double lat,lng;
-                if(enderecos.size()!= 0) {//verifica se veio algum endereço
-                    lat = enderecos.get(0).getLatitude();
-                    lng = enderecos.get(0).getLongitude();
-                }else{
-                    lat = 11111;
-                    lng = 11111;
+                if(enderecos.size()== 0) {//verifica se veio algum endereço
                     customAlert("Endereço não encontrado!", "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.",true);
                     progress.setVisibility(View.GONE);
                     ed_local.requestFocus();
-                }
-                if(lat != 11111 && lng!= 11111) {
+                }else{
+
+                    lat = enderecos.get(0).getLatitude();
+                    lng = enderecos.get(0).getLongitude();
+
 
                     if (eventoEdit == null) {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
