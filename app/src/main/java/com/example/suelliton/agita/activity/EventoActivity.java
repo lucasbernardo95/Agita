@@ -84,6 +84,7 @@ public class EventoActivity extends AppCompatActivity
     int count = 0;
     DatabaseReference naoAprovadoReference;
     String opcaoBusca = "data";
+    TextView text_filtro;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,7 +172,7 @@ public class EventoActivity extends AppCompatActivity
         opcaoBusca = fieldOrder;//guarda a ultima forma de busca para quando voltar de outra activity carregar a opção correta
 
         if(fieldOrder.equals("meus") || fieldOrder.equals("participarei")){//parte administrativa
-
+            text_filtro.setVisibility(View.GONE);
             Query query = null;
             if(fieldOrder.equals("meus")) {
 
@@ -287,9 +288,11 @@ public class EventoActivity extends AppCompatActivity
 
             Query query;
             if (fieldOrder.equals("nome") || fieldOrder.equals("data")) {
+                text_filtro.setVisibility(View.GONE);
                 query = eventosReference.orderByChild(fieldOrder);
                 //query = eventosReference.orderByChild("verificado").equalTo(true).orderByChild(fieldOrder);
             } else {
+                text_filtro.setVisibility(View.VISIBLE);
                 query = eventosReference.orderByChild("estilo").startAt(fieldOrder).endAt(fieldOrder);
             }
 
@@ -402,6 +405,7 @@ public class EventoActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         myrecycler = (RecyclerView) findViewById(R.id.eventos_recycler);
         carrossel = (CarouselView) findViewById(R.id.carrosselView);
+        text_filtro = (TextView) findViewById(R.id.tv_filtro);
     }
 
     public void setViewListener(){
@@ -446,30 +450,39 @@ public class EventoActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.opcao_filtro_data:
                 iniciaLista("data");
+                setFilterTextView("Filtrado por data");
                 return true;
             case R.id.opcao_filtro_nome:
                 iniciaLista("nome");
+                setFilterTextView("Filtrado por nome");
                 return true;
             case R.id.opcao_filtro_rock:
                 iniciaLista("Rock");
+                setFilterTextView("Filtrado pelo estilo rock");
                 return true;
             case R.id.opcao_filtro_pop:
                 iniciaLista("Pop");
+                setFilterTextView("Filtrado pelo estilo pop");
                 return true;
             case R.id.opcao_filtro_eletronica:
                 iniciaLista("Eletrônica");
+                setFilterTextView("Filtrado pelo estilo eletrônica");
                 return true;
             case R.id.opcao_filtro_forro:
                 iniciaLista("Forró");
+                setFilterTextView("Filtrado pelo estilo forró");
                 return true;
             case R.id.opcao_filtro_sertanejo:
                 iniciaLista("Sertanejo");
+                setFilterTextView("Filtrado pelo estilo sertanejo");
                 return true;
             case R.id.opcao_filtro_brega:
                 iniciaLista("Brega");
+                setFilterTextView("Filtrado pelo estilo brega");
                 return true;
             case R.id.opcao_filtro_swingueira:
                 iniciaLista("Swingueira");
+                setFilterTextView("Filtrado pelo estilo swingueira");
                 return true;
 
             default:
@@ -477,6 +490,9 @@ public class EventoActivity extends AppCompatActivity
         }
     }
 
+    public void setFilterTextView(String mensagem){
+        text_filtro.setText(mensagem);
+    }
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -491,12 +507,15 @@ public class EventoActivity extends AppCompatActivity
         } else if (id == R.id.nav_meus_eventos) {
             carrossel.setVisibility(View.GONE);
             iniciaLista("meus");
+            setTitleActionBar("Meus eventos");
         } else if (id == R.id.nav_eventos_irei) {
             carrossel.setVisibility(View.GONE);
             iniciaLista("participarei");
+            setTitleActionBar("Eventos que irei");
         } else if (id == R.id.nav_todos_eventos) {
             carrossel.setVisibility(View.VISIBLE);
             iniciaLista("data");
+            setTitleActionBar("Eventos");
         } else if (id == R.id.nav_aprova_anuncios) {
             startActivity(new Intent(EventoActivity.this,AdminActivity.class));
         } else if (id == R.id.nav_edit_user) {
@@ -518,6 +537,9 @@ public class EventoActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
         return true;
+    }
+    public void setTitleActionBar(String titulo){
+        getSupportActionBar().setTitle(titulo);
     }
 
     @Override
