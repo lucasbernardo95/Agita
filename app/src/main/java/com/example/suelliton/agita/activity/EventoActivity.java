@@ -269,7 +269,6 @@ public class EventoActivity extends AppCompatActivity
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if(dataSnapshot.getValue(Evento.class) != null) {
                                 listaEventos.add(dataSnapshot.getValue(Evento.class));
-                                Log.i("part", dataSnapshot.getValue(Evento.class).getNome());
                                 eventoAdapter.notifyDataSetChanged();
                             }
                         }
