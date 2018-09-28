@@ -224,61 +224,65 @@ public class AddEventoActivity extends AppCompatActivity {
                 }else{
                     lat = 11111;
                     lng = 11111;
+                    customAlert("Endereço não encontrado!", "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.",true);
+                    progress.setVisibility(View.GONE);
+                    ed_local.requestFocus();
                 }
+                if(lat != 11111 && lng!= 11111) {
 
-                if (eventoEdit == null ) {
-                    novoEvento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
-                    //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
-                    referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
-                            query.addChildEventListener(new ChildEventListener() {
-                                @Override
-                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                    referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
-                                }
+                    if (eventoEdit == null) {
+                        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
+                        //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
+                        referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
+                                query.addChildEventListener(new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+                                    }
 
-                                @Override
-                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    @Override
+                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                    @Override
+                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    @Override
+                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    novoEvento  = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
-                    novoEvento.setKey(eventoEdit.getKey());
-                    novoEvento.setVerificado(eventoEdit.isVerificado());
-                    //Se não for um evento verificado, muda a referência para a tabela temporária
-                    if (eventoEdit.isVerificado())
-                        eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
-                    else
-                        referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
+                        novoEvento.setKey(eventoEdit.getKey());
+                        novoEvento.setVerificado(eventoEdit.isVerificado());
+                        //Se não for um evento verificado, muda a referência para a tabela temporária
+                        if (eventoEdit.isVerificado())
+                            eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
+                        else
+                            referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
+                    }
+                    //locaisReference.child(local).setValue(local);
+
+                    if (semFoto) {
+                        customAlert("Evento sem banner!", "Você poderá incluir depois, na aba 'Meus eventos'.",false);
+                    } else {
+                        customAlert("Sucesso!", "Evento salvo com sucesso!", false);
+                    }
                 }
-                //locaisReference.child(local).setValue(local);
-
-                if (semFoto) {
-                    customAlert("Evento sem banner!", "Você poderá incluir depois, na aba 'Meus eventos'.");
-                } else {
-                    customAlert("Sucesso!", "Evento salvo com sucesso!");
-                }
-
 
             }
 
@@ -306,7 +310,7 @@ public class AddEventoActivity extends AppCompatActivity {
         });
     }
 
-    private void customAlert(String title, String message) {
+    private void customAlert(String title, String message,final boolean endereco) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -315,9 +319,11 @@ public class AddEventoActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                limpaCampos();
-                progress.setVisibility(View.INVISIBLE);
-                finish();
+                if(!endereco) {
+                    limpaCampos();
+                    progress.setVisibility(View.INVISIBLE);
+                    finish();
+                }
             }
         });
 
