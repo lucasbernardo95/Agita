@@ -269,10 +269,6 @@ public class AddEventoActivity extends AppCompatActivity {
                     alertField("Por favor, informe o estido do evento!");
                     ed_estilo.requestFocus();
                     return;
-//                } else if (bandas.equals("")) {
-//                    alertField("Por favor, informe ");
-//                    ed_bandas.requestFocus();
-//                }
                 }else if (valor < 0) {
                     alertField("Por favor, informe um valor válido!");
                     ed_valor.requestFocus();
