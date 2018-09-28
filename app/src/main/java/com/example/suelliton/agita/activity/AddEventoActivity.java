@@ -1,6 +1,7 @@
 package com.example.suelliton.agita.activity;
 
 
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -25,8 +26,12 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextClock;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
@@ -56,6 +61,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +69,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import static android.widget.Toast.LENGTH_LONG;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
@@ -71,7 +78,8 @@ public class AddEventoActivity extends AppCompatActivity {
     private final int REQUEST_GALERIA = 2;
     EditText ed_nome;
     CalendarView cv_data;
-    EditText ed_hora;
+    TextView value_ed_hora; //exibe o valor da hora
+    ImageButton bt_ed_hora; //chama o relógio para editar a hora
     AutoCompleteTextView ed_local;
     EditText ed_estilo;
     EditText ed_bandas;
@@ -100,6 +108,8 @@ public class AddEventoActivity extends AppCompatActivity {
         findViews();
         setViewListeners();
 
+
+
         Bundle pacote = getIntent().getExtras();
 
         if (pacote != null) {
@@ -111,6 +121,25 @@ public class AddEventoActivity extends AppCompatActivity {
 
         carregaLocais();
 
+    }
+
+    //Método para chamar o Time Picker Dialog e setar a hora no evento
+    public  void setTimeEvent() {
+
+        Calendar calendario = Calendar.getInstance();
+        int hora = calendario.get(Calendar.HOUR);
+        int minuto = calendario.get(Calendar.MINUTE);
+
+        TimePickerDialog timePicker;
+
+        timePicker = new TimePickerDialog(AddEventoActivity.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int horaDoDia, int minutos) {
+                value_ed_hora.setText(horaDoDia + ":"+minutos); //Seta a hora no EditText
+            }
+        }, hora, minuto, true);
+
+        timePicker.show();
     }
 
     //Seta os valores do evento a ser editado nos edittext's
@@ -125,7 +154,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 Picasso.get().load(uri).into(imageView);
             }
         });
-        ed_hora.setText(eventoEdit.getHora());
+        value_ed_hora.setText(eventoEdit.getHora());
         ed_local.setText(eventoEdit.getLocal());
         ed_estilo.setText(eventoEdit.getEstilo());
         ed_bandas.setText(eventoEdit.getBandas());
@@ -162,7 +191,8 @@ public class AddEventoActivity extends AppCompatActivity {
         progress = (ProgressBar) findViewById(R.id.progress);
         ed_nome = (EditText) findViewById(R.id.nome_cadastro);
         cv_data = (CalendarView) findViewById(R.id.cv_dataCadastro);
-        ed_hora = (EditText) findViewById(R.id.hora_cadastro);
+        value_ed_hora = (TextView) findViewById(R.id.value_hora_cadastro);
+        bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
         ed_local = (AutoCompleteTextView) findViewById(R.id.local_cadastro);
         ed_estilo = (EditText) findViewById(R.id.estilo_cadastro);
         ed_bandas = (EditText) findViewById(R.id.bandas_cadastro);
@@ -174,6 +204,30 @@ public class AddEventoActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
 
         btnSalvarEvento = (Button) findViewById(R.id.salvar_evento);
+
+        bt_ed_hora.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setTimeEvent();
+            }
+        });
+    }
+
+    private void alertField(String message){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Dado inválido!") //seta o título e a mensagem
+                .setMessage(message);
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        progress.setVisibility(View.GONE);
     }
 
     public void setViewListeners(){
@@ -183,6 +237,48 @@ public class AddEventoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 progress.setVisibility(View.VISIBLE);
                 String nome = ed_nome.getText().toString();
+
+                //============Verificação de campos do evento===================\\
+                String hora = value_ed_hora.getText().toString();
+                String data = convertMillisToDate(cv_data.getDate());
+                final String local = ed_local.getText().toString();
+                String estilo = ed_estilo.getText().toString();
+                String bandas = ed_bandas.getText().toString();
+                double valor = ed_valor.getText().toString() == null? 0 : Double.parseDouble(ed_valor.getText().toString());
+                String descricao = ed_descricao.getText().toString();
+                String casa = ed_casaShow.getText().toString();
+                boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
+
+                if (nome.equals("") || nome.length() < 4) { //verificação do nome
+                    alertField("Por favor, informe um nome válido!");
+                    ed_nome.requestFocus();
+                    return;
+                } else if (hora.equals("")) { //hora
+                    alertField("Por favor, informe o horário do evento!");
+                    value_ed_hora.requestFocus();
+                    return;
+                } else if (data.equals("")) {
+                    alertField("Por favor, informe a data do evento!");
+                    cv_data.requestFocus();
+                    return;
+                } else if (local.equals("")) {
+                    alertField("Por favor, informe o local do evento!\nExemplo: Av Brasil Maranguape I, Natal, RN");
+                    ed_local.requestFocus();
+                    return;
+                } else if (estilo.equals("")) {
+                    alertField("Por favor, informe o estido do evento!");
+                    ed_estilo.requestFocus();
+                    return;
+//                } else if (bandas.equals("")) {
+//                    alertField("Por favor, informe ");
+//                    ed_bandas.requestFocus();
+//                }
+                }else if (valor < 0) {
+                    alertField("Por favor, informe um valor válido!");
+                    ed_valor.requestFocus();
+                    return;
+                }
+                //============fim de campos do evento        ===================\\
 
                 if(eventoEdit != null) {
                     bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
@@ -197,18 +293,6 @@ public class AddEventoActivity extends AppCompatActivity {
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-
-
-
-                String hora = ed_hora.getText().toString();
-                String data = convertMillisToDate(cv_data.getDate());
-                final String local = ed_local.getText().toString();
-                String estilo = ed_estilo.getText().toString();
-                String bandas = ed_bandas.getText().toString();
-                double valor = Double.parseDouble(ed_valor.getText().toString());
-                String descricao = ed_descricao.getText().toString();
-                String casa = ed_casaShow.getText().toString();
-                boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
 
                 Geocoder geocoder = new Geocoder(AddEventoActivity.this);
                 List<Address> enderecos = new ArrayList<>();
@@ -276,7 +360,7 @@ public class AddEventoActivity extends AppCompatActivity {
                     //locaisReference.child(local).setValue(local);
 
                     if (semFoto) {
-                        customAlert("Evento sem banner!", "Você poderá incluir depois, na aba 'Meus eventos'.",false);
+                        customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.",false);
                     } else {
                         customAlert("Sucesso!", "Evento salvo com sucesso!", false);
                     }
@@ -329,10 +413,12 @@ public class AddEventoActivity extends AppCompatActivity {
         dialog.show();
     }
 
+//    private void
+
     public void limpaCampos(){
         ed_nome.setText("");
 
-        ed_hora.setText("");
+        value_ed_hora.setText("");
         ed_local.setText("");
         ed_estilo.setText("");
         ed_bandas.setText("");
