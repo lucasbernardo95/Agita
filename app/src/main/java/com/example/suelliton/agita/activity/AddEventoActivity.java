@@ -1,6 +1,6 @@
 package com.example.suelliton.agita.activity;
 
-import android.app.AlertDialog;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -213,6 +214,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 }
 
 
+
                 String hora = ed_hora.getText().toString();
                 String data = convertMillisToDate(cv_data.getDate());
                 final String local = ed_local.getText().toString();
@@ -289,6 +291,12 @@ public class AddEventoActivity extends AppCompatActivity {
                 Toast.makeText(AddEventoActivity.this, "Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();
                 limpaCampos();
                 progress.setVisibility(View.INVISIBLE);
+
+
+
+
+
+
                 finish();
             }
 

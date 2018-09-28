@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -79,6 +81,14 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
         final Evento escolhido = eventos.get(position);
         myHolder.nome.setText(escolhido.getNome());
+
+        if(escolhido.isVerificado()){
+            myHolder.frameLayout.setVisibility(View.GONE);
+        }else {
+            myHolder.frameLayout.setVisibility(View.VISIBLE);
+            myHolder.frameLayout.setBackground(new ColorDrawable(Color.TRANSPARENT));
+        }
+
 
         //Oculta o botão de like se estiver na tela de todos eventos
         if (EventoActivity.class == context.getClass()) {
@@ -209,6 +219,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         final TextView nome;
         final ImageView botaoLike;
         final ImageButton botaoEditar, botaoExcluir;
+        final FrameLayout frameLayout;
 
         public EventoHolder(View v) {
             super(v);
@@ -218,6 +229,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
             botaoLike = (ImageView) v.findViewById(R.id.buttonLike);
             botaoEditar = (ImageButton) v.findViewById(R.id.buttonEdit);
             botaoExcluir = (ImageButton) v.findViewById(R.id.buttonDelete);
+            frameLayout = (FrameLayout) v.findViewById(R.id.frame);
 
         }
 

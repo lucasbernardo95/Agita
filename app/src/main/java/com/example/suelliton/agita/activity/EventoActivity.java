@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
@@ -41,6 +42,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -81,6 +83,8 @@ public class EventoActivity extends AppCompatActivity
     int qtdAnterior = 0;
     List<String> eventosParticiparei ;
     int count = 0;
+    DatabaseReference naoAprovadoReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +92,7 @@ public class EventoActivity extends AppCompatActivity
 
         database =  MyDatabaseUtil.getDatabase();
         eventosReference = database.getReference("eventos");
+        naoAprovadoReference = database.getReference("eventoTemporario");
 
 
         findViews();
@@ -171,6 +176,7 @@ public class EventoActivity extends AppCompatActivity
 
             Query query = null;
             if(fieldOrder.equals("meus")) {
+
                 query = eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
                 listaEventos = new ArrayList<>();
                 eventoAdapter = new EventoAdapter(listaEventos,EventoActivity.this);
@@ -208,9 +214,50 @@ public class EventoActivity extends AppCompatActivity
 
                     }
                 });
+                //query para eventos nao aprovados
+                Query query2 = naoAprovadoReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
+
+                query2.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        listaEventos.add(dataSnapshot.getValue(Evento.class));
+                        eventoAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        for(int i=0;i<listaEventos.size();i++){
+                            if(listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())){
+                                listaEventos.remove(listaEventos.get(i));
+                            }
+                        }
+                        eventoAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
+
 
 
             }else if(fieldOrder.equals("participarei")){
+
                 List<String> keyEventos = usuarioLogado.getParticiparei();
                 if(keyEventos == null) keyEventos = new ArrayList<>();
                 listaEventos = new ArrayList<>();
@@ -239,6 +286,7 @@ public class EventoActivity extends AppCompatActivity
 
 
         }else {
+
 
             Query query;
             if (fieldOrder.equals("nome") || fieldOrder.equals("data")) {
