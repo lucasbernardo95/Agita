@@ -72,7 +72,6 @@ public class EventoActivity extends AppCompatActivity
             //android.Manifest.permission.WRITE_SETTINGS
     };
 
-    private Evento evento;
     public static Evento eventoClicado;
     private List<Evento> listaEventos;
     RecyclerView myrecycler;

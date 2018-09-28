@@ -186,24 +186,9 @@ public class AddEventoActivity extends AppCompatActivity {
                 if(eventoEdit != null) {
                     bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
                 }else if(bannerGaleria == null){
-                    Toast.makeText(AddEventoActivity.this, "heeeyyyy", Toast.LENGTH_SHORT).show();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(AddEventoActivity.this);
-                    builder.setTitle("Está esquecendo de algo?");
-                    builder.setMessage("Você não escolheu nenhum banner para o evento, deseja prosseguir?");
-                    builder.setPositiveButton("Positivo", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface arg0, int arg1) {
-                            semFoto = true;
-                            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
-
-                        }
-                    });
-                    builder.setNegativeButton("Negativo", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface arg0, int arg1) {
-
-                        }
-                    });
-                    alerta = builder.create();
-                    alerta.show();
+                    Toast.makeText(AddEventoActivity.this, "Você não incluiu um banner, poderá incluir depois, editando o evento.", Toast.LENGTH_LONG).show();
+                    semFoto = true;
+                    urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
                 }
                 try {
                     if (!semFoto) {

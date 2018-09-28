@@ -183,15 +183,9 @@ public class EventoAdapter extends RecyclerView.Adapter{
             }
         });
 
-        StorageReference storageReference = storage.getReference("eventos");
+                Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
 
-        StorageReference islandRef = storageReference.child(escolhido.getNome());
-        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(myHolder.imagem);
-            }
-        });
+
 
 
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
