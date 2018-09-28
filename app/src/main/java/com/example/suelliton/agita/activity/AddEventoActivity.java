@@ -11,6 +11,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -186,7 +187,6 @@ public class AddEventoActivity extends AppCompatActivity {
                 if(eventoEdit != null) {
                     bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
                 }else if(bannerGaleria == null){
-                    Toast.makeText(AddEventoActivity.this, "Você não incluiu um banner, poderá incluir depois, editando o evento.", Toast.LENGTH_LONG).show();
                     semFoto = true;
                     urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
                 }
@@ -272,17 +272,13 @@ public class AddEventoActivity extends AppCompatActivity {
                 }
                 //locaisReference.child(local).setValue(local);
 
-
-                Toast.makeText(AddEventoActivity.this, "Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();
-                limpaCampos();
-                progress.setVisibility(View.INVISIBLE);
-
-
-
+                if (semFoto) {
+                    customAlert("Evento sem banner!", "Você poderá incluir depois, na aba 'Meus eventos'.");
+                } else {
+                    customAlert("Sucesso!", "Evento salvo com sucesso!");
+                }
 
 
-
-                finish();
             }
 
         });
@@ -308,6 +304,26 @@ public class AddEventoActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void customAlert(String title, String message) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(title) //seta o título e a mensagem
+                .setMessage(message);
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                limpaCampos();
+                progress.setVisibility(View.INVISIBLE);
+                finish();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     public void limpaCampos(){
         ed_nome.setText("");
 
