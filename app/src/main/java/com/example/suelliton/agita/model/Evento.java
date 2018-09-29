@@ -196,4 +196,28 @@ public class Evento implements Serializable {
     public void setVerificado(boolean verificado) {
         this.verificado = verificado;
     }
+
+    @Override
+    public String toString() {
+        return "Evento{" +
+                "key='" + key + '\'' +
+                ", nome='" + nome + '\'' +
+                ", data='" + data + '\'' +
+                ", hora='" + hora + '\'' +
+                ", local='" + local + '\'' +
+                ", estilo='" + estilo + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", bandas='" + bandas + '\'' +
+                ", valor=" + valor +
+                ", descricao='" + descricao + '\'' +
+                ", urlBanner='" + urlBanner + '\'' +
+                ", liberado=" + liberado +
+                ", casashow='" + casashow + '\'' +
+                ", cover=" + cover +
+                ", dono='" + dono + '\'' +
+                ", verificado=" + verificado +
+                ", qtdParticipantes=" + qtdParticipantes +
+                '}';
+    }
 }

@@ -100,6 +100,7 @@ public class AddEventoActivity extends AppCompatActivity {
     boolean semFoto = false;
     //atributo da classe.
     private AlertDialog alerta;
+    String TAG = "teste";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,12 +114,14 @@ public class AddEventoActivity extends AppCompatActivity {
         Bundle pacote = getIntent().getExtras();
 
         if (pacote != null) {
-            eventoEdit = (Evento) pacote.getSerializable("eventoEdit");
-            setEventoEdit();
-        } else { //se é cadastro, cria uma nova referência para a tabela de eventos temporários
-            referenceEventoTemporario = FirebaseDatabase.getInstance().getReference("eventoTemporario");
-        }
 
+            eventoEdit = (Evento) pacote.getSerializable("eventoEdit");
+            Log.i(TAG, "1 - Modo edit: "+eventoEdit.toString());
+
+            setEventoEdit();
+        } //se é cadastro, cria uma nova referência para a tabela de eventos temporários
+        referenceEventoTemporario = FirebaseDatabase.getInstance().getReference("eventoTemporario");
+        Log.i(TAG, "2 - Modo reference edit: "+referenceEventoTemporario.getRef());
         carregaLocais();
 
     }
@@ -154,6 +157,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 Picasso.get().load(uri).into(imageView);
             }
         });
+
         value_ed_hora.setText(eventoEdit.getHora());
         ed_local.setText(eventoEdit.getLocal());
         ed_estilo.setText(eventoEdit.getEstilo());
@@ -161,8 +165,9 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_valor.setText(String.valueOf(eventoEdit.getValor()));
         ed_descricao.setText(eventoEdit.getDescricao());
         ed_casaShow.setText(eventoEdit.getCasashow());
-        ed_liberado.setChecked(false);//desmarca
+        ed_liberado.setChecked(eventoEdit.isLiberado());
         btnSalvarEvento.setText(R.string.botaoEditarEvento);
+        Log.i(TAG, "4 - Modo edit ");
     }
 
     public void carregaLocais(){
@@ -172,7 +177,7 @@ public class AddEventoActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot data:dataSnapshot.getChildren() ) {
                     listaLocais.add(data.getRef().getKey());
-                    Log.i("locais",data.getRef().getKey());
+                    Log.i(TAG,"5 - local: "+data.getRef().getKey());
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(AddEventoActivity.this,
                         android.R.layout.simple_dropdown_item_1line, listaLocais);
@@ -281,9 +286,12 @@ public class AddEventoActivity extends AppCompatActivity {
                 }else if(bannerGaleria == null){
                     semFoto = true;
                     urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
+                    Log.i(TAG, "pegou imagem sem banner");
                 }
+
                 try {
                     if (!semFoto) {
+                        Log.i(TAG, "6 - Carregando foto");
                         uploadFirebaseBytes(bannerGaleria, nome);
                     }
                 } catch (FileNotFoundException e) {
@@ -310,6 +318,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
                     if (eventoEdit == null) {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
+
                         //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
                         referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -347,11 +356,24 @@ public class AddEventoActivity extends AppCompatActivity {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
                         novoEvento.setKey(eventoEdit.getKey());
                         novoEvento.setVerificado(eventoEdit.isVerificado());
+
+                        Log.i(TAG, "7 - EVENTO EDIT: "+eventoEdit.toString());
+                        Log.i(TAG, "8 - EVENTO NOVO: "+novoEvento.toString());
+                        Log.i(TAG, "9 - EVENTO reference: "+referenceEventoTemporario.getRef());
+//                        Map<String, Object> updateEvent = new HashMap<>();
+                        //seta a chave e o objeto
+//                        updateEvent.put(eventoEdit.getKey(), novoEvento);
+
+
                         //Se não for um evento verificado, muda a referência para a tabela temporária
-                        if (eventoEdit.isVerificado())
+                        if (eventoEdit.isVerificado()) {
+//                            eventosReference.updateChildren(updateEvent);
                             eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
-                        else
+                        }else {
+                            Log.i(TAG, "10 - chave: "+eventoEdit.getKey());
+//                            referenceEventoTemporario.updateChildren(updateEvent);
                             referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
+                        }
                     }
                     //locaisReference.child(local).setValue(local);
 
@@ -360,6 +382,7 @@ public class AddEventoActivity extends AppCompatActivity {
                     } else {
                         customAlert("Sucesso!", "Evento salvo com sucesso!", false);
                     }
+                    finish();
                 }
 
             }
@@ -407,6 +430,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+
     }
 
 //    private void
@@ -425,6 +449,7 @@ public class AddEventoActivity extends AppCompatActivity {
         btnSalvarEvento.setText("");
     }
     public void uploadFirebaseBytes(Bitmap bitmap, final String nomeEvento) throws FileNotFoundException {
+        Log.i(TAG, "11 - nome: "+ nomeEvento);
         storageReference = storage.getReference("eventos");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
@@ -441,7 +466,7 @@ public class AddEventoActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                 StorageReference islandRef = storageReference.child(nomeEvento);
-                islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                 islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         urlBanner = uri.toString();
@@ -507,7 +532,7 @@ public class AddEventoActivity extends AppCompatActivity {
         GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("US/Central"));
         calendar.setTimeInMillis(yourmilliseconds);
 
-        Log.i("click","GregorianCalendar -"+sdf.format(calendar.getTime()));
+        Log.i(TAG,"12 - GregorianCalendar: "+sdf.format(calendar.getTime()));
 
 
         return sdf.format(calendar.getTime());
