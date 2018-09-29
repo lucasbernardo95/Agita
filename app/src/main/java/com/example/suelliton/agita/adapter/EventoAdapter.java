@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.activity.AddEventoActivity;
@@ -249,6 +250,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         deleteEvent(evento);
+                        deleteBannerEvent(evento.getKey());
                     }
                 })
                 .setNegativeButton("Não", null)
@@ -263,6 +265,16 @@ public class EventoAdapter extends RecyclerView.Adapter{
             workReference = database.getReference("eventoTemporario");
         }
         workReference.child(evento.getKey()).removeValue();
+    }
+
+    private void deleteBannerEvent(String key){
+        StorageReference storage = FirebaseStorage.getInstance().getReference("eventos").child(key);
+        storage.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(context, "Exluído com sucesso!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }
