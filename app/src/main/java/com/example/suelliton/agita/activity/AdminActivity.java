@@ -82,7 +82,7 @@ public class AdminActivity extends AppCompatActivity {
 
                     StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
 
-                    StorageReference islandRef = storageReference.child(model.getNome());
+                    StorageReference islandRef = storageReference.child(model.getKey());
                     islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {

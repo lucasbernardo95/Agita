@@ -195,7 +195,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
             }
         });
 
-                Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
+        Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
 
 
 

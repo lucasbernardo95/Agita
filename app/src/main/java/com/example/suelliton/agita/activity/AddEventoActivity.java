@@ -91,8 +91,8 @@ public class AddEventoActivity extends AppCompatActivity {
     ImageView imageView;
     FirebaseStorage storage;
     StorageReference storageReference;
-    Bitmap bannerGaleria = null;
-    private String urlBanner = "";
+    Bitmap bannerGaleria = null, bannerBACKUP = null;
+    private String urlBanner = "", urlBannerBackup = "";
     private List<String> listaLocais;
     private Evento eventoEdit, novoEvento;
     ProgressBar progress;
@@ -100,7 +100,8 @@ public class AddEventoActivity extends AppCompatActivity {
     boolean semFoto = false;
     //atributo da classe.
     private AlertDialog alerta;
-    String TAG = "teste";
+    private final String TAG = "teste";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,14 +110,16 @@ public class AddEventoActivity extends AppCompatActivity {
         findViews();
         setViewListeners();
 
-
-
         Bundle pacote = getIntent().getExtras();
 
         if (pacote != null) {
 
             eventoEdit = (Evento) pacote.getSerializable("eventoEdit");
+            urlBannerBackup = eventoEdit.getUrlBanner(); //guarda a url
+
             Log.i(TAG, "1 - Modo edit: "+eventoEdit.toString());
+            Log.i(TAG, "1.1: "+eventoEdit.isVerificado());
+            Log.i(TAG, "1.2: "+ urlBannerBackup);
 
             setEventoEdit();
         } //se é cadastro, cria uma nova referência para a tabela de eventos temporários
@@ -148,15 +151,8 @@ public class AddEventoActivity extends AppCompatActivity {
     //Seta os valores do evento a ser editado nos edittext's
     private void setEventoEdit(){
         ed_nome.setText(eventoEdit.getNome());
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
 
-        StorageReference islandRef = storageReference.child(eventoEdit.getNome());
-        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(imageView);
-            }
-        });
+        Picasso.get().load(eventoEdit.getUrlBanner()).into(imageView);
 
         value_ed_hora.setText(eventoEdit.getHora());
         ed_local.setText(eventoEdit.getLocal());
@@ -167,6 +163,9 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_casaShow.setText(eventoEdit.getCasashow());
         ed_liberado.setChecked(eventoEdit.isLiberado());
         btnSalvarEvento.setText(R.string.botaoEditarEvento);
+        //Salva a imagem original do evento para verificar, posteriormente, se houve alguma modificação
+        bannerBACKUP = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+
         Log.i(TAG, "4 - Modo edit ");
     }
 
@@ -281,22 +280,32 @@ public class AddEventoActivity extends AppCompatActivity {
                 }
                 //============fim de campos do evento        ===================\\
 
+                //Ecento sendo editado? pega a imagem que já tem
                 if(eventoEdit != null) {
-                    bannerGaleria = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
-                }else if(bannerGaleria == null){
+                    bannerGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+
+                    Log.i(TAG, "Evento já tem foto");
+                    Log.i(TAG, "bannerGaleria: "+ bannerGaleria.toString());
+                    Log.i(TAG, "bannerBACKUP: " +bannerBACKUP.toString());
+
+                    if (bannerGaleria == bannerBACKUP){
+                        semFoto = true; //não irá fazer upload de foto novamente
+                    }
+
+                }else if(bannerGaleria == null){ //Se não tem nada na galeria, coloca a foto default
                     semFoto = true;
                     urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
                     Log.i(TAG, "pegou imagem sem banner");
                 }
 
-                try {
-                    if (!semFoto) {
-                        Log.i(TAG, "6 - Carregando foto");
-                        uploadFirebaseBytes(bannerGaleria, nome);
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    if (!semFoto) {
+//                        Log.i(TAG, "6 - Carregando foto");
+//                        uploadFirebaseBytes(bannerGaleria, nome);
+//                    }
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
 
                 Geocoder geocoder = new Geocoder(AddEventoActivity.this);
                 List<Address> enderecos = new ArrayList<>();
@@ -328,6 +337,19 @@ public class AddEventoActivity extends AppCompatActivity {
                                     @Override
                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                         referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+
+                                        //Após salvar o evento no firebase, verifica se não tem foto,
+                                        //caso não tenha, faz o upload da foto selecionada na galeria
+                                        if (!semFoto) {
+                                            try {
+                                                Log.i(TAG, "Novo evento - iniciando upload de banner");
+                                                uploadFirebaseBytes(bannerGaleria, dataSnapshot.getRef().getKey());
+                                            } catch (FileNotFoundException e) {
+                                                e.printStackTrace();
+                                            }
+                                        } else {
+                                            finish();
+                                        }
                                     }
 
                                     @Override
@@ -360,29 +382,29 @@ public class AddEventoActivity extends AppCompatActivity {
                         Log.i(TAG, "7 - EVENTO EDIT: "+eventoEdit.toString());
                         Log.i(TAG, "8 - EVENTO NOVO: "+novoEvento.toString());
                         Log.i(TAG, "9 - EVENTO reference: "+referenceEventoTemporario.getRef());
-//                        Map<String, Object> updateEvent = new HashMap<>();
-                        //seta a chave e o objeto
-//                        updateEvent.put(eventoEdit.getKey(), novoEvento);
-
 
                         //Se não for um evento verificado, muda a referência para a tabela temporária
                         if (eventoEdit.isVerificado()) {
-//                            eventosReference.updateChildren(updateEvent);
                             eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
                         }else {
                             Log.i(TAG, "10 - chave: "+eventoEdit.getKey());
-//                            referenceEventoTemporario.updateChildren(updateEvent);
                             referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
+                        }
+
+                        //Após salvar o evento no firebase, e se houver modificação no banner
+                        //atualiza a imagem no storage
+                        if (!semFoto) {
+                            try {
+                                Log.i(TAG, "Edit evento - uploading de banner");
+                                uploadFirebaseBytes(bannerGaleria, eventoEdit.getKey());
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            finish();
                         }
                     }
                     //locaisReference.child(local).setValue(local);
-
-                    if (semFoto) {
-                        customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.",false);
-                    } else {
-                        customAlert("Sucesso!", "Evento salvo com sucesso!", false);
-                    }
-                    finish();
                 }
 
             }
@@ -420,15 +442,12 @@ public class AddEventoActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                if(!endereco) {
-                    limpaCampos();
-                    progress.setVisibility(View.INVISIBLE);
-                    finish();
-                }
+                finish();
             }
         });
 
         AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false); //não permite que o usuário click fora da caixa de diálogo
         dialog.show();
 
     }
@@ -448,14 +467,87 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_liberado.setChecked(false);//desmarca
         btnSalvarEvento.setText("");
     }
-    public void uploadFirebaseBytes(Bitmap bitmap, final String nomeEvento) throws FileNotFoundException {
-        Log.i(TAG, "11 - nome: "+ nomeEvento);
+
+    //Chamado quando o banner de um evento é alterado
+    //Baixa o banner do evento alterado pela key
+    private String atualizaImagemEvento(final String key) {
+        final String[] t = {""};
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
+
+        //Usa a chave do evento como identificador de seu banner. Com isso, ao atualizar os dados de um evento
+        //o mesmo não criará uma nova imagem no banco
+        StorageReference islandRef = storageReference.child(key);
+        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                t[0] = uri.toString();
+                Log.i(TAG, "pegou a url do banner para editar");
+            }
+        });
+
+        return t[0];
+    }
+
+    //Seta a url do banner no evento de acordo com a chave e url passada
+    private void setUrlEvent(final String url, String key) {
+        Log.i(TAG, "Atualizando URL_BANNER do evento");
+
+        Query query = null;
+
+        //Se não for um evento verificado, muda a referência para a tabela temporária
+        if (novoEvento.isVerificado()){
+            query = eventosReference.orderByKey().equalTo(key);
+        }else {
+            query = referenceEventoTemporario.orderByKey().equalTo(key);
+        }
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if(dataSnapshot.exists()) {
+                    if (novoEvento.isVerificado()) {
+                        eventosReference.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(url);
+                    } else {
+                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(url);
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /**
+     * key = Chave do evento que se deseja setar o banner
+     * bitmap = Imagem que deseja setar ao evento
+     * */
+    public void uploadFirebaseBytes(Bitmap bitmap, final String key) throws FileNotFoundException {
+
         storageReference = storage.getReference("eventos");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] data = baos.toByteArray();
 
-        final UploadTask uploadTask = storageReference.child(nomeEvento).putBytes(data);
+        //cria uma referência no storage apontando para a key do evento ao qual a imagem pertence
+        UploadTask uploadTask = storageReference.child(key).putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -465,63 +557,43 @@ public class AddEventoActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                StorageReference islandRef = storageReference.child(nomeEvento);
+                //Verifica se o upload ocorreu com sucesso, pega a URI do banner e atualiza as informações no evento ao qual o banner percente
+                StorageReference islandRef = storageReference.child(key);
                  islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        urlBanner = uri.toString();
-                        Query query = null;
-
-                        //Se não for um evento verificado, muda a referência para a tabela temporária
-                        if (novoEvento.isVerificado()){
-                            query = eventosReference.orderByChild("nome").equalTo(nomeEvento);
-                        }else {
-                            query = referenceEventoTemporario.orderByChild("nome").equalTo(nomeEvento);
+                        if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para a imagem
+                            urlBanner = uri.toString();
+                        } else {
+                            //se estiver editando, recupera a url da imagem pela chave e atualiza a url
+                            /** Nota:
+                             * Caso o evento editado esteja usando o banner dejault, quando
+                             * buscar pela key, vai retornar null na busca pelo banner. Então
+                             * coloca esse link como
+                             * retorno alternativo
+                             */
+                            String retorno = atualizaImagemEvento(eventoEdit.getKey());
+                            if (retorno.equals("") || retorno.length() < 2) { //se for nulo cria uma nova URI para o banner novo setado
+                                urlBanner = uri.toString();
+                            } else {
+                                //se já tem uma url direfente da default, seta no evento
+                                urlBanner = retorno;
+                            }
                         }
-                        query.addChildEventListener(new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                if(dataSnapshot.exists()) {
-                                    if (novoEvento.isVerificado()) {
-                                        eventosReference.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(urlBanner);
-                                    } else {
-                                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(urlBanner);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                            }
-
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                            }
-
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                       // Toast.makeText(AddEventoActivity.this, "uri: "+uri.toString(), Toast.LENGTH_SHORT).show();
+                        //Após criar uma url para a imagem do evento, ou recuperar uma existente, seta os dados da urlBanner no evento
+                        setUrlEvent(urlBanner, key);//informa a url e a key do evento
                     }
                 });
-
 
             }
         });
 
-
-
-
-
+        //por fim, chama a caixa de diálogo
+        if (semFoto) {
+            customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.",false);
+        } else {
+            customAlert("Sucesso!", "Evento salvo com sucesso!", false);
+        }
 
     }
     public String convertMillisToDate(long yourmilliseconds){
