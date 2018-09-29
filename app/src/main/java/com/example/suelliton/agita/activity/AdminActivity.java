@@ -195,7 +195,7 @@ public class AdminActivity extends AppCompatActivity {
                 Toast.makeText(AdminActivity.this, "Exluído com sucesso!", Toast.LENGTH_SHORT).show();
             }
         });
-    }
+    } //
 
     private void aletEventVerify(Context context, final Evento model, final  String key) {
         new AlertDialog.Builder(context)
