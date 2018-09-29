@@ -61,6 +61,11 @@ public class Detalhes extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Intent it = new Intent("SERVICO_EVENTO");
+                stopService(EventoActivity.createExplicitFromImplicitIntent(Detalhes.this,it));
+
+
                 if (ActivityCompat.checkSelfPermission(Detalhes.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(Detalhes.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                     ActivityCompat.requestPermissions(Detalhes.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);

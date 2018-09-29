@@ -46,6 +46,24 @@
         <activity android:name=".activity.AddEventoActivity" />
         <activity android:name=".activity.MeusEventosActivity" />
         <activity android:name=".activity.AdminActivity" />
+        <receiver android:name=".utils.EventoBroadcast"
+            android:enabled="true"
+            android:exported="true"  >
+            <intent-filter >
+                <action android:name="android.intent.action.CAMERA_BUTTON"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </receiver>
+        <service android:label="ServicoEventoGPS" android:enabled="true" android:name=".utils.ServicoEventoGPS" android:exported="true" >
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="SERVICO_EVENTO"/>
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+            </intent-filter>
+        </service>
+
+
+
     </application>
 
 </manifest>
