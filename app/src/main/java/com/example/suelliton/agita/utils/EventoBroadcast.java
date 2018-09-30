@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.example.suelliton.agita.activity.EventoActivity;
 
-import static com.example.suelliton.agita.activity.EventoActivity.createExplicitFromImplicitIntent;
 
 public class EventoBroadcast extends BroadcastReceiver {
     public EventoBroadcast(){

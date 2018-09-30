@@ -250,7 +250,7 @@ public class AddUserActivity extends AppCompatActivity{
                 });
 
 
-                //tempo necessário para dar tempo do listener carregar os dados
+                //tempo necessário para dar tempo do childListener carregar os dados
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

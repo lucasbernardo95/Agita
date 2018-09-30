@@ -8,15 +8,14 @@
             android:id="@+id/nav_add_evento"
             android:title="Adicionar evento" />
         <item
+            android:id="@+id/nav_todos_eventos"
+            android:title="Todos eventos" />
+        <item
             android:id="@+id/nav_meus_eventos"
             android:title="Meus eventos" />
         <item
             android:id="@+id/nav_eventos_irei"
             android:title="Eventos que irei" />
-        <item
-        android:id="@+id/nav_todos_eventos"
-        android:title="Todos eventos" />
-
         <item
             android:id="@+id/nav_aprova_anuncios"
             android:title="Avaliar eventos" />

@@ -1,13 +1,10 @@
 package com.example.suelliton.agita.activity;
-
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -26,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,39 +30,23 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
-import com.example.suelliton.agita.holders.EventoViewHolder;
-
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.GPSTracker;
-import com.example.suelliton.agita.utils.MyDatabaseUtil;
-import com.example.suelliton.agita.utils.NotificationUtil;
 import com.example.suelliton.agita.utils.PermissionUtils;
-import com.example.suelliton.agita.utils.ServicoEventoGPS;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
 
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
@@ -75,49 +55,42 @@ import static com.example.suelliton.agita.activity.SplashActivity.usuarioReferen
 
 public class EventoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static String[] PERMISSIONS_STORAGE = {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
     DrawerLayout drawer;
     Toolbar toolbar ;
     FrameLayout frameLayout;
 
-
-    private static String[] PERMISSIONS_STORAGE = {
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-            //android.Manifest.permission.WRITE_SETTINGS
-    };
-
+    public static List<String> eventosParticiparei ;
     public static Evento eventoClicado;
+    public static String  master ;
     private List<Evento> listaEventos;
     RecyclerView myrecycler;
     EventoAdapter eventoAdapter;
     CarouselView carrossel;
     List<Evento> eventosCarousel;
-    FirebaseRecyclerAdapter<Evento,EventoViewHolder> adapterFirebase;
     int qtdAnterior = 0;
-    List<String> eventosParticiparei ;
     int count = 0;
-    DatabaseReference naoAprovadoReference;
-    String opcaoBusca = "data";
+    DatabaseReference temporarioReference;
     TextView text_filtro;
-
-    GPSTracker gpsTracker;
-    Location mlocation;
-    LocationManager manager ;
+    ChildEventListener childListener;
+    ValueEventListener valueListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento);
-
-        naoAprovadoReference = database.getReference("eventoTemporario");
-
+        temporarioReference = database.getReference("eventoTemporario");
 
         findViews();
         setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
         setViewListener();
-        if(usuarioLogado != null)atualizaUsuarioLogado();
-        iniciaLista(opcaoBusca);
+        if(usuarioLogado != null)atualizaUsuarioLogado();//se tiver usuario logado
 
         eventosCarousel = new ArrayList<>();
+        listaEventos = new ArrayList<>();
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -128,8 +101,18 @@ public class EventoActivity extends AppCompatActivity
                 //carrossel.notify();
 
             }
-        },300);
+        },500);
 
+        controlaExibicaoMenu();
+
+        myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
+        eventoAdapter = new EventoAdapter(listaEventos,EventoActivity.this);
+        myrecycler.setAdapter(eventoAdapter);
+
+        master = "todosEventos";//aba de inicio
+
+    }
+    public void controlaExibicaoMenu(){
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu nav_Menu = navigationView.getMenu();
         if(usuarioLogado == null){//se o usuario for fantasma
@@ -149,10 +132,23 @@ public class EventoActivity extends AppCompatActivity
             nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
             atualizaUsuarioLogado();
         }
+    }
 
-        myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
-//dispararServicoBusca();
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        buscaEventos("data");
+        PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        carrossel.requestFocus();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        removeListenersFirebase();
     }
     //Método temporário para exibir as eventosCarousel no carrossel
     ImageListener clickImagem = new ImageListener() {
@@ -171,272 +167,67 @@ public class EventoActivity extends AppCompatActivity
             }
         }
     };
+    public void buscaEventos(String slave){
 
-    public void populateCarousel(){
-        int qtd = 0;
-        if(listaEventos.size()>5){
-            qtd = 5;
-        }else{
-            qtd = listaEventos.size();
+        switch (master){
+            case "todosEventos":
+                    getTodosEventos(slave);
+                break;
+            case "meusEventos":
+                    getMeusEventos(slave);
+                break;
+            case "ireiEventos":
+                    getIreiEventos(slave);
+                break;
+            case "pertoEventos":
+                    getPertoEventos(slave);
+                break;
         }
-        eventosCarousel = new ArrayList<>();
-        for(int i = 0 ; i < qtd; i++){
-            Evento evento = listaEventos.get(i);
-            eventosCarousel.add(evento);
-        }
-    }
-
-    public void iniciaLista(final String fieldOrder) {
-        if(fieldOrder.equals("eventoProximo")){
-            buscarEventoProximo();
-            return;
-        }
-        opcaoBusca = fieldOrder;//guarda a ultima forma de busca para quando voltar de outra activity carregar a opção correta
-
-
-
-        if(fieldOrder.equals("meus") || fieldOrder.equals("participarei")){//parte administrativa
-            text_filtro.setVisibility(View.GONE);
-            Query query = null;
-            if(fieldOrder.equals("meus")) {
-
-                query = eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
-                listaEventos = new ArrayList<>();
-                eventoAdapter = new EventoAdapter(listaEventos,EventoActivity.this);
-                myrecycler.setAdapter(eventoAdapter);
-
-                query.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        listaEventos.add(dataSnapshot.getValue(Evento.class));
-                        eventoAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        for(int i=0;i<listaEventos.size();i++){
-                            if(listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())){
-                                listaEventos.remove(listaEventos.get(i));
-                            }
-                        }
-                        eventoAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-                //query para eventos nao aprovados
-                Query query2 = naoAprovadoReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
-
-                query2.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        listaEventos.add(dataSnapshot.getValue(Evento.class));
-                        eventoAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        for(int i=0;i<listaEventos.size();i++){
-                            if(listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())){
-                                listaEventos.remove(listaEventos.get(i));
-                            }
-                        }
-                        eventoAdapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
-
-
-
-
-
-            }else if(fieldOrder.equals("participarei")){
-
-                List<String> keyEventos = usuarioLogado.getParticiparei();
-                if(keyEventos == null) keyEventos = new ArrayList<>();
-                listaEventos = new ArrayList<>();
-                eventoAdapter = new EventoAdapter(listaEventos,EventoActivity.this);
-                myrecycler.setAdapter(eventoAdapter);
-                for (String key : keyEventos ) {//parei aqui
-                    query = eventosReference.child(key);
-                    query.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.getValue(Evento.class) != null) {
-                                listaEventos.add(dataSnapshot.getValue(Evento.class));
-                                eventoAdapter.notifyDataSetChanged();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-
-            }
-
-
-        }else {
-
-
-            Query query;
-            if (fieldOrder.equals("nome") || fieldOrder.equals("data")) {
-                text_filtro.setVisibility(View.GONE);
-                query = eventosReference.orderByChild(fieldOrder);
-                //query = eventosReference.orderByChild("verificado").equalTo(true).orderByChild(fieldOrder);
-            } else {
-                text_filtro.setVisibility(View.VISIBLE);
-                query = eventosReference.orderByChild("estilo").startAt(fieldOrder).endAt(fieldOrder);
-            }
-
-            adapterFirebase = new FirebaseRecyclerAdapter<Evento, EventoViewHolder>(Evento.class,
-                    R.layout.inflate_evento,
-                    EventoViewHolder.class,
-                    query) {
-
-                @Override
-                protected void populateViewHolder(final EventoViewHolder viewHolder, final Evento model, int position) {
-
-                    setValuesViewHolder(viewHolder, model);//todos os eventos filtrados
-                    //myrecycler.invalidate();
-
-                    if (model.getQtdParticipantes() >= qtdAnterior && count < 6) {
-                        eventosCarousel.add(model);
-                        qtdAnterior = model.getQtdParticipantes();
-                        count++;
-                    }
-                }
-            };
-
-            myrecycler.setAdapter(adapterFirebase);
-
-
-        }
-
 
     }
-
-    public void setValuesViewHolder(final EventoViewHolder viewHolder,Evento model){
-        viewHolder.nome.setText(model.getNome());
-        if(!model.getUrlBanner().equals("")) {
-            Picasso.get().load(model.getUrlBanner()).into(viewHolder.imagem);
-        }
-        final Evento evento = model;
-        final boolean[] like = new boolean[1];
-
-        if(usuarioLogado != null) {
-            if (eventosParticiparei != null){
-                if (eventosParticiparei.contains(evento.getKey())) {
-                    like[0] = true;
-                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                } else {
-                    like[0] = false;
-                    viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-                }
-            }
-
-        }
-            viewHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    if(usuarioLogado !=null) {
-                        if (like[0]) {
-                            like[0] = false;
-                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-                            eventosParticiparei.remove(evento.getKey());
-                            eventosReference.child(evento.getKey()).child("qtdParticipantes").setValue(evento.getQtdParticipantes() - 1);
-                        } else {
-                            like[0] = true;
-                            viewHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                            eventosParticiparei.add(evento.getKey());
-                            eventosReference.child(evento.getKey()).child("qtdParticipantes").setValue(evento.getQtdParticipantes() + 1);
-                        }
-                        usuarioLogado.setParticiparei(eventosParticiparei);
-                        usuarioReference.child(usuarioLogado.getLogin()).setValue(usuarioLogado);
-                        view.requestFocus();
-                    }else{
-                        Toast.makeText(EventoActivity.this, "Faça login para curtir o evento", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-
-        viewHolder.imagem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventoClicado = evento;
-                startActivity(new Intent(EventoActivity.this, Detalhes.class));
-            }
-        });
+    public void removeListenersFirebase(){
+        if(valueListener != null)eventosReference.removeEventListener(valueListener);
+        if(childListener != null)eventosReference.removeEventListener(childListener);
     }
-    public void buscarEventoProximo(){
-
-        opcaoBusca = "eventoProximo";
+    public void getPertoEventos(final String slave){
+        removeListenersFirebase();
+        listaEventos.removeAll(listaEventos);
         //verifica se foi dada permissao pra usar gps
         if (ActivityCompat.checkSelfPermission(EventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(EventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(EventoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 20);
             return;
         }
-        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        boolean isOnGps = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        LocationManager manager  = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {//gps ligado ou nao
 
-        if (isOnGps) {
-
-            gpsTracker = new GPSTracker(getApplicationContext());
-            mlocation = null;
+            GPSTracker gpsTracker = new GPSTracker(getApplicationContext());
+            Location mlocation = null;
             while (mlocation == null) {
                 mlocation = gpsTracker.getLocation();
             }
-
             final double lat = mlocation.getLatitude();
             final double lng = mlocation.getLongitude();
-            listaEventos = new ArrayList<>();
-            eventoAdapter = new EventoAdapter(listaEventos,this);
-            myrecycler.setAdapter(eventoAdapter);
-            Query query = eventosReference;
-            query.addChildEventListener(new ChildEventListener() {
+            Query query = null;
+            if(slave.equals("data")){
+                query = eventosReference.orderByChild("data");
+            }else if(slave.equals("nome")){
+                query = eventosReference.orderByChild("nome");
+            }else{
+                query = eventosReference;
+            }
+            childListener = query.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     Evento evento = dataSnapshot.getValue(Evento.class);
                     if (lat > evento.getLatitude() - 0.0450000 && lat < evento.getLatitude() + 0.0450000 &&
-                            lng > evento.getLongitude() - 0.020000 && lng < evento.getLongitude() + 0.020000// &&
-                        //convertMillisToDate(Calendar.getInstance().getTimeInMillis()).equals(evento.getData()) &&
-                        //Math.abs(getHoraAtual() -  Integer.parseInt(evento.getHora().split(":")[0]) )
-                        //< 2
-                            ) {
-                        listaEventos.add(evento);
+                            lng > evento.getLongitude() - 0.020000 && lng < evento.getLongitude() + 0.020000) {
+                        if(slave.equals("") || slave.equals("data") || slave.equals("nome")){//quando clica no menu principal
+                            listaEventos.add(evento);
+                        }else{//quando clica no menu secundario de estilos
+                            if(evento.getEstilo().equals(slave)){
+                                listaEventos.add(evento);
+                            }
+                        }
                         eventoAdapter.notifyDataSetChanged();
 
                     }
@@ -471,37 +262,126 @@ public class EventoActivity extends AppCompatActivity
         }
 
     }
-    public void dispararServicoBusca(){
-        Intent it = new Intent("SERVICO_EVENTO");
-        it.putExtra("aas", "sdvsd");
-        startService(createExplicitFromImplicitIntent( EventoActivity.this,it));
-    }
-    public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
-        //Retrieve all services that can match the given intent
-        PackageManager pm = context.getPackageManager();
-        List<ResolveInfo> resolveInfo = pm.queryIntentServices(implicitIntent, 0);
+    public void getIreiEventos(final String slave){
+        removeListenersFirebase();
+        listaEventos.removeAll(listaEventos);
+        List<String> keyEventos = usuarioLogado.getParticiparei();
+        if(keyEventos == null) keyEventos = new ArrayList<>();
 
-        //Make sure only one match was found
-        if (resolveInfo == null || resolveInfo.size() != 1) {
-            return null;
+        for (String key : keyEventos ) {
+             valueListener = eventosReference.child(key).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Evento evento = dataSnapshot.getValue(Evento.class);
+                        if(slave.equals("") || slave.equals("data") || slave.equals("nome")){//quando clica no menu principal
+                            listaEventos.add(evento);
+                        }else{//quando clica no menu secundario de estilos
+                            if(evento.getEstilo().equals(slave)){
+                                listaEventos.add(evento);
+                            }
+                        }
+                        eventoAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
-
-        //Get component info and create ComponentName
-        ResolveInfo serviceInfo = resolveInfo.get(0);
-        String packageName = serviceInfo.serviceInfo.packageName;
-        String className = serviceInfo.serviceInfo.name;
-        ComponentName component = new ComponentName(packageName, className);
-
-        //Create a new intent. Use the old one for extras and such reuse
-        Intent explicitIntent = new Intent(implicitIntent);
-
-        //Set the component to be explicit
-        explicitIntent.setComponent(component);
-
-        return explicitIntent;
     }
+    public void getMeusEventos(final String slave){
+        removeListenersFirebase();
+        listaEventos.removeAll(listaEventos);
+        List<Query> querys = new ArrayList<>();//lista de queryes
+        querys.add(eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin()));//busca eventos aprovados
+        querys.add(temporarioReference.orderByChild("dono").equalTo(usuarioLogado.getLogin()));//busca eventos nao aprovados
+        for (Query query: querys) {
 
+            childListener = query.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    Evento evento = dataSnapshot.getValue(Evento.class);
+                    if(slave.equals("") || slave.equals("data") || slave.equals("nome")){//quando clica no menu principal
+                        listaEventos.add(evento);
+                    }else{//quando clica no menu secundario de estilos
+                        if(evento.getEstilo().equals(slave)){
+                            listaEventos.add(evento);
+                        }
+                    }
+                    eventoAdapter.notifyDataSetChanged();
+                }
 
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    for(int i=0;i<listaEventos.size();i++){
+                        if(listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())){
+                            listaEventos.remove(listaEventos.get(i));
+                        }
+                    }
+                    eventoAdapter.notifyDataSetChanged();
+                }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+    public void getTodosEventos(String slave){
+        removeListenersFirebase();
+        listaEventos.removeAll(listaEventos);
+        Query query = null;
+        if(slave.equals("data") || slave.equals("nome")){
+            query = eventosReference.orderByChild(slave);
+        }else{
+            query = eventosReference.orderByChild("estilo").startAt(slave).endAt(slave);
+        }
+        childListener = query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Evento evento = dataSnapshot.getValue(Evento.class);
+                //preenche carousel
+                if (evento.getQtdParticipantes() >= qtdAnterior && count < 6) {
+                    eventosCarousel.add(evento);
+                    qtdAnterior = evento.getQtdParticipantes();
+                    count++;
+                }
+                listaEventos.add(evento);
+                eventoAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     public void atualizaUsuarioLogado(){
         Query query = usuarioReference.child(usuarioLogado.getLogin());
@@ -515,7 +395,6 @@ public class EventoActivity extends AppCompatActivity
                     eventosParticiparei = new ArrayList<>();
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -539,7 +418,6 @@ public class EventoActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -547,9 +425,6 @@ public class EventoActivity extends AppCompatActivity
             }
         });
     }
-
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -559,55 +434,52 @@ public class EventoActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.filtro_todos_eventos, menu);
-
         return super.onCreateOptionsMenu(menu);
         //return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         carrossel.setVisibility(View.GONE);
         switch (item.getItemId()) {
             case R.id.opcao_filtro_data:
-                iniciaLista("data");
+                buscaEventos("data");
                 setFilterTextView("Filtrado por data");
                 return true;
             case R.id.opcao_filtro_nome:
-                iniciaLista("nome");
+                buscaEventos("nome");
                 setFilterTextView("Filtrado por nome");
                 return true;
             case R.id.opcao_filtro_rock:
-                iniciaLista("Rock");
+                buscaEventos("Rock");
                 setFilterTextView("Filtrado pelo estilo rock");
                 return true;
             case R.id.opcao_filtro_pop:
-                iniciaLista("Pop");
+                buscaEventos("Pop");
                 setFilterTextView("Filtrado pelo estilo pop");
                 return true;
             case R.id.opcao_filtro_eletronica:
-                iniciaLista("Eletrônica");
+                buscaEventos("Eletrônica");
                 setFilterTextView("Filtrado pelo estilo eletrônica");
                 return true;
             case R.id.opcao_filtro_forro:
-                iniciaLista("Forró");
+                buscaEventos("Forró");
                 setFilterTextView("Filtrado pelo estilo forró");
                 return true;
             case R.id.opcao_filtro_sertanejo:
-                iniciaLista("Sertanejo");
+                buscaEventos("Sertanejo");
                 setFilterTextView("Filtrado pelo estilo sertanejo");
                 return true;
             case R.id.opcao_filtro_brega:
-                iniciaLista("Brega");
+                buscaEventos("Brega");
                 setFilterTextView("Filtrado pelo estilo brega");
                 return true;
             case R.id.opcao_filtro_swingueira:
-                iniciaLista("Swingueira");
+                buscaEventos("Swingueira");
                 setFilterTextView("Filtrado pelo estilo swingueira");
                 return true;
 
@@ -620,31 +492,32 @@ public class EventoActivity extends AppCompatActivity
         text_filtro.setText(mensagem);
     }
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-
         int id = item.getItemId();
-
         if (id == R.id.nav_add_evento) {
             startActivity(new Intent(EventoActivity.this,AddEventoActivity.class));
         } else if (id == R.id.nav_meus_eventos) {
             carrossel.setVisibility(View.GONE);
-            iniciaLista("meus");
+            master = "meusEventos";
+            buscaEventos("");
             setTitleActionBar("Meus eventos");
         } else if (id == R.id.nav_eventos_irei) {
             carrossel.setVisibility(View.GONE);
-            iniciaLista("participarei");
+            master = "ireiEventos";
+            buscaEventos("");
             setTitleActionBar("Eventos que irei");
         } else if (id == R.id.nav_todos_eventos) {
             carrossel.setVisibility(View.VISIBLE);
-            iniciaLista("data");
+            master = "todosEventos";
+            buscaEventos("data");
             setTitleActionBar("Eventos");
         }else if (id == R.id.nav_busca_evento_proximo) {
+            master = "pertoEventos";
+            buscaEventos("");
            getSupportActionBar().setTitle("Eventos perto");
-           buscarEventoProximo();
         } else if (id == R.id.nav_aprova_anuncios) {
             startActivity(new Intent(EventoActivity.this,AdminActivity.class));
         } else if (id == R.id.nav_edit_user) {
@@ -661,10 +534,8 @@ public class EventoActivity extends AppCompatActivity
             startActivity(new Intent(EventoActivity.this,LoginActivity.class));
             finish();
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-
         return true;
     }
     public void setTitleActionBar(String titulo){
@@ -674,7 +545,6 @@ public class EventoActivity extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         for (int result : grantResults) {
             if (result == PackageManager.PERMISSION_DENIED) {
                 // Alguma permissão foi negada, agora é com você :-)
@@ -685,8 +555,6 @@ public class EventoActivity extends AppCompatActivity
         }
         // btn.setEnabled(true);
     }
-
-
     private void alertAndFinish(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.app_name).setMessage("Para utilizar todas as funções desse aplicativo, você precisa aceitar o acesso ao armazenamento externo.");
@@ -709,49 +577,4 @@ public class EventoActivity extends AppCompatActivity
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        carrossel.requestFocus();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        iniciaLista(opcaoBusca);//responsável por atualizar a lista depois de o evento editado
-        PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
-    }
-
-    public String convertMillisToDate(long yourmilliseconds){
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy", Locale.US);
-
-
-        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("US/Central"));
-        calendar.setTimeInMillis(yourmilliseconds);
-
-        Log.i("click","GregorianCalendar -"+sdf.format(calendar.getTime()));
-
-
-        return sdf.format(calendar.getTime());
-    }
-    public int getHoraAtual(){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-        // OU
-        SimpleDateFormat dateFormat_hora = new SimpleDateFormat("HH:mm:ss");
-
-        Date data = new Date();
-        Calendar  cal = Calendar.getInstance();
-        cal.setTime(data);
-        Date data_atual = cal.getTime();
-
-        String data_completa = dateFormat.format(data_atual);
-
-        String hora_atual = dateFormat_hora.format(data_atual);
-        Log.i("Script","Hora atual:"+ hora_atual.split(":")[0]);
-        return Integer.parseInt(hora_atual.split(":")[0]);
-
-    }
-
 }
