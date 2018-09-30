@@ -137,6 +137,7 @@ public class AdminActivity extends AppCompatActivity {
                                         @Override
                                         public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
                                             alertEventoDelet(AdminActivity.this, model, data.getKey());
+                                            deleteBannerEvent(data.getKey());
                                         }
 
                                         @Override
@@ -185,6 +186,16 @@ public class AdminActivity extends AppCompatActivity {
                 .setNegativeButton("Não", null)
                 .show();
     }
+
+    private void deleteBannerEvent(String key){
+        StorageReference storage = FirebaseStorage.getInstance().getReference("eventos").child(key);
+        storage.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(AdminActivity.this, "Exluído com sucesso!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    } //
 
     private void aletEventVerify(Context context, final Evento model, final  String key) {
         new AlertDialog.Builder(context)
