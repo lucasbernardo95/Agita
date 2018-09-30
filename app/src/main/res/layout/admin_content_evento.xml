@@ -3,128 +3,106 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="500dp"
+    android:layout_height="wrap_content"
     app:cardElevation="4dp"
-
-    android:layout_gravity="center"
     android:layout_margin="5dp"
     app:cardCornerRadius="2dp"
     app:contentPadding="10dp"
+
+    app:cardBackgroundColor="@color/adminElementColor"
     >
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_weight="10"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
+            <LinearLayout
+                android:id="@+id/layout_img_admin"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
             <ImageView
+                android:src="@drawable/ic_load"
                 android:id="@+id/imageEventoAdmin"
+                android:layout_width="120dp"
+                android:layout_height="120dp" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"/>
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/nomeEventoAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nome do evento aqui"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/localEventoAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Local do vento aqui"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/estiloEventoAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Estilo do evento aqui"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/donoEventoAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dono do evento aqui"
+                    android:gravity="center" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_weight="10"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/nomeEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/horaEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/dataEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/valorEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/localEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/bandasEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/estiloEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/casaEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/donoEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/descricaoEventoAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
-
-        </LinearLayout>
-        <TableLayout
-            android:shrinkColumns="*"
-            android:stretchColumns="*"
-            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center">
 
-            <TableRow
-                android:layout_height="wrap_content"
+            <ImageButton
+                android:id="@+id/botaoAprova"
                 android:layout_width="wrap_content"
-                android:gravity="center">
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_confirma" />
 
-                <ImageView
-                    android:id="@+id/botaoAprova"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    android:src="@drawable/ic_aprova" />
+            <ImageButton
+                android:id="@+id/botaoExcluir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_excluir" />
 
-                <ImageView
-                    android:id="@+id/botaoExcluir"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent"
-                    android:src="@drawable/ic_excluir"
-                    />
-            </TableRow>
+            <ImageButton
+                android:id="@+id/botaoInfoAdmin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_info" />
 
-        </TableLayout>
+            <ImageButton
+                android:id="@+id/botaoMapAdmin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mapa" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

@@ -60,8 +60,6 @@ public class MeusEventosActivity extends AppCompatActivity {
         myrecycler = (RecyclerView) findViewById(R.id.meus_eventos_recycler);
 
 
-
-
     }
 
     @Override

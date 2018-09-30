@@ -73,7 +73,7 @@ public class EventoActivity extends AppCompatActivity
     List<Evento> eventosCarousel;
     int qtdAnterior = 0;
     int count = 0;
-    DatabaseReference temporarioReference;
+    public static DatabaseReference temporarioReference;
     TextView text_filtro;
     ChildEventListener childListener;
     ValueEventListener valueListener;

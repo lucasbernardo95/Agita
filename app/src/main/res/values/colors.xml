@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#b25000</color>
     <color name="colorAccent">#ff7300</color>
 
+    <color name="adminElementColor">#ffe0bf</color>
+
     <color name="carrosselColorWhite">#FFFFFF</color>
     <color name="carrosselColorBlack">#000000</color>
     <color name="carrosselColorOffBlack">#181818</color>

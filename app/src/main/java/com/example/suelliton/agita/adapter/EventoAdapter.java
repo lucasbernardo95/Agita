@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,10 @@ public class EventoAdapter extends RecyclerView.Adapter{
                     //mostra botoes de edição
                     myHolder.botaoEditar.setVisibility(View.VISIBLE);
                     myHolder.botaoExcluir.setVisibility(View.VISIBLE);
+                    
+                    //Oculta o botão de like e nome do evento para o dono
+                    myHolder.botaoLike.setVisibility(View.GONE);
+                    myHolder.nome.setVisibility(View.GONE);
                     //Se o evento ainda não foi verificado, mostra um botão de alerta
                     if (escolhido.isVerificado()) {
                         myHolder.botaoAlerta.setVisibility(View.GONE);
@@ -79,7 +84,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
                        // myHolder.nome.setVisibility(View.GONE);
                         myHolder.botaoAlerta.setVisibility(View.VISIBLE);
                     }
-                    }
+                }
             }else{//demais abas
                     //layut padrao só com o coraçao
                     myHolder.botaoEditar.setVisibility(View.GONE);
@@ -162,6 +167,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
             }
         });
+        Log.i("teste", "Valor: " + escolhido.getUrlBanner());
         Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
 
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
