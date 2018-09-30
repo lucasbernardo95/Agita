@@ -75,7 +75,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
                     
                     //Oculta o botão de like e nome do evento para o dono
                     myHolder.botaoLike.setVisibility(View.GONE);
-                    myHolder.nome.setVisibility(View.GONE);
+                    //myHolder.nome.setVisibility(View.GONE);
                     //Se o evento ainda não foi verificado, mostra um botão de alerta
                     if (escolhido.isVerificado()) {
                         myHolder.botaoAlerta.setVisibility(View.GONE);
