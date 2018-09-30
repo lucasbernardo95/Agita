@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +17,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -38,8 +41,11 @@ import com.example.suelliton.agita.holders.EventoViewHolder;
 
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.model.Usuario;
+import com.example.suelliton.agita.utils.GPSTracker;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
+import com.example.suelliton.agita.utils.NotificationUtil;
 import com.example.suelliton.agita.utils.PermissionUtils;
+import com.example.suelliton.agita.utils.ServicoEventoGPS;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -52,8 +58,14 @@ import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 
 import static com.example.suelliton.agita.activity.SplashActivity.database;
@@ -87,6 +99,10 @@ public class EventoActivity extends AppCompatActivity
     DatabaseReference naoAprovadoReference;
     String opcaoBusca = "data";
     TextView text_filtro;
+
+    GPSTracker gpsTracker;
+    Location mlocation;
+    LocationManager manager ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,7 +151,7 @@ public class EventoActivity extends AppCompatActivity
         }
 
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));
-dispararServicoBusca();
+//dispararServicoBusca();
 
     }
     //Método temporário para exibir as eventosCarousel no carrossel
@@ -171,7 +187,13 @@ dispararServicoBusca();
     }
 
     public void iniciaLista(final String fieldOrder) {
+        if(fieldOrder.equals("eventoProximo")){
+            buscarEventoProximo();
+            return;
+        }
         opcaoBusca = fieldOrder;//guarda a ultima forma de busca para quando voltar de outra activity carregar a opção correta
+
+
 
         if(fieldOrder.equals("meus") || fieldOrder.equals("participarei")){//parte administrativa
             text_filtro.setVisibility(View.GONE);
@@ -379,11 +401,80 @@ dispararServicoBusca();
             }
         });
     }
+    public void buscarEventoProximo(){
 
+        opcaoBusca = "eventoProximo";
+        //verifica se foi dada permissao pra usar gps
+        if (ActivityCompat.checkSelfPermission(EventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(EventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(EventoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 20);
+            return;
+        }
+        manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        boolean isOnGps = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (isOnGps) {
+
+            gpsTracker = new GPSTracker(getApplicationContext());
+            mlocation = null;
+            while (mlocation == null) {
+                mlocation = gpsTracker.getLocation();
+            }
+
+            final double lat = mlocation.getLatitude();
+            final double lng = mlocation.getLongitude();
+            listaEventos = new ArrayList<>();
+            eventoAdapter = new EventoAdapter(listaEventos,this);
+            myrecycler.setAdapter(eventoAdapter);
+            Query query = eventosReference;
+            query.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    Evento evento = dataSnapshot.getValue(Evento.class);
+                    if (lat > evento.getLatitude() - 0.0450000 && lat < evento.getLatitude() + 0.0450000 &&
+                            lng > evento.getLongitude() - 0.020000 && lng < evento.getLongitude() + 0.020000// &&
+                        //convertMillisToDate(Calendar.getInstance().getTimeInMillis()).equals(evento.getData()) &&
+                        //Math.abs(getHoraAtual() -  Integer.parseInt(evento.getHora().split(":")[0]) )
+                        //< 2
+                            ) {
+                        listaEventos.add(evento);
+                        eventoAdapter.notifyDataSetChanged();
+
+                    }
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }else{
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            Toast.makeText(EventoActivity.this, "Ative o GPS do dispositivo", Toast.LENGTH_SHORT).show();
+            startActivityForResult(intent, 10);
+
+        }
+
+    }
     public void dispararServicoBusca(){
         Intent it = new Intent("SERVICO_EVENTO");
         it.putExtra("aas", "sdvsd");
-        startService(createExplicitFromImplicitIntent( this,it));
+        startService(createExplicitFromImplicitIntent( EventoActivity.this,it));
     }
     public static Intent createExplicitFromImplicitIntent(Context context, Intent implicitIntent) {
         //Retrieve all services that can match the given intent
@@ -551,6 +642,9 @@ dispararServicoBusca();
             carrossel.setVisibility(View.VISIBLE);
             iniciaLista("data");
             setTitleActionBar("Eventos");
+        }else if (id == R.id.nav_busca_evento_proximo) {
+           getSupportActionBar().setTitle("Eventos perto");
+           buscarEventoProximo();
         } else if (id == R.id.nav_aprova_anuncios) {
             startActivity(new Intent(EventoActivity.this,AdminActivity.class));
         } else if (id == R.id.nav_edit_user) {
@@ -627,6 +721,37 @@ dispararServicoBusca();
         super.onStart();
         iniciaLista(opcaoBusca);//responsável por atualizar a lista depois de o evento editado
         PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
+    }
+
+    public String convertMillisToDate(long yourmilliseconds){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy", Locale.US);
+
+
+        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("US/Central"));
+        calendar.setTimeInMillis(yourmilliseconds);
+
+        Log.i("click","GregorianCalendar -"+sdf.format(calendar.getTime()));
+
+
+        return sdf.format(calendar.getTime());
+    }
+    public int getHoraAtual(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+        // OU
+        SimpleDateFormat dateFormat_hora = new SimpleDateFormat("HH:mm:ss");
+
+        Date data = new Date();
+        Calendar  cal = Calendar.getInstance();
+        cal.setTime(data);
+        Date data_atual = cal.getTime();
+
+        String data_completa = dateFormat.format(data_atual);
+
+        String hora_atual = dateFormat_hora.format(data_atual);
+        Log.i("Script","Hora atual:"+ hora_atual.split(":")[0]);
+        return Integer.parseInt(hora_atual.split(":")[0]);
+
     }
 
 }

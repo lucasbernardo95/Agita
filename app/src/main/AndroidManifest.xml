@@ -46,7 +46,7 @@
         <activity android:name=".activity.AddEventoActivity" />
         <activity android:name=".activity.MeusEventosActivity" />
         <activity android:name=".activity.AdminActivity" />
-        <receiver android:name=".utils.EventoBroadcast"
+      <!--  <receiver android:name=".utils.EventoBroadcast"
             android:enabled="true"
             android:exported="true"  >
             <intent-filter >
@@ -60,7 +60,7 @@
                 <action android:name="SERVICO_EVENTO"/>
                 <action android:name="android.location.PROVIDERS_CHANGED" />
             </intent-filter>
-        </service>
+        </service> -->
 
 
 

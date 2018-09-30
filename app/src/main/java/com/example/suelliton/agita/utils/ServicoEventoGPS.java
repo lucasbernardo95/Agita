@@ -1,5 +1,6 @@
 package com.example.suelliton.agita.utils;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.suelliton.agita.activity.Detalhes;
 import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.google.firebase.database.ChildEventListener;
@@ -78,13 +80,6 @@ public class ServicoEventoGPS extends Service {
         }
 
         public void run(){
-            while(ativo && count < 100) {
-                try {
-                    Thread.sleep(60000 *5);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
 
                 count++;
                 //intancia a classe do GPS para pegar minha localização
@@ -106,7 +101,7 @@ public class ServicoEventoGPS extends Service {
                                 Math.abs(getHoraAtual() -  Integer.parseInt(evento.getHora().split(":")[0]) )
                                     < 2) {
                                 int id = 1;
-                                Intent intent = new Intent(ServicoEventoGPS.this, EventoActivity.class);
+                                Intent intent = new Intent(ServicoEventoGPS.this, Detalhes.class);
                                 intent.putExtra("msg", "Olá Leitor, como vai?");
                                 String contentTitle = "Heyy, existe um evento acontecendo nas imediações";
                                 String contentText = evento.getNome()+" em "+evento.getCasashow()+" com: "+evento.getBandas();
@@ -141,7 +136,7 @@ public class ServicoEventoGPS extends Service {
 
                     Log.i("Script", "Serviço rodando");
                 }
-            }
+
             stopSelf(startId);
         }
     }
