@@ -227,10 +227,9 @@ public class EventoActivity extends AppCompatActivity
                             if(evento.getEstilo().equals(slave)){
                                 listaEventos.add(evento);
                             }
-                        }
-                        eventoAdapter.notifyDataSetChanged();
-
+                        }      
                     }
+                    eventoAdapter.notifyDataSetChanged();
                 }
 
                 @Override
@@ -273,24 +272,26 @@ public class EventoActivity extends AppCompatActivity
                   @Override
                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                       Evento evento = dataSnapshot.getValue(Evento.class);
-                      boolean existe = false;
-                      for(int i = 0;i < listaEventos.size();i++){
-                          if(listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())){
-                              listaEventos.remove(i);
-                              listaEventos.add(i,evento);
-                              existe = true;
-                          }
-                      }
-                      if(!existe) {
-                          if (slave.equals("") || slave.equals("data") || slave.equals("nome")) {//quando clica no menu principal
-                              listaEventos.add(evento);
-                          } else {//quando clica no menu secundario de estilos
-                              if (evento.getEstilo().equals(slave)) {
-                                  listaEventos.add(evento);
+                      if(evento != null) {
+                          boolean existe = false;
+                          for (int i = 0; i < listaEventos.size(); i++) {
+                              if (listaEventos.get(i).getKey().equals(dataSnapshot.getValue(Evento.class).getKey())) {
+                                  listaEventos.remove(i);
+                                  listaEventos.add(i, evento);
+                                  existe = true;
                               }
                           }
+                          if (!existe) {
+                              if (slave.equals("") || slave.equals("data") || slave.equals("nome")) {//quando clica no menu principal
+                                  listaEventos.add(evento);
+                              } else {//quando clica no menu secundario de estilos
+                                  if (evento.getEstilo().equals(slave)) {
+                                      listaEventos.add(evento);
+                                  }
+                              }
+                          }
+                          eventoAdapter.notifyDataSetChanged();
                       }
-                      eventoAdapter.notifyDataSetChanged();
                   }
 
                   @Override
@@ -299,6 +300,7 @@ public class EventoActivity extends AppCompatActivity
                   }
               });
         }
+
     }
     public void getMeusEventos(final String slave){
         removeListenersFirebase();
