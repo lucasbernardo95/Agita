@@ -227,7 +227,7 @@ public class EventoActivity extends AppCompatActivity
                             if(evento.getEstilo().equals(slave)){
                                 listaEventos.add(evento);
                             }
-                        }      
+                        }
                     }
                     eventoAdapter.notifyDataSetChanged();
                 }
@@ -290,8 +290,8 @@ public class EventoActivity extends AppCompatActivity
                                   }
                               }
                           }
-                          eventoAdapter.notifyDataSetChanged();
                       }
+                      eventoAdapter.notifyDataSetChanged();
                   }
 
                   @Override
@@ -300,6 +300,7 @@ public class EventoActivity extends AppCompatActivity
                   }
               });
         }
+        eventoAdapter.notifyDataSetChanged();//necessita para quando nao tiver evento irei atualizar a tela
 
     }
     public void getMeusEventos(final String slave){
