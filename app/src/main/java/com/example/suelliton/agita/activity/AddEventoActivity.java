@@ -4,15 +4,12 @@ package com.example.suelliton.agita.activity;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -29,18 +26,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Evento;
-import com.example.suelliton.agita.utils.MyDatabaseUtil;
+import com.example.suelliton.agita.utils.Util;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.SuccessContinuation;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,24 +45,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 
-import static android.widget.Toast.LENGTH_LONG;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
@@ -91,7 +79,7 @@ public class AddEventoActivity extends AppCompatActivity {
     ImageView imageView;
     FirebaseStorage storage;
     StorageReference storageReference;
-    Bitmap bannerGaleria = null, bannerBACKUP = null;
+    Bitmap bitmapGaleria = null, bannerBACKUP = null;
     private String urlBanner = "", urlBannerBackup = "";
     private List<String> listaLocais;
     private Evento eventoEdit, novoEvento;
@@ -244,7 +232,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
                 //============Verificação de campos do evento===================\\
                 String hora = value_ed_hora.getText().toString();
-                String data = convertMillisToDate(cv_data.getDate());
+                String data = Util.convertMillisToDate(cv_data.getDate());
                 final String local = ed_local.getText().toString();
                 String estilo = ed_estilo.getText().toString();
                 String bandas = ed_bandas.getText().toString();
@@ -282,17 +270,16 @@ public class AddEventoActivity extends AppCompatActivity {
 
                 //Ecento sendo editado? pega a imagem que já tem
                 if(eventoEdit != null) {
-                    bannerGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-
+                    bitmapGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                     Log.i(TAG, "Evento já tem foto");
-                    Log.i(TAG, "bannerGaleria: "+ bannerGaleria.toString());
+                    Log.i(TAG, "bitmapGaleria: "+ bitmapGaleria.toString());
                     Log.i(TAG, "bannerBACKUP: " +bannerBACKUP.toString());
 
-                    if (bannerGaleria == bannerBACKUP){
+                    if (bitmapGaleria == bannerBACKUP){
                         semFoto = true; //não irá fazer upload de foto novamente
                     }
 
-                }else if(bannerGaleria == null){ //Se não tem nada na galeria, coloca a foto default
+                }else if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
                     semFoto = true;
                     urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
                     Log.i(TAG, "pegou imagem sem banner");
@@ -301,7 +288,7 @@ public class AddEventoActivity extends AppCompatActivity {
 //                try {
 //                    if (!semFoto) {
 //                        Log.i(TAG, "6 - Carregando foto");
-//                        uploadFirebaseBytes(bannerGaleria, nome);
+//                        uploadFirebaseBytes(bitmapGaleria, nome);
 //                    }
 //                } catch (FileNotFoundException e) {
 //                    e.printStackTrace();
@@ -316,14 +303,14 @@ public class AddEventoActivity extends AppCompatActivity {
                 }
                 double lat,lng;
                 if(enderecos.size()== 0) {//verifica se veio algum endereço
-                    customAlert("Endereço não encontrado!", "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.",true);
+                    alertField( "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.");
                     progress.setVisibility(View.GONE);
                     ed_local.requestFocus();
+
                 }else{
 
                     lat = enderecos.get(0).getLatitude();
                     lng = enderecos.get(0).getLongitude();
-
 
                     if (eventoEdit == null) {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
@@ -343,7 +330,7 @@ public class AddEventoActivity extends AppCompatActivity {
                                         if (!semFoto) {
                                             try {
                                                 Log.i(TAG, "Novo evento - iniciando upload de banner");
-                                                uploadFirebaseBytes(bannerGaleria, dataSnapshot.getRef().getKey());
+                                                uploadFirebaseBytes(bitmapGaleria, dataSnapshot.getRef().getKey());
                                             } catch (FileNotFoundException e) {
                                                 e.printStackTrace();
                                             }
@@ -396,7 +383,7 @@ public class AddEventoActivity extends AppCompatActivity {
                         if (!semFoto) {
                             try {
                                 Log.i(TAG, "Edit evento - uploading de banner");
-                                uploadFirebaseBytes(bannerGaleria, eventoEdit.getKey());
+                                uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
@@ -596,33 +583,24 @@ public class AddEventoActivity extends AppCompatActivity {
         }
 
     }
-    public String convertMillisToDate(long yourmilliseconds){
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy", Locale.US);
-
-
-        GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("US/Central"));
-        calendar.setTimeInMillis(yourmilliseconds);
-
-        Log.i(TAG,"12 - GregorianCalendar: "+sdf.format(calendar.getTime()));
-
-
-        return sdf.format(calendar.getTime());
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK && requestCode == REQUEST_GALERIA){
-            Uri selectedImage = data.getData();
-            String[] filePath = {MediaStore.Images.Media.DATA};
-            Cursor c = getContentResolver().query(selectedImage,filePath,null,null,null);
-            c.moveToFirst();
-            int columnIndex = c.getColumnIndex(filePath[0]);
-            String picturePath = c.getString(columnIndex);
-            c.close();
-            bannerGaleria = (BitmapFactory.decodeFile(picturePath));
-            imageView.setImageBitmap(bannerGaleria);
+            Uri uriSelectedImage = data.getData();
+            CropImage.activity(uriSelectedImage)
+                    .start(this);
+        }else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                imageView.setImageURI(resultUri);
+                bitmapGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
         }
 
     }

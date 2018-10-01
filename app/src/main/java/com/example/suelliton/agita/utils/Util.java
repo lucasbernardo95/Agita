@@ -18,9 +18,7 @@ import java.util.TimeZone;
 public class Util {
 
 
-
-
-    public String convertMillisToDate(long yourmilliseconds){
+    public static String convertMillisToDate(long yourmilliseconds){
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy", Locale.US);
         GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("US/Central"));
         calendar.setTimeInMillis(yourmilliseconds);

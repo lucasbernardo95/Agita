@@ -70,17 +70,9 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
         myHolder.local.setText(escolhido.getLocal());
         myHolder.estilo.setText(escolhido.getEstilo());
         myHolder.dono.setText(escolhido.getDono());
-
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
-
-        StorageReference islandRef = storageReference.child(escolhido.getKey());
-        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(myHolder.imagem);
-            }
-        });
-
+        if(escolhido.getUrlBanner() != null || !escolhido.getUrlBanner().equals("")) {
+            Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
+        }
         //implementa o zoom na imagem
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,32 +86,8 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
         myHolder.exclui.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                temporarioReference.orderByChild("nome").equalTo(escolhido.getNome()).addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        alertEventoDelet(context, escolhido, dataSnapshot.getKey(), position);
-                    }
+                alertEventoDelet(context, escolhido, escolhido.getKey(), position);
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
             }
         });
 
@@ -127,32 +95,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
         myHolder.aprova.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                temporarioReference.orderByChild("nome").equalTo(escolhido.getNome()).addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot data, @Nullable String s) {
-                        aletEventVerify(context, escolhido, data.getKey(), position);
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                aletEventVerify(context, escolhido, escolhido.getKey(), position);
             }
         });
 
@@ -221,12 +164,10 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
 
         public AdminViewHolder(View itemView) {
             super(itemView);
-
             nome = (TextView) itemView.findViewById(R.id.nomeEventoAdmin);
             local = (TextView) itemView.findViewById(R.id.localEventoAdmin);
             estilo = (TextView) itemView.findViewById(R.id.estiloEventoAdmin);
             dono = (TextView) itemView.findViewById(R.id.donoEventoAdmin);
-
             imagem = (ImageView) itemView.findViewById(R.id.imageEventoAdmin);
 
             //permite dar um zoom na foto
