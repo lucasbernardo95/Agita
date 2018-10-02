@@ -5,9 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 
+import com.example.suelliton.agita.activity.AddEventoActivity;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -17,6 +23,17 @@ import java.util.TimeZone;
 
 public class Util {
 
+
+    public static List<Address> getNomeLocalFromEndereco(Context contexto, String local){
+        Geocoder geocoder = new Geocoder(contexto);
+        List<Address> enderecos = new ArrayList<>();
+        try {
+            enderecos = geocoder.getFromLocationName(local,1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return enderecos;
+    }
 
     public static String convertMillisToDate(long yourmilliseconds){
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yy", Locale.US);

@@ -38,7 +38,6 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -50,14 +49,11 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
+import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
@@ -84,7 +80,7 @@ public class AddEventoActivity extends AppCompatActivity {
     private List<String> listaLocais;
     private Evento eventoEdit, novoEvento;
     ProgressBar progress;
-    private DatabaseReference referenceEventoTemporario = null;
+    private DatabaseReference referenceEventoTemporario;
     boolean semFoto = false;
     //atributo da classe.
     private AlertDialog alerta;
@@ -94,24 +90,20 @@ public class AddEventoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_evento);
-        storage = FirebaseStorage.getInstance();
         findViews();
         setViewListeners();
-
+        storage = FirebaseStorage.getInstance();
         Bundle pacote = getIntent().getExtras();
 
         if (pacote != null) {
-
             eventoEdit = (Evento) pacote.getSerializable("eventoEdit");
             urlBannerBackup = eventoEdit.getUrlBanner(); //guarda a url
-
             Log.i(TAG, "1 - Modo edit: "+eventoEdit.toString());
             Log.i(TAG, "1.1: "+eventoEdit.isVerificado());
             Log.i(TAG, "1.2: "+ urlBannerBackup);
-
             setEventoEdit();
         } //se é cadastro, cria uma nova referência para a tabela de eventos temporários
-        referenceEventoTemporario = FirebaseDatabase.getInstance().getReference("eventoTemporario");
+        referenceEventoTemporario = database.getReference("eventoTemporario");
         Log.i(TAG, "2 - Modo reference edit: "+referenceEventoTemporario.getRef());
         carregaLocais();
 
@@ -229,8 +221,6 @@ public class AddEventoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 progress.setVisibility(View.VISIBLE);
                 String nome = ed_nome.getText().toString();
-
-                //============Verificação de campos do evento===================\\
                 String hora = value_ed_hora.getText().toString();
                 String data = Util.convertMillisToDate(cv_data.getDate());
                 final String local = ed_local.getText().toString();
@@ -266,55 +256,30 @@ public class AddEventoActivity extends AppCompatActivity {
                     ed_valor.requestFocus();
                     return;
                 }
-                //============fim de campos do evento        ===================\\
 
                 //Ecento sendo editado? pega a imagem que já tem
                 if(eventoEdit != null) {
                     bitmapGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                    Log.i(TAG, "Evento já tem foto");
-                    Log.i(TAG, "bitmapGaleria: "+ bitmapGaleria.toString());
-                    Log.i(TAG, "bannerBACKUP: " +bannerBACKUP.toString());
 
                     if (bitmapGaleria == bannerBACKUP){
                         semFoto = true; //não irá fazer upload de foto novamente
                     }
 
-                }else if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
-                    semFoto = true;
-                    urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
-                    Log.i(TAG, "pegou imagem sem banner");
                 }
 
-//                try {
-//                    if (!semFoto) {
-//                        Log.i(TAG, "6 - Carregando foto");
-//                        uploadFirebaseBytes(bitmapGaleria, nome);
-//                    }
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
 
-                Geocoder geocoder = new Geocoder(AddEventoActivity.this);
-                List<Address> enderecos = new ArrayList<>();
-                try {
-                    enderecos = geocoder.getFromLocationName(local,1);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                double lat,lng;
+                List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
+
                 if(enderecos.size()== 0) {//verifica se veio algum endereço
                     alertField( "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.");
                     progress.setVisibility(View.GONE);
                     ed_local.requestFocus();
-
                 }else{
-
-                    lat = enderecos.get(0).getLatitude();
-                    lng = enderecos.get(0).getLongitude();
+                    double lat = enderecos.get(0).getLatitude();
+                    double lng = enderecos.get(0).getLongitude();
 
                     if (eventoEdit == null) {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
-
                         //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
                         referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -324,18 +289,14 @@ public class AddEventoActivity extends AppCompatActivity {
                                     @Override
                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                         referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
-
-                                        //Após salvar o evento no firebase, verifica se não tem foto,
-                                        //caso não tenha, faz o upload da foto selecionada na galeria
-                                        if (!semFoto) {
+                                        if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
+                                            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
+                                        }else{
                                             try {
-                                                Log.i(TAG, "Novo evento - iniciando upload de banner");
                                                 uploadFirebaseBytes(bitmapGaleria, dataSnapshot.getRef().getKey());
                                             } catch (FileNotFoundException e) {
                                                 e.printStackTrace();
                                             }
-                                        } else {
-                                            finish();
                                         }
                                     }
 
@@ -365,11 +326,6 @@ public class AddEventoActivity extends AppCompatActivity {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
                         novoEvento.setKey(eventoEdit.getKey());
                         novoEvento.setVerificado(eventoEdit.isVerificado());
-
-                        Log.i(TAG, "7 - EVENTO EDIT: "+eventoEdit.toString());
-                        Log.i(TAG, "8 - EVENTO NOVO: "+novoEvento.toString());
-                        Log.i(TAG, "9 - EVENTO reference: "+referenceEventoTemporario.getRef());
-
                         //Se não for um evento verificado, muda a referência para a tabela temporária
                         if (eventoEdit.isVerificado()) {
                             eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
@@ -377,18 +333,17 @@ public class AddEventoActivity extends AppCompatActivity {
                             Log.i(TAG, "10 - chave: "+eventoEdit.getKey());
                             referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
                         }
-
                         //Após salvar o evento no firebase, e se houver modificação no banner
                         //atualiza a imagem no storage
-                        if (!semFoto) {
+                        if (bitmapGaleria == null) {
+                            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
+                        } else {
                             try {
                                 Log.i(TAG, "Edit evento - uploading de banner");
                                 uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                        } else {
-                            finish();
                         }
                     }
                     //locaisReference.child(local).setValue(local);
@@ -481,7 +436,6 @@ public class AddEventoActivity extends AppCompatActivity {
         Log.i(TAG, "Atualizando URL_BANNER do evento");
 
         Query query = null;
-
         //Se não for um evento verificado, muda a referência para a tabela temporária
         if (novoEvento.isVerificado()){
             query = eventosReference.orderByKey().equalTo(key);
