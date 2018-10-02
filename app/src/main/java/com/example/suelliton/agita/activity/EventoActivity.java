@@ -590,6 +590,7 @@ public class EventoActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        frameLayout.setVisibility(View.INVISIBLE);
         int id = item.getItemId();
         if (id == R.id.nav_add_evento) {
             startActivity(new Intent(EventoActivity.this,AddEventoActivity.class));
