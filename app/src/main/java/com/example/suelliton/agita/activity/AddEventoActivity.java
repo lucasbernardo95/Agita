@@ -187,28 +187,6 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_liberado.setChecked(true); //inicia como true
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
 
-        //click do botão de ajuda no local do evneto (tela de cadastro)
-        ((ImageView) findViewById(R.id.imgAjudaLocal))
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(AddEventoActivity.this);
-
-                        builder.setTitle("Local do evento!")
-                                .setMessage(R.string.sms_ajuda_local);
-
-                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                finish();
-                            }
-                        });
-
-                        AlertDialog dialog = builder.create();
-                        dialog.setCanceledOnTouchOutside(false); //não permite que o usuário click fora da caixa de diálogo
-                        dialog.show();
-                    }
-                });
-
         btnSalvarEvento = (Button) findViewById(R.id.salvar_evento);
 
         bt_ed_hora.setOnClickListener(new View.OnClickListener() {
