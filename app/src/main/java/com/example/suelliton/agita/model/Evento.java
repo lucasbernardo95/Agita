@@ -201,21 +201,21 @@ public class Evento implements Serializable {
     public String toString() {
         return "Evento{" +
                 "key='" + key + '\'' +
-                ", nome='" + nome + '\'' +
-                ", data='" + data + '\'' +
-                ", hora='" + hora + '\'' +
-                ", local='" + local + '\'' +
-                ", estilo='" + estilo + '\'' +
+                ", nomeDetalhe='" + nome + '\'' +
+                ", dataDetalhe='" + data + '\'' +
+                ", horaDetalhe='" + hora + '\'' +
+                ", localDetalhe='" + local + '\'' +
+                ", estiloDetalhe='" + estilo + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", bandas='" + bandas + '\'' +
-                ", valor=" + valor +
-                ", descricao='" + descricao + '\'' +
+                ", bandasDetalhe='" + bandas + '\'' +
+                ", valorDetalhe=" + valor +
+                ", descricaoDetalhe='" + descricao + '\'' +
                 ", urlBanner='" + urlBanner + '\'' +
                 ", liberado=" + liberado +
                 ", casashow='" + casashow + '\'' +
                 ", cover=" + cover +
-                ", dono='" + dono + '\'' +
+                ", donoDetalhe='" + dono + '\'' +
                 ", verificado=" + verificado +
                 ", qtdParticipantes=" + qtdParticipantes +
                 '}';

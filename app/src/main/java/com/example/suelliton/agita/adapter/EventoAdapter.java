@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.activity.AddEventoActivity;
-import com.example.suelliton.agita.activity.Detalhes;
+import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
@@ -73,15 +73,15 @@ public class EventoAdapter extends RecyclerView.Adapter{
                     myHolder.botaoEditar.setVisibility(View.VISIBLE);
                     myHolder.botaoExcluir.setVisibility(View.VISIBLE);
                     
-                    //Oculta o botão de like e nome do evento para o dono
+                    //Oculta o botão de like e nomeDetalhe do evento para o donoDetalhe
                     myHolder.botaoLike.setVisibility(View.GONE);
-                    //myHolder.nome.setVisibility(View.GONE);
+                    //myHolder.nomeDetalhe.setVisibility(View.GONE);
                     //Se o evento ainda não foi verificado, mostra um botão de alerta
                     if (escolhido.isVerificado()) {
                         myHolder.botaoAlerta.setVisibility(View.GONE);
                     } else {
-                        //Oculta o nome do evento para evitar bugs visuais
-                       // myHolder.nome.setVisibility(View.GONE);
+                        //Oculta o nomeDetalhe do evento para evitar bugs visuais
+                       // myHolder.nomeDetalhe.setVisibility(View.GONE);
                         myHolder.botaoAlerta.setVisibility(View.VISIBLE);
                     }
                 }
@@ -124,7 +124,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         });
 
         //Vai fazer essa verificação quando carregar os eventos na tela
-        //checa se o usuártio já deu like no filtro_eventos atual ou não e seta a imagem correspondente
+        //checa se o usuártio já deu like no filtro_eventos atual ou não e seta a imagemDetalhe correspondente
 
         //implemmenta o click do botão like
         final boolean[] like = new boolean[1];
@@ -174,7 +174,8 @@ public class EventoAdapter extends RecyclerView.Adapter{
             @Override
             public void onClick(View view) {
                 eventoClicado = escolhido;
-                context.startActivity(new Intent(context, Detalhes.class));
+                EventoActivity.setContentDetalhes();
+                //context.startActivity(new Intent(context, Detalhes.class));
             }
         });
     }

@@ -73,7 +73,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
         if(escolhido.getUrlBanner() != null || !escolhido.getUrlBanner().equals("")) {
             Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
         }
-        //implementa o zoom na imagem
+        //implementa o zoom na imagemDetalhe
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,7 +171,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
             imagem = (ImageView) itemView.findViewById(R.id.imageEventoAdmin);
 
             //permite dar um zoom na foto
-//            PhotoViewAttacher photoZoom = new PhotoViewAttacher(imagem);
+//            PhotoViewAttacher photoZoom = new PhotoViewAttacher(imagemDetalhe);
 //            photoZoom.update();
 
             aprova = (ImageButton) itemView.findViewById(R.id.botaoAprova);
@@ -225,7 +225,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
                         eventosReference.push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Query query = eventosReference.orderByChild("nome").startAt(model.getNome()).endAt(model.getNome()).limitToFirst(1);
+                                Query query = eventosReference.orderByChild("nomeDetalhe").startAt(model.getNome()).endAt(model.getNome()).limitToFirst(1);
                                 query.addChildEventListener(new ChildEventListener() {
                                     @Override
                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {

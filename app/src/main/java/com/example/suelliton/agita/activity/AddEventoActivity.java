@@ -62,8 +62,8 @@ public class AddEventoActivity extends AppCompatActivity {
     private final int REQUEST_GALERIA = 2;
     EditText ed_nome;
     CalendarView cv_data;
-    TextView value_ed_hora; //exibe o valor da hora
-    ImageButton bt_ed_hora; //chama o relógio para editar a hora
+    TextView value_ed_hora; //exibe o valorDetalhe da horaDetalhe
+    ImageButton bt_ed_hora; //chama o relógio para editar a horaDetalhe
     AutoCompleteTextView ed_local;
     EditText ed_estilo;
     EditText ed_bandas;
@@ -109,7 +109,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
     }
 
-    //Método para chamar o Time Picker Dialog e setar a hora no evento
+    //Método para chamar o Time Picker Dialog e setar a horaDetalhe no evento
     public  void setTimeEvent() {
 
         Calendar calendario = Calendar.getInstance();
@@ -121,7 +121,7 @@ public class AddEventoActivity extends AppCompatActivity {
         timePicker = new TimePickerDialog(AddEventoActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int horaDoDia, int minutos) {
-                value_ed_hora.setText(horaDoDia + ":"+minutos); //Seta a hora no EditText
+                value_ed_hora.setText(horaDoDia + ":"+minutos); //Seta a horaDetalhe no EditText
             }
         }, hora, minuto, true);
 
@@ -143,7 +143,7 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_casaShow.setText(eventoEdit.getCasashow());
         ed_liberado.setChecked(eventoEdit.isLiberado());
         btnSalvarEvento.setText(R.string.botaoEditarEvento);
-        //Salva a imagem original do evento para verificar, posteriormente, se houve alguma modificação
+        //Salva a imagemDetalhe original do evento para verificar, posteriormente, se houve alguma modificação
         bannerBACKUP = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
         Log.i(TAG, "4 - Modo edit ");
@@ -156,7 +156,7 @@ public class AddEventoActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot data:dataSnapshot.getChildren() ) {
                     listaLocais.add(data.getRef().getKey());
-                    Log.i(TAG,"5 - local: "+data.getRef().getKey());
+                    Log.i(TAG,"5 - localDetalhe: "+data.getRef().getKey());
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(AddEventoActivity.this,
                         android.R.layout.simple_dropdown_item_1line, listaLocais);
@@ -231,20 +231,20 @@ public class AddEventoActivity extends AppCompatActivity {
                 String casa = ed_casaShow.getText().toString();
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
 
-                if (nome.equals("") || nome.length() < 4) { //verificação do nome
-                    alertField("Por favor, informe um nome válido!");
+                if (nome.equals("") || nome.length() < 4) { //verificação do nomeDetalhe
+                    alertField("Por favor, informe um nomeDetalhe válido!");
                     ed_nome.requestFocus();
                     return;
-                } else if (hora.equals("")) { //hora
+                } else if (hora.equals("")) { //horaDetalhe
                     alertField("Por favor, informe o horário do evento!");
                     value_ed_hora.requestFocus();
                     return;
                 } else if (data.equals("")) {
-                    alertField("Por favor, informe a data do evento!");
+                    alertField("Por favor, informe a dataDetalhe do evento!");
                     cv_data.requestFocus();
                     return;
                 } else if (local.equals("")) {
-                    alertField("Por favor, informe o local do evento!\nExemplo: Av Brasil Maranguape I, Natal, RN");
+                    alertField("Por favor, informe o localDetalhe do evento!\nExemplo: Av Brasil Maranguape I, Natal, RN");
                     ed_local.requestFocus();
                     return;
                 } else if (estilo.equals("")) {
@@ -252,12 +252,12 @@ public class AddEventoActivity extends AppCompatActivity {
                     ed_estilo.requestFocus();
                     return;
                 }else if (valor < 0) {
-                    alertField("Por favor, informe um valor válido!");
+                    alertField("Por favor, informe um valorDetalhe válido!");
                     ed_valor.requestFocus();
                     return;
                 }
 
-                //Ecento sendo editado? pega a imagem que já tem
+                //Ecento sendo editado? pega a imagemDetalhe que já tem
                 if(eventoEdit != null) {
                     bitmapGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
 
@@ -271,7 +271,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
 
                 if(enderecos.size()== 0) {//verifica se veio algum endereço
-                    alertField( "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.");
+                    alertField( "Por favor, inclua um endereço válido no seguinte formato: rua ou casaDetalhe de show, cidade, estado.");
                     progress.setVisibility(View.GONE);
                     ed_local.requestFocus();
                 }else{
@@ -284,7 +284,7 @@ public class AddEventoActivity extends AppCompatActivity {
                         referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
+                                Query query = referenceEventoTemporario.orderByChild("nomeDetalhe").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
                                 query.addChildEventListener(new ChildEventListener() {
                                     @Override
                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -334,7 +334,7 @@ public class AddEventoActivity extends AppCompatActivity {
                             referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
                         }
                         //Após salvar o evento no firebase, e se houver modificação no banner
-                        //atualiza a imagem no storage
+                        //atualiza a imagemDetalhe no storage
                         if (bitmapGaleria == null) {
                             urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
                         } else {
@@ -346,7 +346,7 @@ public class AddEventoActivity extends AppCompatActivity {
                             }
                         }
                     }
-                    //locaisReference.child(local).setValue(local);
+                    //locaisReference.child(localDetalhe).setValue(localDetalhe);
                 }
 
             }
@@ -418,7 +418,7 @@ public class AddEventoActivity extends AppCompatActivity {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
 
         //Usa a chave do evento como identificador de seu banner. Com isso, ao atualizar os dados de um evento
-        //o mesmo não criará uma nova imagem no banco
+        //o mesmo não criará uma nova imagemDetalhe no banco
         StorageReference islandRef = storageReference.child(key);
         islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -487,7 +487,7 @@ public class AddEventoActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] data = baos.toByteArray();
 
-        //cria uma referência no storage apontando para a key do evento ao qual a imagem pertence
+        //cria uma referência no storage apontando para a key do evento ao qual a imagemDetalhe pertence
         UploadTask uploadTask = storageReference.child(key).putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -503,10 +503,10 @@ public class AddEventoActivity extends AppCompatActivity {
                  islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para a imagem
+                        if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para a imagemDetalhe
                             urlBanner = uri.toString();
                         } else {
-                            //se estiver editando, recupera a url da imagem pela chave e atualiza a url
+                            //se estiver editando, recupera a url da imagemDetalhe pela chave e atualiza a url
                             /** Nota:
                              * Caso o evento editado esteja usando o banner dejault, quando
                              * buscar pela key, vai retornar null na busca pelo banner. Então
@@ -521,7 +521,7 @@ public class AddEventoActivity extends AppCompatActivity {
                                 urlBanner = retorno;
                             }
                         }
-                        //Após criar uma url para a imagem do evento, ou recuperar uma existente, seta os dados da urlBanner no evento
+                        //Após criar uma url para a imagemDetalhe do evento, ou recuperar uma existente, seta os dados da urlBanner no evento
                         setUrlEvent(urlBanner, key);//informa a url e a key do evento
                     }
                 });

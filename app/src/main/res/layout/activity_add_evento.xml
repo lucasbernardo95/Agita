@@ -32,7 +32,7 @@
 
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
-        <!-- data  -->
+        <!-- dataDetalhe  -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"/>
 
         </android.support.design.widget.TextInputLayout>
-        <!-- hora  -->
+        <!-- horaDetalhe  -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -71,7 +71,7 @@
                 />
 
         </LinearLayout>
-        <!-- local  -->
+        <!-- localDetalhe  -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

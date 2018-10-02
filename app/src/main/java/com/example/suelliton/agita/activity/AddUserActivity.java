@@ -238,7 +238,7 @@ public class AddUserActivity extends AppCompatActivity{
                         if (dataSnapshot.exists()) {//verifica se a snapshot existe
                             for (DataSnapshot u : dataSnapshot.getChildren()) {//itera sobre todos usuários
                                 Usuario usuario = u.getValue(Usuario.class);////instancia um novo usuario com a snapshot atual
-                                listaUsuarios.add(usuario);//adiciona na lista local o usuário vindo do firebase
+                                listaUsuarios.add(usuario);//adiciona na lista localDetalhe o usuário vindo do firebase
                             }
                         }
                     }

@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -61,7 +62,7 @@ public class EventoActivity extends AppCompatActivity
     };
     DrawerLayout drawer;
     Toolbar toolbar ;
-    FrameLayout frameLayout;
+
 
     public static List<String> eventosParticiparei ;
     public static Evento eventoClicado;
@@ -77,6 +78,17 @@ public class EventoActivity extends AppCompatActivity
     TextView text_filtro;
     ChildEventListener childListener;
     ValueEventListener valueListener;
+
+    //--------------
+    GPSTracker gpsTracker;
+    Location mlocation;
+    public static FrameLayout frameLayout;
+    public static TextView nomeDetalhe, horaDetalhe, dataDetalhe, valorDetalhe, localDetalhe,
+            bandasDetalhe, estiloDetalhe, casaDetalhe, donoDetalhe, descricaoDetalhe;
+    public static ImageView imagemDetalhe;
+    public static FloatingActionButton fabMapaDetalhe;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,7 +172,8 @@ public class EventoActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         eventoClicado = eventosCarousel.get(position);
-                        startActivity(new Intent(EventoActivity.this,Detalhes.class));
+                        setContentDetalhes();
+                        //startActivity(new Intent(EventoActivity.this,Detalhes.class));
                     }
                 });
             }catch (Exception e){
@@ -403,7 +416,7 @@ public class EventoActivity extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuarioLogado = dataSnapshot.getValue(Usuario.class);
                 eventosParticiparei = usuarioLogado.getParticiparei();
-                //Toast.makeText(EventoActivity.this, "nome "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(EventoActivity.this, "nomeDetalhe "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
                 if(eventosParticiparei == null){
                     eventosParticiparei = new ArrayList<>();
                 }
@@ -424,9 +437,35 @@ public class EventoActivity extends AppCompatActivity
         myrecycler = (RecyclerView) findViewById(R.id.eventos_recycler);
         carrossel = (CarouselView) findViewById(R.id.carrosselView);
         text_filtro = (TextView) findViewById(R.id.tv_filtro);
+//-------campos frame detalhes
+        nomeDetalhe = (TextView) findViewById(R.id.tv_evento_clicado);
+        horaDetalhe = (TextView) findViewById(R.id.textHoraEventoDetalhe);
+        dataDetalhe = (TextView) findViewById(R.id.textDataEventoDetalhe);
+        valorDetalhe = (TextView) findViewById(R.id.textValorEventoDetalhe);
+        localDetalhe = (TextView) findViewById(R.id.textLocalEventoDetalhe);
+        bandasDetalhe = (TextView) findViewById(R.id.textBandasEventoDetalhe);
+        estiloDetalhe = (TextView) findViewById(R.id.textEstiloEventoDetalhe);
+        casaDetalhe = (TextView) findViewById(R.id.textCasaEventoDetalhe);
+        donoDetalhe = (TextView) findViewById(R.id.textDonoEventoDetalhe);
+        descricaoDetalhe = (TextView) findViewById(R.id.textDescricaoEventoDetalhe);
+        imagemDetalhe = (ImageView) findViewById(R.id.imageEventoDetalhe);
+        fabMapaDetalhe = (FloatingActionButton) findViewById(R.id.butonMap);
     }
-
-    public void setViewListener(){
+    public static void setContentDetalhes() {//seta dados no frame de detalhes
+        frameLayout.setVisibility(View.VISIBLE);
+        nomeDetalhe.setText(eventoClicado.getNome());
+        horaDetalhe.setText(String.valueOf(eventoClicado.getHora()));
+        dataDetalhe.setText(String.valueOf(eventoClicado.getData()));
+        valorDetalhe.setText(String.valueOf(eventoClicado.getValor()));
+        localDetalhe.setText(eventoClicado.getLocal());
+        bandasDetalhe.setText(eventoClicado.getBandas());
+        estiloDetalhe.setText(eventoClicado.getEstilo());
+        casaDetalhe.setText(eventoClicado.getCasashow());
+        donoDetalhe.setText(eventoClicado.getDono());
+        descricaoDetalhe.setText(eventoClicado.getDescricao());
+        Picasso.get().load(eventoClicado.getUrlBanner()).into(imagemDetalhe);
+    }
+    public void setViewListener(){//seta acoes para as views
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -437,15 +476,46 @@ public class EventoActivity extends AppCompatActivity
                 v.setVisibility(View.INVISIBLE);
             }
         });
+
+        fabMapaDetalhe.setOnClickListener(new View.OnClickListener() {//botão que chama o mapa de rota
+            @Override
+            public void onClick(View view) {
+                if (ActivityCompat.checkSelfPermission(EventoActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(EventoActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(EventoActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 20);
+                    return;
+                }
+                gpsTracker = new GPSTracker(getApplicationContext()); //intancia a classe do GPS para pegar minha localização
+                mlocation = gpsTracker.getLocation();
+                LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+                boolean isOnGps = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+                if (!isOnGps) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    Toast.makeText(EventoActivity.this, "Ative o GPS do dispositivo", Toast.LENGTH_SHORT).show();
+                    startActivityForResult(intent, 20);
+                }else{
+                    String uri = "http://maps.google.com/maps?saddr=" + mlocation.getLatitude() + "," + mlocation.getLongitude() + "&daddr=" + eventoClicado.getLatitude() + "," + eventoClicado.getLongitude();
+                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                    intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                    startActivity(intent);
+                }
+
+
+            }
+        });
     }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        }else if(frameLayout.getVisibility() == View.VISIBLE){// se os detalhes estiver exibindo esconde
+            frameLayout.setVisibility(View.INVISIBLE);
         } else {
             super.onBackPressed();
         }
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -525,7 +595,7 @@ public class EventoActivity extends AppCompatActivity
         } else if (id == R.id.nav_todos_eventos) {
             carrossel.setVisibility(View.VISIBLE);
             master = "todosEventos";
-            buscaEventos("data");
+            buscaEventos("dataDetalhe");
             setTitleActionBar("Eventos");
         }else if (id == R.id.nav_busca_evento_proximo) {
             master = "pertoEventos";

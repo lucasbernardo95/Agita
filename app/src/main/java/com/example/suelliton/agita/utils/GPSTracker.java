@@ -47,7 +47,7 @@ public class GPSTracker extends Service implements LocationListener {
                         //tempo de atualização da localização
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
                         if (locationManager !=null){
-                            //pega o último local onde o celular conseguiu pegar sua localização 'se teve internet ativa e gps também para isso'
+                            //pega o último localDetalhe onde o celular conseguiu pegar sua localização 'se teve internet ativa e gps também para isso'
                             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         }
                     }
@@ -59,7 +59,7 @@ public class GPSTracker extends Service implements LocationListener {
                         //tempo de atualização da localização
                         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 10, this);
                         if (locationManager !=null){
-                            //pega o último local onde o celular conseguiu pegar sua localização 'se teve internet ativa e gps também para isso'
+                            //pega o último localDetalhe onde o celular conseguiu pegar sua localização 'se teve internet ativa e gps também para isso'
                             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         }
                     }

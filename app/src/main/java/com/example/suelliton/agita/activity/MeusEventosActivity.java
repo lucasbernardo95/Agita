@@ -74,7 +74,7 @@ public class MeusEventosActivity extends AppCompatActivity {
 
         Query query = null;
         if(fieldOrder.equals("meus")) {
-            query = eventosReference.orderByChild("dono").equalTo(usuarioLogado.getLogin());
+            query = eventosReference.orderByChild("donoDetalhe").equalTo(usuarioLogado.getLogin());
             List<String> keyEventos = usuarioLogado.getParticiparei();
             listaEventos = new ArrayList<>();
             eventoAdapter = new EventoAdapter(listaEventos,MeusEventosActivity.this);
