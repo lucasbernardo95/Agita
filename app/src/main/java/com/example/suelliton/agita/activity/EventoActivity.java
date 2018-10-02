@@ -1,5 +1,6 @@
 package com.example.suelliton.agita.activity;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -62,7 +64,7 @@ public class EventoActivity extends AppCompatActivity
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     DrawerLayout drawer;
-    Toolbar toolbar ;
+    static Toolbar toolbar ;
 
 
     public static List<String> eventosParticiparei ;
@@ -124,7 +126,10 @@ public class EventoActivity extends AppCompatActivity
 
         master = "todosEventos";//aba de inicio
 
+
+
     }
+
     public void controlaExibicaoMenu(){
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu nav_Menu = navigationView.getMenu();
@@ -456,6 +461,7 @@ public class EventoActivity extends AppCompatActivity
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
         frameLayout.setVisibility(View.VISIBLE);//exibe o frame
+        toolbar.getMenu().setGroupVisible(0,false);
         nomeDetalhe.setText(eventoClicado.getNome());
         horaDetalhe.setText(String.valueOf(eventoClicado.getHora()));
         dataDetalhe.setText(String.valueOf(eventoClicado.getData()));
@@ -477,6 +483,7 @@ public class EventoActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 v.setVisibility(View.INVISIBLE);
+                toolbar.getMenu().setGroupVisible(0,true);
             }
         });
 
@@ -520,6 +527,7 @@ public class EventoActivity extends AppCompatActivity
         }
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
