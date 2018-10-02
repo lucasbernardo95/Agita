@@ -48,6 +48,7 @@ import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
@@ -450,9 +451,11 @@ public class EventoActivity extends AppCompatActivity
         descricaoDetalhe = (TextView) findViewById(R.id.textDescricaoEventoDetalhe);
         imagemDetalhe = (ImageView) findViewById(R.id.imageEventoDetalhe);
         fabMapaDetalhe = (FloatingActionButton) findViewById(R.id.butonMap);
+
+
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
-        frameLayout.setVisibility(View.VISIBLE);
+        frameLayout.setVisibility(View.VISIBLE);//exibe o frame
         nomeDetalhe.setText(eventoClicado.getNome());
         horaDetalhe.setText(String.valueOf(eventoClicado.getHora()));
         dataDetalhe.setText(String.valueOf(eventoClicado.getData()));
@@ -520,8 +523,8 @@ public class EventoActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.filtro_todos_eventos, menu);
-        return super.onCreateOptionsMenu(menu);
+            getMenuInflater().inflate(R.menu.menu_filtro_estilos, menu);
+            return super.onCreateOptionsMenu(menu);
         //return true;
     }
     @Override
@@ -595,7 +598,7 @@ public class EventoActivity extends AppCompatActivity
         } else if (id == R.id.nav_todos_eventos) {
             carrossel.setVisibility(View.VISIBLE);
             master = "todosEventos";
-            buscaEventos("dataDetalhe");
+            buscaEventos("data");
             setTitleActionBar("Eventos");
         }else if (id == R.id.nav_busca_evento_proximo) {
             master = "pertoEventos";
