@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.suelliton.agita.activity.Detalhes;
-import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;

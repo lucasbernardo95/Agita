@@ -11,16 +11,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
 import com.example.suelliton.agita.holders.EventoViewHolder;
 import com.example.suelliton.agita.model.Evento;
-import com.example.suelliton.agita.model.Participante;
-import com.example.suelliton.agita.model.Usuario;
-import com.example.suelliton.agita.utils.ItemClickListener;
-import com.example.suelliton.agita.utils.MeuRecyclerViewClickListener;
 import com.example.suelliton.agita.utils.MyDatabaseUtil;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;

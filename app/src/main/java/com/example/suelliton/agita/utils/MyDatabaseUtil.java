@@ -1,7 +1,6 @@
 package com.example.suelliton.agita.utils;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
 

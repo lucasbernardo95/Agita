@@ -1,6 +1,5 @@
 package com.example.suelliton.agita.holders;
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,8 +7,6 @@ import android.widget.TextView;
 
 import com.example.suelliton.agita.R;
 
-import com.example.suelliton.agita.activity.Detalhes;
-import com.example.suelliton.agita.model.Participante;
 import com.example.suelliton.agita.utils.ItemClickListener;
 
 public class EventoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

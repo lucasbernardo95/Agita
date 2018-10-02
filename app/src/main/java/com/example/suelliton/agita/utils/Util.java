@@ -9,8 +9,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.util.Log;
 
-import com.example.suelliton.agita.activity.AddEventoActivity;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

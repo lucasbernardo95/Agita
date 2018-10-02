@@ -1,13 +1,9 @@
 package com.example.suelliton.agita.adapter;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -22,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
-import com.example.suelliton.agita.activity.SplashActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.GPSTracker;
 import com.example.suelliton.agita.utils.ItemClickListener;
