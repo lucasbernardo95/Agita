@@ -81,10 +81,15 @@ public class Detalhes extends AppCompatActivity {
                     Toast.makeText(Detalhes.this, "Ative o GPS do dispositivo", Toast.LENGTH_SHORT).show();
                     startActivityForResult(intent, REQUEST_GPS);
                 }else{
-                    String uri = "http://maps.google.com/maps?saddr=" + mlocation.getLatitude() + "," + mlocation.getLongitude() + "&daddr=" + eventoClicado.getLatitude() + "," + eventoClicado.getLongitude();
-                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
-                    intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-                    startActivity(intent);
+                    try {
+                        String uri = "http://maps.google.com/maps?saddr=" + mlocation.getLatitude() + "," + mlocation.getLongitude() + "&daddr=" + eventoClicado.getLatitude() + "," + eventoClicado.getLongitude();
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                        startActivity(intent);
+                    } catch (RuntimeException r) {
+                        Toast.makeText(Detalhes.this, "Erro ao tentar localizar o local do evento.", Toast.LENGTH_LONG).show();
+                    }
+
                 }
 
 

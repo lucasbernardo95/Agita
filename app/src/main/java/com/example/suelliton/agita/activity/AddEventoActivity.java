@@ -232,7 +232,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
 
                 if (nome.equals("") || nome.length() < 4) { //verificação do nomeDetalhe
-                    alertField("Por favor, informe um nomeDetalhe válido!");
+                    alertField("Por favor, informe um nome válido!");
                     ed_nome.requestFocus();
                     return;
                 } else if (hora.equals("")) { //horaDetalhe
@@ -240,11 +240,11 @@ public class AddEventoActivity extends AppCompatActivity {
                     value_ed_hora.requestFocus();
                     return;
                 } else if (data.equals("")) {
-                    alertField("Por favor, informe a dataDetalhe do evento!");
+                    alertField("Por favor, informe a data do evento!");
                     cv_data.requestFocus();
                     return;
                 } else if (local.equals("")) {
-                    alertField("Por favor, informe o localDetalhe do evento!\nExemplo: Av Brasil Maranguape I, Natal, RN");
+                    alertField("Por favor, informe o local do evento!\nExemplo: Av Brasil Maranguape I, Natal, RN");
                     ed_local.requestFocus();
                     return;
                 } else if (estilo.equals("")) {
@@ -252,7 +252,7 @@ public class AddEventoActivity extends AppCompatActivity {
                     ed_estilo.requestFocus();
                     return;
                 }else if (valor < 0) {
-                    alertField("Por favor, informe um valorDetalhe válido!");
+                    alertField("Por favor, informe um valor válido!");
                     ed_valor.requestFocus();
                     return;
                 }
@@ -271,7 +271,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
 
                 if(enderecos.size()== 0) {//verifica se veio algum endereço
-                    alertField( "Por favor, inclua um endereço válido no seguinte formato: rua ou casaDetalhe de show, cidade, estado.");
+                    alertField( "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.");
                     progress.setVisibility(View.GONE);
                     ed_local.requestFocus();
                 }else{

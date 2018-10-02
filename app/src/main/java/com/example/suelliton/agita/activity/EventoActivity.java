@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.suelliton.agita.R;
@@ -85,7 +86,7 @@ public class EventoActivity extends AppCompatActivity
     //--------------
     GPSTracker gpsTracker;
     Location mlocation;
-    public static FrameLayout frameLayout;
+    public static ScrollView scrollViewLayout;
     public static TextView nomeDetalhe, horaDetalhe, dataDetalhe, valorDetalhe, localDetalhe,
             bandasDetalhe, estiloDetalhe, casaDetalhe, donoDetalhe, descricaoDetalhe;
     public static ImageView imagemDetalhe;
@@ -437,7 +438,7 @@ public class EventoActivity extends AppCompatActivity
     public void findViews(){
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        frameLayout = (FrameLayout) findViewById(R.id.frame);
+        scrollViewLayout = (ScrollView) findViewById(R.id.frame);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         myrecycler = (RecyclerView) findViewById(R.id.eventos_recycler);
@@ -460,7 +461,7 @@ public class EventoActivity extends AppCompatActivity
 
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
-        frameLayout.setVisibility(View.VISIBLE);//exibe o frame
+        scrollViewLayout.setVisibility(View.VISIBLE);//exibe o frame
         toolbar.getMenu().setGroupVisible(0,false);
         nomeDetalhe.setText(eventoClicado.getNome());
         horaDetalhe.setText(String.valueOf(eventoClicado.getHora()));
@@ -479,7 +480,7 @@ public class EventoActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        frameLayout.setOnClickListener(new View.OnClickListener() {
+        scrollViewLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 v.setVisibility(View.INVISIBLE);
@@ -505,10 +506,14 @@ public class EventoActivity extends AppCompatActivity
                     Toast.makeText(EventoActivity.this, "Ative o GPS do dispositivo", Toast.LENGTH_SHORT).show();
                     startActivityForResult(intent, 20);
                 }else{
-                    String uri = "http://maps.google.com/maps?saddr=" + mlocation.getLatitude() + "," + mlocation.getLongitude() + "&daddr=" + eventoClicado.getLatitude() + "," + eventoClicado.getLongitude();
-                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
-                    intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-                    startActivity(intent);
+                    try {
+                        String uri = "http://maps.google.com/maps?saddr=" + mlocation.getLatitude() + "," + mlocation.getLongitude() + "&daddr=" + eventoClicado.getLatitude() + "," + eventoClicado.getLongitude();
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                        startActivity(intent);
+                    } catch (RuntimeException erro) {
+                        Toast.makeText(EventoActivity.this, "Erro ao tentar encontrar o local do evento.", Toast.LENGTH_LONG).show();
+                    }
                 }
 
 
@@ -520,8 +525,8 @@ public class EventoActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }else if(frameLayout.getVisibility() == View.VISIBLE){// se os detalhes estiver exibindo esconde
-            frameLayout.setVisibility(View.INVISIBLE);
+        }else if(scrollViewLayout.getVisibility() == View.VISIBLE){// se os detalhes estiver exibindo esconde
+            scrollViewLayout.setVisibility(View.INVISIBLE);
         } else {
             super.onBackPressed();
         }
@@ -590,7 +595,7 @@ public class EventoActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        frameLayout.setVisibility(View.INVISIBLE);
+        scrollViewLayout.setVisibility(View.INVISIBLE);
         int id = item.getItemId();
         if (id == R.id.nav_add_evento) {
             startActivity(new Intent(EventoActivity.this,AddEventoActivity.class));

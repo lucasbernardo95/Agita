@@ -67,7 +67,7 @@
     </LinearLayout>
 
     </ScrollView>
-    <FrameLayout
+    <ScrollView
         android:id="@+id/frame"
         android:visibility="invisible"
         android:background="@color/carrosselColorWhite"
@@ -77,22 +77,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <LinearLayout
-                android:layout_weight="10"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+
                 <ImageView
                     android:id="@+id/imageEventoDetalhe"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"/>
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_weight="10"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+
 
                 <TextView
                     android:id="@+id/tv_evento_clicado"
@@ -164,8 +156,6 @@
                     android:gravity="center"
                     android:text="Ao contrário do que se acredita, Lorem Ipsum não é simplesmente um texto randômico. Com mais de 2000 anos, suas raízes podem ser encontradas em uma obra de literatura latina clássica datada de 45 AC." />
 
-            </LinearLayout>
-
             <android.support.design.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -180,5 +170,5 @@
             </android.support.design.widget.CoordinatorLayout>
 
         </LinearLayout>
-    </FrameLayout>
+    </ScrollView>
 </RelativeLayout>
