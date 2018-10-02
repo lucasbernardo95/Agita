@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -214,6 +215,11 @@ public class AddEventoActivity extends AppCompatActivity {
         progress.setVisibility(View.GONE);
     }
 
+    private boolean isCampoVazio(String valor) {
+        //verifica se o valor passado é nulo ou se contém apenas um 'espaço' digitado
+        return (TextUtils.isEmpty(valor) || valor.trim().isEmpty());
+    }
+
     public void setViewListeners(){
 
         btnSalvarEvento.setOnClickListener(new View.OnClickListener() {
@@ -231,28 +237,28 @@ public class AddEventoActivity extends AppCompatActivity {
                 String casa = ed_casaShow.getText().toString();
                 boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
 
-                if (nome.equals("") || nome.length() < 4) { //verificação do nomeDetalhe
-                    alertField("Por favor, informe um nome válido!");
+                if (isCampoVazio(nome)) { //verificação do nomeDetalhe
+                    alertField(getString(R.string.aviso_nome_validacao));
                     ed_nome.requestFocus();
                     return;
-                } else if (hora.equals("")) { //horaDetalhe
-                    alertField("Por favor, informe o horário do evento!");
+                } else if (isCampoVazio(hora)) { //horaDetalhe
+                    alertField(getString(R.string.aviso_hora_validacao));
                     value_ed_hora.requestFocus();
                     return;
-                } else if (data.equals("")) {
-                    alertField("Por favor, informe a data do evento!");
+                } else if (isCampoVazio(data)) {
+                    alertField(getString(R.string.aviso_data_validacao));
                     cv_data.requestFocus();
                     return;
-                } else if (local.equals("")) {
-                    alertField("Por favor, informe o local do evento!\nExemplo: Av Brasil Maranguape I, Natal, RN");
+                } else if (isCampoVazio(local)) {
+                    alertField(getString(R.string.aviso_local_validacao));
                     ed_local.requestFocus();
                     return;
-                } else if (estilo.equals("")) {
-                    alertField("Por favor, informe o estido do evento!");
+                } else if (isCampoVazio(estilo)) {
+                    alertField(getString(R.string.aviso_estilo_validacao));
                     ed_estilo.requestFocus();
                     return;
                 }else if (valor < 0) {
-                    alertField("Por favor, informe um valor válido!");
+                    alertField(getString(R.string.aviso_valor_validacao));
                     ed_valor.requestFocus();
                     return;
                 }
@@ -271,7 +277,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
 
                 if(enderecos.size()== 0) {//verifica se veio algum endereço
-                    alertField( "Por favor, inclua um endereço válido no seguinte formato: rua ou casa de show, cidade, estado.");
+                    alertField( getString(R.string.alerta_endereco_invalido));
                     progress.setVisibility(View.GONE);
                     ed_local.requestFocus();
                 }else{

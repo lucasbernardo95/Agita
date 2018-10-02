@@ -37,4 +37,11 @@
     <string name="botaoEditarEvento">Editar</string>
     <string name="botaoSalvarUsuario">Salvar</string>
     <string name="smsErroLoad">Erro ao tentar carregar o conteúdo do evento selecionado!</string>
+    <string name="aviso_nome_validacao">Por favor, informe um nome válido!</string>
+    <string name="aviso_hora_validacao">Por favor, informe o horário do evento!</string>
+    <string name="aviso_data_validacao">Por favor, informe a data do evento!</string>
+    <string name="aviso_local_validacao">Por favor, informe o local do evento! Exemplo: Av Brasil Maranguape I, Natal, RN</string>
+    <string name="aviso_estilo_validacao">Por favor, informe o estido do evento!</string>
+    <string name="aviso_valor_validacao">Por favor, informe um valor válido!</string>
+    <string name="alerta_endereco_invalido">Por favor, informe um endereço válido! Exemplo: rua ou avenida, cidade, estado.</string>
 </resources>
