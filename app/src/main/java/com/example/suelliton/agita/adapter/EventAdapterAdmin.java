@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.GPSTracker;
-import com.example.suelliton.agita.utils.ItemClickListener;
 import com.example.suelliton.agita.utils.MyDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -65,9 +64,16 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
         myHolder.local.setText(escolhido.getLocal());
         myHolder.estilo.setText(escolhido.getEstilo());
         myHolder.dono.setText(escolhido.getDono());
-        if(escolhido.getUrlBanner() != null || !escolhido.getUrlBanner().equals("")) {
+
+        //Comentei esse if pois ainda continuou dando erro quando não consegue carregar a imagem
+        //if(escolhido.getUrlBanner() != null || !escolhido.getUrlBanner().equals("")) {
+        try {
             Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
+        } catch (RuntimeException erro) {
+            erro.printStackTrace();
+            Toast.makeText(context, "Erro ao tentar carregar a imagem do evento.",Toast.LENGTH_LONG).show();
         }
+        //}
         //implementa o zoom na imagemDetalhe
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,8 +156,6 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
     }
 
     public class AdminViewHolder extends RecyclerView.ViewHolder {
-
-        private ItemClickListener itemClickListener;
 
         public TextView nome, local, estilo, dono;
         public ImageView imagem;

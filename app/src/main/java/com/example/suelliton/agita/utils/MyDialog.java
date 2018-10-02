@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,13 +40,18 @@ public class MyDialog extends Dialog {
 //        imgZoom.setImageResource(R.drawable.ic_relogio);
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
-        StorageReference islandRef = storageReference.child(key);
-        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).into(imgZoom);
-            }
-        });
+        try {
+            StorageReference islandRef = storageReference.child(key);
+            islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Picasso.get().load(uri).into(imgZoom);
+                }
+            });
+        } catch (RuntimeException erro) {
+            erro.printStackTrace();
+            Toast.makeText(context, "Erro ao tentar carregar a imagem do evento.", Toast.LENGTH_LONG).show();
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setPositiveButton("Fechar", null);

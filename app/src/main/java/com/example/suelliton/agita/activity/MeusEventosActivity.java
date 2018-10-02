@@ -32,10 +32,7 @@ import java.util.List;
 
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
-import static com.example.suelliton.agita.activity.SplashActivity.database;
-import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
-import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class MeusEventosActivity extends AppCompatActivity {
 
