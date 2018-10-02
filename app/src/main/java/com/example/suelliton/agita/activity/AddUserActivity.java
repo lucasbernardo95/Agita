@@ -314,17 +314,17 @@ public class AddUserActivity extends AppCompatActivity{
             showProgress(false);
             //Se ocorreu com sucesso para cadastrar
             if (success) {
-                Toast.makeText(AddUserActivity.this, "Usuário  cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddUserActivity.this, R.string.salvo_sucesso_sms, Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(AddUserActivity.this,EventoActivity.class));
                 finish();
             } else {
                     if(!passUser){
                         ed_login.requestFocus();
-                        Toast.makeText(AddUserActivity.this, "Username já existe tente outro", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddUserActivity.this, R.string.login_validacao, Toast.LENGTH_SHORT).show();
                     }
                     if(!passEmail){
                         ac_email.requestFocus();
-                        Toast.makeText(AddUserActivity.this, "Já existe um usuário para este email ", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddUserActivity.this, R.string.email_validacao, Toast.LENGTH_SHORT).show();
 
                     }
             }

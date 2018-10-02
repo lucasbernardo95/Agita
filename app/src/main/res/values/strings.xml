@@ -44,4 +44,7 @@
     <string name="aviso_estilo_validacao">Por favor, informe o estido do evento!</string>
     <string name="aviso_valor_validacao">Por favor, informe um valor válido!</string>
     <string name="alerta_endereco_invalido">Por favor, informe um endereço válido! Exemplo: rua ou avenida, cidade, estado.</string>
+    <string name="salvo_sucesso_sms">Dados salvos com sucesso!</string>
+    <string name="login_validacao">Username já cadastrado!</string>
+    <string name="email_validacao">Já existe um usuário para este email.</string>
 </resources>
