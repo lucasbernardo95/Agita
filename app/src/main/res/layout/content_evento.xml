@@ -67,10 +67,17 @@
     </LinearLayout>
 
     </ScrollView>
-    <ScrollView
+
+    <FrameLayout
         android:id="@+id/frame"
         android:visibility="invisible"
         android:background="@color/carrosselColorWhite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -83,8 +90,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"/>
-
-
 
                 <TextView
                     android:id="@+id/tv_evento_clicado"
@@ -156,19 +161,19 @@
                     android:gravity="center"
                     android:text="Ao contrário do que se acredita, Lorem Ipsum não é simplesmente um texto randômico. Com mais de 2000 anos, suas raízes podem ser encontradas em uma obra de literatura latina clássica datada de 45 AC." />
 
-            <android.support.design.widget.CoordinatorLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/butonMap"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:layout_gravity="bottom|end"
 
-                    app:srcCompat="@android:drawable/ic_dialog_map" />
-            </android.support.design.widget.CoordinatorLayout>
 
         </LinearLayout>
     </ScrollView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/butonMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_gravity="bottom|end"
+
+            app:srcCompat="@android:drawable/ic_dialog_map" />
+    </android.support.design.widget.CoordinatorLayout>
+    </FrameLayout>
 </RelativeLayout>

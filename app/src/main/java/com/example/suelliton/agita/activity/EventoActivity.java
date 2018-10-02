@@ -27,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -82,7 +83,7 @@ public class EventoActivity extends AppCompatActivity
     //--------------
     GPSTracker gpsTracker;
     Location mlocation;
-    public static ScrollView scrollViewLayout;
+    public static FrameLayout frameLayout;
     public static TextView nomeDetalhe, horaDetalhe, dataDetalhe, valorDetalhe, localDetalhe,
             bandasDetalhe, estiloDetalhe, casaDetalhe, donoDetalhe, descricaoDetalhe;
     public static ImageView imagemDetalhe;
@@ -434,7 +435,7 @@ public class EventoActivity extends AppCompatActivity
     public void findViews(){
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        scrollViewLayout = (ScrollView) findViewById(R.id.frame);
+        frameLayout = (FrameLayout) findViewById(R.id.frame);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         myrecycler = (RecyclerView) findViewById(R.id.eventos_recycler);
@@ -457,7 +458,7 @@ public class EventoActivity extends AppCompatActivity
 
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
-        scrollViewLayout.setVisibility(View.VISIBLE);//exibe o frame
+        frameLayout.setVisibility(View.VISIBLE);//exibe o frame
         toolbar.getMenu().setGroupVisible(0,false);
         nomeDetalhe.setText(eventoClicado.getNome());
         horaDetalhe.setText(String.valueOf(eventoClicado.getHora()));
@@ -476,7 +477,7 @@ public class EventoActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        scrollViewLayout.setOnClickListener(new View.OnClickListener() {
+        frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 v.setVisibility(View.INVISIBLE);
@@ -521,8 +522,8 @@ public class EventoActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }else if(scrollViewLayout.getVisibility() == View.VISIBLE){// se os detalhes estiver exibindo esconde
-            scrollViewLayout.setVisibility(View.INVISIBLE);
+        }else if(frameLayout.getVisibility() == View.VISIBLE){// se os detalhes estiver exibindo esconde
+            frameLayout.setVisibility(View.INVISIBLE);
         } else {
             super.onBackPressed();
         }
@@ -591,7 +592,7 @@ public class EventoActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        scrollViewLayout.setVisibility(View.INVISIBLE);
+        frameLayout.setVisibility(View.INVISIBLE);
         int id = item.getItemId();
         if (id == R.id.nav_add_evento) {
             startActivity(new Intent(EventoActivity.this,AddEventoActivity.class));
