@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.synnapps:carouselview:0.1.4'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-
+    implementation 'com.github.chrisbanes:PhotoView:2.1.0'
+    implementation 'com.android.support:palette-v7:27.0.0'
 }
 apply plugin: 'com.google.gms.google-services'

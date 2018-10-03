@@ -81,16 +81,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:id="@+id/linear_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/imageEventoDetalhe"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"/>
 
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"/>
                 <TextView
                     android:id="@+id/tv_evento_clicado"
                     android:layout_width="match_parent"

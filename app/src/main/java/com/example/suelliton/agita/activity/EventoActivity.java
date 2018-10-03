@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -21,6 +23,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,7 +83,7 @@ public class EventoActivity extends AppCompatActivity
     TextView text_filtro;
     ChildEventListener childListener;
     ValueEventListener valueListener;
-
+    LinearLayout linearLayout;
     //--------------
     GPSTracker gpsTracker;
     Location mlocation;
@@ -455,7 +459,7 @@ public class EventoActivity extends AppCompatActivity
         imagemDetalhe = (ImageView) findViewById(R.id.imageEventoDetalhe);
         fabMapaDetalhe = (FloatingActionButton) findViewById(R.id.butonMap);
 
-
+        linearLayout = (LinearLayout) findViewById(R.id.linear_layout);
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
         frameLayout.setVisibility(View.VISIBLE);//exibe o frame
@@ -472,15 +476,23 @@ public class EventoActivity extends AppCompatActivity
         descricaoDetalhe.setText(eventoClicado.getDescricao());
         Picasso.get().load(eventoClicado.getUrlBanner()).into(imagemDetalhe);
     }
+
     public void setViewListener(){//seta acoes para as views
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        frameLayout.setOnClickListener(new View.OnClickListener() {
+        /*frameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                v.setVisibility(View.INVISIBLE);
+                frameLayout.setVisibility(View.INVISIBLE);
+                toolbar.getMenu().setGroupVisible(0,true);
+            }
+        });*/
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frameLayout.setVisibility(View.INVISIBLE);
                 toolbar.getMenu().setGroupVisible(0,true);
             }
         });
@@ -583,7 +595,10 @@ public class EventoActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    public static Palette createPaletteSync(Bitmap bitmap) {
+        Palette p = Palette.from(bitmap).generate();
+        return p;
+    }
     public void setFilterTextView(String mensagem){
         text_filtro.setText(mensagem);
     }

@@ -25,71 +25,77 @@
 
         <ImageView
             android:id="@+id/imgEvento"
-            android:layout_width="300dp"
+            android:src="@drawable/logo_agita"
+            android:layout_width="400dp"
             android:layout_height="200dp"
             android:layout_gravity="center" />
+        <!--   <com.github.chrisbanes.photoview.PhotoView
+               android:id="@+id/imgEvento"
+               android:layout_width="300dp"
+               android:layout_height="200dp"
+            />-->
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
-            <android.support.v7.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="40dp">
-                <TextView
-                    android:id="@+id/textNomeEvento"
-                    android:layout_weight="10"
-                    android:layout_marginTop="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="nome evento"
-                    android:textStyle="bold" />
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_gravity="center"
+               android:orientation="vertical">
+               <android.support.v7.widget.LinearLayoutCompat
+                   android:layout_width="match_parent"
+                   android:layout_height="40dp">
+                   <TextView
+                       android:id="@+id/textNomeEvento"
+                       android:layout_weight="10"
+                       android:layout_marginTop="5dp"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:gravity="center"
+                       android:text="nome evento"
+                       android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/buttonLike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_action_nolike" />
+                   <ImageView
+                       android:id="@+id/buttonLike"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:src="@drawable/ic_action_nolike" />
 
-            </android.support.v7.widget.LinearLayoutCompat>
-            <LinearLayout
-                android:layout_gravity="bottom"
-                android:gravity="bottom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ImageButton
-                    android:backgroundTint="@color/carrosselColorWhite"
-                    android:layout_weight="3"
-                    android:visibility="gone"
-                    android:id="@+id/buttonAlert"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_alert" />
-                <ImageButton
-                    android:backgroundTint="@color/carrosselColorWhite"
-                    android:layout_weight="3"
-                    android:visibility="gone"
-                    android:id="@+id/buttonEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_lapis" />
-                <ImageButton
-                    android:backgroundTint="@color/carrosselColorWhite"
-                    android:layout_weight="3"
-                    android:visibility="gone"
-                    android:id="@+id/buttonDelete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_lixeira" />
+               </android.support.v7.widget.LinearLayoutCompat>
+               <LinearLayout
+                   android:layout_gravity="bottom"
+                   android:gravity="bottom"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+                   <ImageButton
+                       android:backgroundTint="@color/carrosselColorWhite"
+                       android:layout_weight="3"
+                       android:visibility="gone"
+                       android:id="@+id/buttonAlert"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:src="@drawable/ic_alert" />
+                   <ImageButton
+                       android:backgroundTint="@color/carrosselColorWhite"
+                       android:layout_weight="3"
+                       android:visibility="gone"
+                       android:id="@+id/buttonEdit"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:src="@drawable/ic_lapis" />
+                   <ImageButton
+                       android:backgroundTint="@color/carrosselColorWhite"
+                       android:layout_weight="3"
+                       android:visibility="gone"
+                       android:id="@+id/buttonDelete"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:src="@drawable/ic_lixeira" />
 
-            </LinearLayout>
+               </LinearLayout>
 
 
-        </LinearLayout>
+           </LinearLayout>
 
-    </LinearLayout>
+       </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
-</android.support.v7.widget.CardView>
+   </android.support.constraint.ConstraintLayout>
+   </android.support.v7.widget.CardView>

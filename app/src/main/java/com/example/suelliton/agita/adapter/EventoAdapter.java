@@ -4,10 +4,15 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -18,12 +23,16 @@ import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.activity.AddEventoActivity;
 import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
+import com.example.suelliton.agita.utils.PaletteListener;
+import com.github.chrisbanes.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import java.util.List;
+import java.util.logging.Handler;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
 import static com.example.suelliton.agita.activity.EventoActivity.eventosParticiparei;
@@ -32,6 +41,7 @@ import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
+import static java.security.AccessController.getContext;
 /*
 * É necessário o uso de um adapter para:
 * fornecer dados para a lista de eventos e
@@ -64,6 +74,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
         final EventoHolder myHolder = (EventoHolder) holder;
         final Evento escolhido = eventos.get(position);
+
         myHolder.nome.setText(escolhido.getNome());
             //Se o evento pertencer ao usuário logado, ele pode editar e excluir se estiver na aba meus eventos
         if(usuarioLogado != null) {
@@ -167,8 +178,20 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
             }
         });
-        Log.i("teste", "Valor: " + escolhido.getUrlBanner());
-        Picasso.get().load(escolhido.getUrlBanner()).into(myHolder.imagem);
+        Picasso.get()
+                .load(escolhido.getUrlBanner())
+                .into(myHolder.imagem);/*, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        BitmapDrawable bitmapDrawable = (BitmapDrawable) myHolder.imagem.getDrawable();
+                        createPaletteAsync(bitmapDrawable.getBitmap(),myHolder.imagem);
+                    }
+
+                    @Override
+                    public void onError(Exception ex) {
+
+                    }
+                });*/
 
         myHolder.imagem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,6 +202,18 @@ public class EventoAdapter extends RecyclerView.Adapter{
             }
         });
     }
+    public void createPaletteAsync(Bitmap bitmap, final ImageView imageView) {
+        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+            public void onGenerated(Palette p) {
+                imageView.setBackgroundColor(p.getMutedColor(0));
+            }
+        });
+    }
+    public Palette createPaletteSync(Bitmap bitmap) {
+        Palette p = Palette.from(bitmap).generate();
+        return p;
+    }
+
     @Override
     public int getItemCount() {
         return eventos == null ? 0 :  eventos.size();
@@ -200,6 +235,11 @@ public class EventoAdapter extends RecyclerView.Adapter{
             botaoEditar = (ImageButton) v.findViewById(R.id.buttonEdit);
             botaoExcluir = (ImageButton) v.findViewById(R.id.buttonDelete);
             botaoAlerta = (ImageButton) v.findViewById(R.id.buttonAlert);
+
+
+
+
+
         }
     }
 
