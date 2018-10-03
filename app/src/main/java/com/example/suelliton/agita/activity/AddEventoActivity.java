@@ -329,17 +329,18 @@ public class AddEventoActivity extends AppCompatActivity {
                         novoEvento.setVerificado(eventoEdit.isVerificado());
                         if(bitmapGaleria == null) {
                             novoEvento.setUrlBanner(eventoEdit.getUrlBanner());
-                            if (eventoEdit.isVerificado()) {
-                                eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
-                            }else {
-                                referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
-                            }
+
                         }else{
                             try {
                                 uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
+                        }
+                        if (eventoEdit.isVerificado()) {
+                            eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
+                        }else {
+                            referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
                         }
                         //Se não for um evento verificado, muda a referência para a tabela temporária
                         customAlert("Sucesso!", "Evento editado com sucesso!");
