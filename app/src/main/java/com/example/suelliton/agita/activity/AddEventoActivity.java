@@ -50,7 +50,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
@@ -330,18 +332,13 @@ public class AddEventoActivity extends AppCompatActivity {
                         });
                     } else {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
-                        novoEvento.setKey(eventoEdit.getKey());
+//                        novoEvento.setKey(eventoEdit.getKey());
                         novoEvento.setVerificado(eventoEdit.isVerificado());
 
-                        //Salva os dados alterados no bd
-                        if (eventoEdit.isVerificado()) {
-                            eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
-                        }else {
-                            referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
-                        }
                         //se não mudou a foto, usa a que já tem, caso contrário, faz o upload
                         if(bitmapGaleria == null) {
                             novoEvento.setUrlBanner(eventoEdit.getUrlBanner());
+                            atualizaEvento();
                         }else{
                             try {
                                 uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
@@ -381,6 +378,18 @@ public class AddEventoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void atualizaEvento() {
+        novoEvento.setKey(eventoEdit.getKey());
+        Map<String, Object> update = new HashMap<>();
+        update.put(eventoEdit.getKey(), novoEvento);
+        //Salva os dados alterados no bd
+        if (eventoEdit.isVerificado()) {
+            eventosReference.updateChildren(update);
+        }else {
+            referenceEventoTemporario.updateChildren(update);
+        }
     }
 
     private void customAlert(String title, String message) {
@@ -430,14 +439,10 @@ public class AddEventoActivity extends AppCompatActivity {
                     public void onSuccess(Uri uri) {
                         if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para o banner após o upload
                             urlBanner = uri.toString();
-                            //Após criar uma url para a imagem do evento, ou recuperar uma existente,
-                            //seta os dados da urlBanner no evento, atualizando a urlBanner com link do banner no storage
-                            if (novoEvento.isVerificado()) {
-                                eventosReference.child(key).child("urlBanner").setValue(urlBanner);
-                            }else {
-                                referenceEventoTemporario.child(key).child("urlBanner").setValue(urlBanner);
-                            }
                         }
+
+                        atualizaEvento();
+
                     }
                 });
 
