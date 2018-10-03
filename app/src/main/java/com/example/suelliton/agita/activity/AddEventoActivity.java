@@ -28,7 +28,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Evento;
@@ -49,7 +48,6 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -133,7 +131,11 @@ public class AddEventoActivity extends AppCompatActivity {
     private void setEventoEdit(){
         ed_nome.setText(eventoEdit.getNome());
 
-        Picasso.get().load(eventoEdit.getUrlBanner()).into(imageView);
+        try {
+            Picasso.get().load(eventoEdit.getUrlBanner()).into(imageView);
+        } catch (RuntimeException e){
+            e.printStackTrace();
+        }
 
         value_ed_hora.setText(eventoEdit.getHora());
         ed_local.setText(eventoEdit.getLocal());
@@ -398,26 +400,6 @@ public class AddEventoActivity extends AppCompatActivity {
 
     }
 
-    //Chamado quando o banner de um evento é alterado
-    //Baixa o banner do evento alterado pela key
-    private String atualizaImagemEvento(final String key) {
-        final String[] t = {""};
-
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
-
-        //Usa a chave do evento como identificador de seu banner. Com isso, ao atualizar os dados de um evento
-        //o mesmo não criará uma nova imagemDetalhe no banco
-        StorageReference islandRef = storageReference.child(key);
-        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                t[0] = uri.toString();
-                Log.i(TAG, "pegou a url do banner para editar");
-            }
-        });
-
-        return t[0];
-    }
 
     /**
      * key = Chave do evento que se deseja setar o banner
@@ -448,22 +430,14 @@ public class AddEventoActivity extends AppCompatActivity {
                     public void onSuccess(Uri uri) {
                         if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para o banner após o upload
                             urlBanner = uri.toString();
-                        } else {
-                            String retorno = atualizaImagemEvento(eventoEdit.getKey());
-                            if (retorno.equals("") || retorno.length() < 2) { //se for nulo cria uma nova URI para o banner novo setado
-                                urlBanner = uri.toString();
-                            } else {
-                                //se já tem uma url direfente da default, seta no evento
-                                urlBanner = retorno;
+                            //Após criar uma url para a imagem do evento, ou recuperar uma existente,
+                            //seta os dados da urlBanner no evento, atualizando a urlBanner com link do banner no storage
+                            if (novoEvento.isVerificado()) {
+                                eventosReference.child(key).child("urlBanner").setValue(urlBanner);
+                            }else {
+                                referenceEventoTemporario.child(key).child("urlBanner").setValue(urlBanner);
                             }
                         }
-                        //Após criar uma url para a imagem do evento, ou recuperar uma existente,
-                        //seta os dados da urlBanner no evento, atualizando a urlBanner com link do banner no storage
-                        if (novoEvento.isVerificado())
-                            eventosReference.child(key).child("urlBanner").setValue(urlBanner);
-
-                        else
-                            referenceEventoTemporario.child(key).child("urlBanner").setValue(urlBanner);
                     }
                 });
 

@@ -178,9 +178,16 @@ public class EventoAdapter extends RecyclerView.Adapter{
 
             }
         });
-        Picasso.get()
-                .load(escolhido.getUrlBanner())
-                .into(myHolder.imagem);/*, new com.squareup.picasso.Callback() {
+        try {
+            Picasso.get()
+                    .load(escolhido.getUrlBanner())
+                    .into(myHolder.imagem);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+
+
+        /*, new com.squareup.picasso.Callback() {
                     @Override
                     public void onSuccess() {
                         BitmapDrawable bitmapDrawable = (BitmapDrawable) myHolder.imagem.getDrawable();
