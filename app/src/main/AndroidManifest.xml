@@ -46,7 +46,8 @@
         <activity android:name=".activity.AddEventoActivity" />
         <activity android:name=".activity.MeusEventosActivity" />
         <activity android:name=".activity.AdminActivity" />
-      <!--  <receiver android:name=".utils.EventoBroadcast"
+        <!--
+        <receiver android:name=".utils.EventoBroadcast"
             android:enabled="true"
             android:exported="true"  >
             <intent-filter >
@@ -60,11 +61,14 @@
                 <action android:name="SERVICO_EVENTO"/>
                 <action android:name="android.location.PROVIDERS_CHANGED" />
             </intent-filter>
-        </service> -->
+        </service>
+        -->
 
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"/> <!-- optional (needed if default theme has no action bar) -->
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" /> <!-- optional (needed if default theme has no action bar) -->
 
+        <activity android:name=".activity.EditEventoActivity"></activity>
     </application>
 
 </manifest>

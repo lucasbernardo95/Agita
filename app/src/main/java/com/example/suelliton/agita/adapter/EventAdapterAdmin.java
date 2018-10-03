@@ -221,14 +221,14 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
                         //seta como verificado
                         model.setVerificado(true);
                         //Salva o evento em outra tabela
-                        eventosReference.push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        eventosReference.child(model.getKey()).setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Query query = eventosReference.orderByChild("nomeDetalhe").startAt(model.getNome()).endAt(model.getNome()).limitToFirst(1);
+                                Query query = eventosReference.orderByChild("nome").startAt(model.getNome()).endAt(model.getNome()).limitToFirst(1);
                                 query.addChildEventListener(new ChildEventListener() {
                                     @Override
                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                        eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+                                        //eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
                                     }
 
                                     @Override
