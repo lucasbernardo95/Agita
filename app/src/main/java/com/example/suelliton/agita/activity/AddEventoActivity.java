@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Evento;
@@ -262,15 +263,7 @@ public class AddEventoActivity extends AppCompatActivity {
                     return;
                 }
 
-                //Ecento sendo editado? pega a imagemDetalhe que já tem
-                if(eventoEdit != null) {
-                    bitmapGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
 
-                    if (bitmapGaleria == bannerBACKUP){
-                        semFoto = true; //não irá fazer upload de foto novamente
-                    }
-
-                }
 
 
                 List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
@@ -284,18 +277,21 @@ public class AddEventoActivity extends AppCompatActivity {
                     double lng = enderecos.get(0).getLongitude();
 
                     if (eventoEdit == null) {
+
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
                         //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
                         referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Query query = referenceEventoTemporario.orderByChild("nomeDetalhe").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
+                                Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
                                 query.addChildEventListener(new ChildEventListener() {
                                     @Override
                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                         referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+
                                         if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
                                             urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
+                                            customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.");
                                         }else{
                                             try {
                                                 uploadFirebaseBytes(bitmapGaleria, dataSnapshot.getRef().getKey());
@@ -331,25 +327,23 @@ public class AddEventoActivity extends AppCompatActivity {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
                         novoEvento.setKey(eventoEdit.getKey());
                         novoEvento.setVerificado(eventoEdit.isVerificado());
-                        //Se não for um evento verificado, muda a referência para a tabela temporária
-                        if (eventoEdit.isVerificado()) {
-                            eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
-                        }else {
-                            Log.i(TAG, "10 - chave: "+eventoEdit.getKey());
-                            referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
-                        }
-                        //Após salvar o evento no firebase, e se houver modificação no banner
-                        //atualiza a imagemDetalhe no storage
-                        if (bitmapGaleria == null) {
-                            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
-                        } else {
+                        if(bitmapGaleria == null) {
+                            novoEvento.setUrlBanner(eventoEdit.getUrlBanner());
+                            if (eventoEdit.isVerificado()) {
+                                eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
+                            }else {
+                                referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
+                            }
+                        }else{
                             try {
-                                Log.i(TAG, "Edit evento - uploading de banner");
                                 uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
                         }
+                        //Se não for um evento verificado, muda a referência para a tabela temporária
+                        customAlert("Sucesso!", "Evento editado com sucesso!");
+
                     }
                     //locaisReference.child(localDetalhe).setValue(localDetalhe);
                 }
@@ -380,10 +374,8 @@ public class AddEventoActivity extends AppCompatActivity {
         });
     }
 
-    private void customAlert(String title, String message,final boolean endereco) {
-
+    private void customAlert(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         builder.setTitle(title) //seta o título e a mensagem
                 .setMessage(message);
 
@@ -399,86 +391,18 @@ public class AddEventoActivity extends AppCompatActivity {
 
     }
 
-//    private void
 
-    public void limpaCampos(){
-        ed_nome.setText("");
-
-        value_ed_hora.setText("");
-        ed_local.setText("");
-        ed_estilo.setText("");
-        ed_bandas.setText("");
-        ed_valor.setText("");
-        ed_descricao.setText("");
-        ed_casaShow.setText("");
-        ed_liberado.setChecked(false);//desmarca
-        btnSalvarEvento.setText("");
-    }
-
-    //Chamado quando o banner de um evento é alterado
-    //Baixa o banner do evento alterado pela key
-    private String atualizaImagemEvento(final String key) {
-        final String[] t = {""};
-
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("eventos");
-
-        //Usa a chave do evento como identificador de seu banner. Com isso, ao atualizar os dados de um evento
-        //o mesmo não criará uma nova imagemDetalhe no banco
-        StorageReference islandRef = storageReference.child(key);
-        islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                t[0] = uri.toString();
-                Log.i(TAG, "pegou a url do banner para editar");
-            }
-        });
-
-        return t[0];
-    }
 
     //Seta a url do banner no evento de acordo com a chave e url passada
     private void setUrlEvent(final String url, String key) {
         Log.i(TAG, "Atualizando URL_BANNER do evento");
-
-        Query query = null;
         //Se não for um evento verificado, muda a referência para a tabela temporária
         if (novoEvento.isVerificado()){
-            query = eventosReference.orderByKey().equalTo(key);
+            eventosReference.child(key).child("urlBanner").setValue(url);
         }else {
-            query = referenceEventoTemporario.orderByKey().equalTo(key);
+            referenceEventoTemporario.child(key).child("urlBanner").setValue(url);
         }
-        query.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.exists()) {
-                    if (novoEvento.isVerificado()) {
-                        eventosReference.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(url);
-                    } else {
-                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("urlBanner").setValue(url);
-                    }
-                }
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     /**
@@ -511,20 +435,7 @@ public class AddEventoActivity extends AppCompatActivity {
                         if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para a imagemDetalhe
                             urlBanner = uri.toString();
                         } else {
-                            //se estiver editando, recupera a url da imagemDetalhe pela chave e atualiza a url
-                            /** Nota:
-                             * Caso o evento editado esteja usando o banner dejault, quando
-                             * buscar pela key, vai retornar null na busca pelo banner. Então
-                             * coloca esse link como
-                             * retorno alternativo
-                             */
-                            String retorno = atualizaImagemEvento(eventoEdit.getKey());
-                            if (retorno.equals("") || retorno.length() < 2) { //se for nulo cria uma nova URI para o banner novo setado
-                                urlBanner = uri.toString();
-                            } else {
-                                //se já tem uma url direfente da default, seta no evento
-                                urlBanner = retorno;
-                            }
+                           urlBanner = eventoEdit.getUrlBanner();
                         }
                         //Após criar uma url para a imagemDetalhe do evento, ou recuperar uma existente, seta os dados da urlBanner no evento
                         setUrlEvent(urlBanner, key);//informa a url e a key do evento
@@ -534,12 +445,7 @@ public class AddEventoActivity extends AppCompatActivity {
             }
         });
 
-        //por fim, chama a caixa de diálogo
-        if (semFoto) {
-            customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.",false);
-        } else {
-            customAlert("Sucesso!", "Evento salvo com sucesso!", false);
-        }
+
 
     }
 
