@@ -2,10 +2,12 @@ package com.example.suelliton.agita.activity;
 
 
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -48,6 +50,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -332,21 +335,21 @@ public class AddEventoActivity extends AppCompatActivity {
                         });
                     } else {
                         novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
-//                        novoEvento.setKey(eventoEdit.getKey());
+                        novoEvento.setKey(eventoEdit.getKey());
                         novoEvento.setVerificado(eventoEdit.isVerificado());
-
                         //se não mudou a foto, usa a que já tem, caso contrário, faz o upload
-                        if(bitmapGaleria == null) {
-                            novoEvento.setUrlBanner(eventoEdit.getUrlBanner());
-                            atualizaEvento();
-                        }else{
+                        if(bitmapGaleria != null) {
                             try {
                                 uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
                         }
-
+                        if (eventoEdit.isVerificado()) {
+                            eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
+                        }else {
+                            referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
+                        }
                         //Se não for um evento verificado, muda a referência para a tabela temporária
                         customAlert("Sucesso!", "Evento editado com sucesso!");
 
@@ -380,17 +383,7 @@ public class AddEventoActivity extends AppCompatActivity {
         });
     }
 
-    private void atualizaEvento() {
-        novoEvento.setKey(eventoEdit.getKey());
-        Map<String, Object> update = new HashMap<>();
-        update.put(eventoEdit.getKey(), novoEvento);
-        //Salva os dados alterados no bd
-        if (eventoEdit.isVerificado()) {
-            eventosReference.updateChildren(update);
-        }else {
-            referenceEventoTemporario.updateChildren(update);
-        }
-    }
+
 
     private void customAlert(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -439,10 +432,8 @@ public class AddEventoActivity extends AppCompatActivity {
                     public void onSuccess(Uri uri) {
                         if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para o banner após o upload
                             urlBanner = uri.toString();
+                            referenceEventoTemporario.child(key).child("urlBanner").setValue(urlBanner);
                         }
-
-                        atualizaEvento();
-
                     }
                 });
 
@@ -452,7 +443,6 @@ public class AddEventoActivity extends AppCompatActivity {
 
 
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -466,7 +456,11 @@ public class AddEventoActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
                 imageView.setImageURI(resultUri);
-                bitmapGaleria = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                try {
+                    bitmapGaleria = Util.createParcelDescriptor(this,resultUri,500);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
