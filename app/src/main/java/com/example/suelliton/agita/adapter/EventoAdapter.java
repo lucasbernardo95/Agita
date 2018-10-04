@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.activity.AddEventoActivity;
+import com.example.suelliton.agita.activity.EditEventoActivity;
 import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.PaletteListener;
@@ -109,7 +110,7 @@ public class EventoAdapter extends RecyclerView.Adapter{
         myHolder.botaoEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, AddEventoActivity.class).putExtra("eventoEdit",escolhido));
+                context.startActivity(new Intent(context, EditEventoActivity.class).putExtra("eventoEdit",escolhido));
             }
         });
 
