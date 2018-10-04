@@ -69,11 +69,11 @@ public class EditEventoActivity extends AppCompatActivity {
     ImageButton bt_ed_hora; //chama o relógio para editar a horaDetalhe
     AutoCompleteTextView ed_local;
     AutoCompleteTextView ed_estilo;
-    EditText ed_bandas;
-    EditText ed_valor;
-    EditText ed_descricao;
-    EditText ed_casaShow;
-    CheckedTextView ed_liberado;
+    private EditText ed_bandas;
+    private EditText ed_valor;
+    private EditText ed_descricao;
+    private EditText ed_casaShow;
+    private CheckedTextView ed_liberado;
     Button btnSalvarEvento;
     ImageView imageView;
     FirebaseStorage storage;
@@ -325,8 +325,6 @@ public class EditEventoActivity extends AppCompatActivity {
         eventoEdit.setDono(dono);
     }
 
-
-
     private void customAlert(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(title) //seta o título e a mensagem
@@ -343,7 +341,6 @@ public class EditEventoActivity extends AppCompatActivity {
         dialog.show();
 
     }
-
 
     /**
      * key = Chave do evento que se deseja setar o banner
@@ -386,8 +383,6 @@ public class EditEventoActivity extends AppCompatActivity {
                 Log.i(TAG, "Upload is " + progressoUpload + "% done");
             }
         });
-
-
 
     }
 
