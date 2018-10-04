@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
+import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.GPSTracker;
 import com.example.suelliton.agita.utils.MyDialog;
@@ -139,11 +142,24 @@ public class EventAdapterAdmin extends RecyclerView.Adapter{
 
                 gpsTracker = new GPSTracker(context.getApplicationContext()); //intancia a classe do GPS para pegar minha localização
                 mlocation = gpsTracker.getLocation();
+                LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
-                String uri = "http://maps.google.com/maps?saddr=" + mlocation.getLatitude() + "," + mlocation.getLongitude() + "&daddr=" + escolhido.getLatitude() + "," + escolhido.getLongitude();
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
-                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-                context.startActivity(intent);
+                boolean isOnGps = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+                if (!isOnGps) {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    Toast.makeText(context, "Ative o GPS do dispositivo", Toast.LENGTH_SHORT).show();
+                    context.startActivity(intent);
+                }else{
+                    try {
+                        String uri = "http://maps.google.com/maps?saddr=" + mlocation.getLatitude() + "," + mlocation.getLongitude() + "&daddr=" + escolhido.getLatitude() + "," + escolhido.getLongitude();
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                        context.startActivity(intent);
+                    } catch (RuntimeException erro) {
+                        Toast.makeText(context, "Erro ao tentar encontrar o local do evento.", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
         //fim do botão mapa

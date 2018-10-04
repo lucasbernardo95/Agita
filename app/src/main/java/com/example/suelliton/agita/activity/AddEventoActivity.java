@@ -2,12 +2,9 @@ package com.example.suelliton.agita.activity;
 
 
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -30,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.Util;
@@ -45,20 +41,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import static com.example.suelliton.agita.activity.SplashActivity.database;
-import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 
@@ -80,14 +72,12 @@ public class AddEventoActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     Bitmap bitmapGaleria = null, bannerBACKUP = null;
-    private String urlBanner = "", urlBannerBackup = "";
+    private String urlBanner = "";
     private List<String> listaLocais;
-    private Evento eventoEdit, novoEvento;
+    private Evento novoEvento;
     ProgressBar progress;
     private DatabaseReference referenceEventoTemporario;
-    boolean semFoto = false;
-    //atributo da classe.
-    private AlertDialog alerta;
+
     private final String TAG = "teste";
 
     @Override
@@ -97,16 +87,9 @@ public class AddEventoActivity extends AppCompatActivity {
         findViews();
         setViewListeners();
         storage = FirebaseStorage.getInstance();
-        Bundle pacote = getIntent().getExtras();
 
-        if (pacote != null) {
-            eventoEdit = (Evento) pacote.getSerializable("eventoEdit");
-            urlBannerBackup = eventoEdit.getUrlBanner(); //guarda a url
-            Log.i(TAG, "1 - Modo edit: "+eventoEdit.toString());
-            Log.i(TAG, "1.1: "+eventoEdit.isVerificado());
-            Log.i(TAG, "1.2: "+ urlBannerBackup);
-            setEventoEdit();
-        } //se é cadastro, cria uma nova referência para a tabela de eventos temporários
+
+
         referenceEventoTemporario = database.getReference("eventoTemporario");
         Log.i(TAG, "2 - Modo reference edit: "+referenceEventoTemporario.getRef());
         carregaLocais();
@@ -133,29 +116,7 @@ public class AddEventoActivity extends AppCompatActivity {
     }
 
     //Seta os valores do evento a ser editado nos edittext's
-    private void setEventoEdit(){
-        ed_nome.setText(eventoEdit.getNome());
 
-        try {
-            Picasso.get().load(eventoEdit.getUrlBanner()).into(imageView);
-        } catch (RuntimeException e){
-            e.printStackTrace();
-        }
-
-        value_ed_hora.setText(eventoEdit.getHora());
-        ed_local.setText(eventoEdit.getLocal());
-        ed_estilo.setText(eventoEdit.getEstilo());
-        ed_bandas.setText(eventoEdit.getBandas());
-        ed_valor.setText(String.valueOf(eventoEdit.getValor()));
-        ed_descricao.setText(eventoEdit.getDescricao());
-        ed_casaShow.setText(eventoEdit.getCasashow());
-        ed_liberado.setChecked(eventoEdit.isLiberado());
-        btnSalvarEvento.setText(R.string.botaoEditarEvento);
-        //Salva a imagemDetalhe original do evento para verificar, posteriormente, se houve alguma modificação
-        bannerBACKUP = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
-
-        Log.i(TAG, "4 - Modo edit ");
-    }
 
     public void carregaLocais(){
         listaLocais = new ArrayList<>();
@@ -280,8 +241,6 @@ public class AddEventoActivity extends AppCompatActivity {
                     double lat = enderecos.get(0).getLatitude();
                     double lng = enderecos.get(0).getLongitude();
 
-                    if (eventoEdit == null) {
-
                         //se for um evento novo e não tiver foto, coloca a foto default antes de salvar o evento no bd
                         if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
                             urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
@@ -333,27 +292,7 @@ public class AddEventoActivity extends AppCompatActivity {
                                 });
                             }
                         });
-                    } else {
-                        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
-                        novoEvento.setKey(eventoEdit.getKey());
-                        novoEvento.setVerificado(eventoEdit.isVerificado());
-                        //se não mudou a foto, usa a que já tem, caso contrário, faz o upload
-                        if(bitmapGaleria != null) {
-                            try {
-                                uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        if (eventoEdit.isVerificado()) {
-                            eventosReference.child(eventoEdit.getKey()).setValue(novoEvento);
-                        }else {
-                            referenceEventoTemporario.child(eventoEdit.getKey()).setValue(novoEvento);
-                        }
-                        //Se não for um evento verificado, muda a referência para a tabela temporária
-                        customAlert("Sucesso!", "Evento editado com sucesso!");
 
-                    }
                     //locaisReference.child(localDetalhe).setValue(localDetalhe);
                 }
 
@@ -430,10 +369,10 @@ public class AddEventoActivity extends AppCompatActivity {
                  islandRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        if (eventoEdit == null ) { //se for um cadastro, cria uma nova url para o banner após o upload
+                        //se for um cadastro, cria uma nova url para o banner após o upload
                             urlBanner = uri.toString();
                             referenceEventoTemporario.child(key).child("urlBanner").setValue(urlBanner);
-                        }
+
                     }
                 });
 
