@@ -24,6 +24,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -83,7 +84,7 @@ public class EventoActivity extends AppCompatActivity
     TextView text_filtro;
     ChildEventListener childListener;
     ValueEventListener valueListener;
-    LinearLayout linearLayout;
+    CardView cardView;
     //--------------
     GPSTracker gpsTracker;
     Location mlocation;
@@ -459,7 +460,7 @@ public class EventoActivity extends AppCompatActivity
         imagemDetalhe = (ImageView) findViewById(R.id.imageEventoDetalhe);
         fabMapaDetalhe = (FloatingActionButton) findViewById(R.id.butonMap);
 
-        linearLayout = (LinearLayout) findViewById(R.id.linear_layout);
+        cardView = (CardView) findViewById(R.id.cardView);
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
         frameLayout.setVisibility(View.VISIBLE);//exibe o frame
@@ -489,7 +490,7 @@ public class EventoActivity extends AppCompatActivity
                 toolbar.getMenu().setGroupVisible(0,true);
             }
         });*/
-        linearLayout.setOnClickListener(new View.OnClickListener() {
+        cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 frameLayout.setVisibility(View.INVISIBLE);
