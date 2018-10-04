@@ -33,44 +33,9 @@
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
         <!-- dataDetalhe  -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp">
 
-        <TextView
-                android:text="Data"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <CalendarView
-                android:id="@+id/cv_dataCadastro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </android.support.design.widget.TextInputLayout>
         <!-- horaDetalhe  -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <ImageButton
-                android:id="@+id/hora_cadastro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_relogio"
-                />
-
-            <TextView
-                android:layout_gravity="center"
-                android:id="@+id/value_hora_cadastro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-        </LinearLayout>
         <!-- localDetalhe  -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -180,6 +145,48 @@
             <!--android:inputType="number" />-->
 
         </android.support.design.widget.TextInputLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Horário"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageButton
+                android:id="@+id/hora_cadastro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_relogio"
+                />
+
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/value_hora_cadastro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+        </LinearLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:text="Data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <CalendarView
+                android:id="@+id/cv_dataCadastro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </android.support.design.widget.TextInputLayout>
         <ProgressBar
             android:id="@+id/progress"
             style="?android:attr/progressBarStyle"
@@ -189,14 +196,7 @@
             android:layout_height="wrap_content"
             />
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/salvar_evento"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="75dp"
-            android:layout_marginTop="24dp"
-            android:padding="12dp"
-            android:text="Cadastrar evento" />
+
 
 
     </LinearLayout>

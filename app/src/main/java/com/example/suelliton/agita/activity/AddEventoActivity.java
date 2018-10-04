@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -68,7 +70,7 @@ public class AddEventoActivity extends AppCompatActivity {
     EditText ed_descricao;
     EditText ed_casaShow;
     CheckedTextView ed_liberado;
-    Button btnSalvarEvento;
+
     ImageView imageView;
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -80,7 +82,7 @@ public class AddEventoActivity extends AppCompatActivity {
     private DatabaseReference referenceEventoTemporario;
 
     private final String TAG = "teste";
-
+    MenuItem itemComfirm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,7 +165,7 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_liberado.setChecked(true); //inicia como true
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
 
-        btnSalvarEvento = (Button) findViewById(R.id.salvar_evento);
+
 
         bt_ed_hora.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,6 +173,7 @@ public class AddEventoActivity extends AppCompatActivity {
                 setTimeEvent();
             }
         });
+
     }
 
     private void alertField(String message){
@@ -197,116 +200,6 @@ public class AddEventoActivity extends AppCompatActivity {
 
     public void setViewListeners(){
 
-        btnSalvarEvento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progress.setVisibility(View.VISIBLE);
-                String nome = ed_nome.getText().toString();
-                String hora = value_ed_hora.getText().toString();
-                String data = Util.convertMillisToDate(cv_data.getDate());
-                final String local = ed_local.getText().toString();
-                String estilo = ed_estilo.getText().toString();
-                String bandas = ed_bandas.getText().toString();
-                double valor = ed_valor.getText().toString() == null? 0 : Double.parseDouble(ed_valor.getText().toString());
-                String descricao = ed_descricao.getText().toString();
-                String casa = ed_casaShow.getText().toString();
-                boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
-
-                if (isCampoVazio(nome)) { //verificação do nomeDetalhe
-                    alertField(getString(R.string.aviso_nome_validacao));
-                    ed_nome.requestFocus();
-                    return;
-                } else if (isCampoVazio(hora)) { //horaDetalhe
-                    alertField(getString(R.string.aviso_hora_validacao));
-                    value_ed_hora.requestFocus();
-                    return;
-                } else if (isCampoVazio(data)) {
-                    alertField(getString(R.string.aviso_data_validacao));
-                    cv_data.requestFocus();
-                    return;
-                } else if (isCampoVazio(local)) {
-                    alertField(getString(R.string.aviso_local_validacao));
-                    ed_local.requestFocus();
-                    return;
-                } else if (isCampoVazio(estilo)) {
-                    alertField(getString(R.string.aviso_estilo_validacao));
-                    ed_estilo.requestFocus();
-                    return;
-                }else if (valor < 0) {
-                    alertField(getString(R.string.aviso_valor_validacao));
-                    ed_valor.requestFocus();
-                    return;
-                }
-
-                List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
-
-                if(enderecos.size()== 0) {//verifica se veio algum endereço
-                    alertField( getString(R.string.alerta_endereco_invalido));
-                    progress.setVisibility(View.GONE);
-                    ed_local.requestFocus();
-                }else{
-                    double lat = enderecos.get(0).getLatitude();
-                    double lng = enderecos.get(0).getLongitude();
-
-                        //se for um evento novo e não tiver foto, coloca a foto default antes de salvar o evento no bd
-                        if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
-                            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
-                        }
-
-                        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
-                        //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
-                        referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
-                                query.addChildEventListener(new ChildEventListener() {
-                                    @Override
-                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
-
-                                        //Se não tem nada na galeria, coloca a foto default
-                                        if(bitmapGaleria == null){
-                                            customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.");
-                                        }else{//Caso contrário, se tem uma foto, faz p upload
-                                            try {
-                                                uploadFirebaseBytes(bitmapGaleria, dataSnapshot.getRef().getKey());
-                                                customAlert("Evento cadastrado!", "Operaçãoa realizada com sucesso!");
-                                            } catch (FileNotFoundException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-                        });
-
-                    //locaisReference.child(localDetalhe).setValue(localDetalhe);
-                }
-
-            }
-
-        });
-
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -328,6 +221,112 @@ public class AddEventoActivity extends AppCompatActivity {
             }
         });
     }
+
+public void salvarEvento(){
+    progress.setVisibility(View.VISIBLE);
+    String nome = ed_nome.getText().toString();
+    String hora = value_ed_hora.getText().toString();
+    String data = Util.convertMillisToDate(cv_data.getDate());
+    final String local = ed_local.getText().toString();
+    String estilo = ed_estilo.getText().toString();
+    String bandas = ed_bandas.getText().toString();
+    double valor = ed_valor.getText().toString() == null? 0 : Double.parseDouble(ed_valor.getText().toString());
+    String descricao = ed_descricao.getText().toString();
+    String casa = ed_casaShow.getText().toString();
+    boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
+
+    if (isCampoVazio(nome)) { //verificação do nomeDetalhe
+        alertField(getString(R.string.aviso_nome_validacao));
+        ed_nome.requestFocus();
+        return;
+    } else if (isCampoVazio(hora)) { //horaDetalhe
+        alertField(getString(R.string.aviso_hora_validacao));
+        value_ed_hora.requestFocus();
+        return;
+    } else if (isCampoVazio(data)) {
+        alertField(getString(R.string.aviso_data_validacao));
+        cv_data.requestFocus();
+        return;
+    } else if (isCampoVazio(local)) {
+        alertField(getString(R.string.aviso_local_validacao));
+        ed_local.requestFocus();
+        return;
+    } else if (isCampoVazio(estilo)) {
+        alertField(getString(R.string.aviso_estilo_validacao));
+        ed_estilo.requestFocus();
+        return;
+    }else if (valor < 0) {
+        alertField(getString(R.string.aviso_valor_validacao));
+        ed_valor.requestFocus();
+        return;
+    }
+
+    List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
+
+    if(enderecos.size()== 0) {//verifica se veio algum endereço
+        alertField( getString(R.string.alerta_endereco_invalido));
+        progress.setVisibility(View.GONE);
+        ed_local.requestFocus();
+    }else{
+        double lat = enderecos.get(0).getLatitude();
+        double lng = enderecos.get(0).getLongitude();
+
+        //se for um evento novo e não tiver foto, coloca a foto default antes de salvar o evento no bd
+        if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
+            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
+        }
+
+        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
+        //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
+        referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
+                query.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+
+                        //Se não tem nada na galeria, coloca a foto default
+                        if(bitmapGaleria == null){
+                            customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.");
+                        }else{//Caso contrário, se tem uma foto, faz p upload
+                            try {
+                                uploadFirebaseBytes(bitmapGaleria, dataSnapshot.getRef().getKey());
+                                customAlert("Evento cadastrado!", "Operaçãoa realizada com sucesso!");
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        });
+
+        //locaisReference.child(localDetalhe).setValue(localDetalhe);
+    }
+
+}
 
 
 
@@ -388,6 +387,25 @@ public class AddEventoActivity extends AppCompatActivity {
 
 
 
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_salvar, menu);
+        return super.onCreateOptionsMenu(menu);
+        //return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_confirm) {
+            salvarEvento();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

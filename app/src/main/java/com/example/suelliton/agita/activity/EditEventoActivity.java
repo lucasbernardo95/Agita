@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -74,12 +76,10 @@ public class EditEventoActivity extends AppCompatActivity {
     EditText ed_descricao;
     EditText ed_casaShow;
     CheckedTextView ed_liberado;
-    Button btnSalvarEvento;
     ImageView imageView;
     FirebaseStorage storage;
     StorageReference storageReference;
     Bitmap bitmapGaleria = null;
-
     private Evento eventoEdit;
     ProgressBar progress;
     private DatabaseReference referenceEventoTemporario;
@@ -132,7 +132,7 @@ public class EditEventoActivity extends AppCompatActivity {
         ed_liberado = (CheckedTextView) findViewById(R.id.liberado_cadastro);
         ed_liberado.setChecked(true); //inicia como true
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
-        btnSalvarEvento = (Button) findViewById(R.id.salvar_evento);
+
     }
 
     //Seta os valores do evento a ser editado nos edittext's
@@ -153,7 +153,7 @@ public class EditEventoActivity extends AppCompatActivity {
         ed_descricao.setText(eventoEdit.getDescricao());
         ed_casaShow.setText(eventoEdit.getCasashow());
         ed_liberado.setChecked(eventoEdit.isLiberado());
-        btnSalvarEvento.setText(R.string.botaoEditarEvento);
+
 
         bt_ed_hora.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,78 +207,7 @@ public class EditEventoActivity extends AppCompatActivity {
 
     public void setViewListeners(){
 
-        btnSalvarEvento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                progress.setVisibility(View.VISIBLE);
-
-                String nome = ed_nome.getText().toString();
-                String hora = value_ed_hora.getText().toString();
-                String data = Util.convertMillisToDate(cv_data.getDate());
-                final String local = ed_local.getText().toString();
-                String estilo = ed_estilo.getText().toString();
-                String bandas = ed_bandas.getText().toString();
-                double valor = ed_valor.getText().toString() == null? 0 : Double.parseDouble(ed_valor.getText().toString());
-                String descricao = ed_descricao.getText().toString();
-                String casa = ed_casaShow.getText().toString();
-                boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
-
-                if (isCampoVazio(nome)) { //verificação do nomeDetalhe
-                    alertField(getString(R.string.aviso_nome_validacao));
-                    ed_nome.requestFocus();
-                    return;
-                } else if (isCampoVazio(hora)) { //horaDetalhe
-                    alertField(getString(R.string.aviso_hora_validacao));
-                    value_ed_hora.requestFocus();
-                    return;
-                } else if (isCampoVazio(data)) {
-                    alertField(getString(R.string.aviso_data_validacao));
-                    cv_data.requestFocus();
-                    return;
-                } else if (isCampoVazio(local)) {
-                    alertField(getString(R.string.aviso_local_validacao));
-                    ed_local.requestFocus();
-                    return;
-                } else if (isCampoVazio(estilo)) {
-                    alertField(getString(R.string.aviso_estilo_validacao));
-                    ed_estilo.requestFocus();
-                    return;
-                }else if (valor < 0) {
-                    alertField(getString(R.string.aviso_valor_validacao));
-                    ed_valor.requestFocus();
-                    return;
-                }
-
-                List<Address> enderecos = Util.getNomeLocalFromEndereco(EditEventoActivity.this,local);
-
-                if(enderecos.size() == 0) {//verifica se veio algum endereço
-                    alertField( getString(R.string.alerta_endereco_invalido));
-                    progress.setVisibility(View.GONE);
-                    ed_local.requestFocus();
-                    return;
-                }
-
-                double lat = enderecos.get(0).getLatitude();
-                double lng = enderecos.get(0).getLongitude();
-
-                atualizarCamposEvento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
-
-                //Se tiver algo na galeria, atualiza a imagem e url no banco
-                if(bitmapGaleria != null) {
-                    try {
-                        uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                } else {//se não, atualiza apenas os campos alterados
-                    atualizaEvento();
-                }
-                //Se não for um evento verificado, muda a referência para a tabela temporária
-                customAlert("Sucesso!", "Evento editado com sucesso!");
-            }
-
-        });
 
         //Click da imagem para abrir a galeria de fotos para a escolha do banner
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -324,8 +253,96 @@ public class EditEventoActivity extends AppCompatActivity {
         eventoEdit.setCover(cover);
         eventoEdit.setDono(dono);
     }
+    public void editarEvento(){
+        progress.setVisibility(View.VISIBLE);
+
+        String nome = ed_nome.getText().toString();
+        String hora = value_ed_hora.getText().toString();
+        String data = Util.convertMillisToDate(cv_data.getDate());
+        final String local = ed_local.getText().toString();
+        String estilo = ed_estilo.getText().toString();
+        String bandas = ed_bandas.getText().toString();
+        double valor = ed_valor.getText().toString() == null? 0 : Double.parseDouble(ed_valor.getText().toString());
+        String descricao = ed_descricao.getText().toString();
+        String casa = ed_casaShow.getText().toString();
+        boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
+
+        if (isCampoVazio(nome)) { //verificação do nomeDetalhe
+            alertField(getString(R.string.aviso_nome_validacao));
+            ed_nome.requestFocus();
+            return;
+        } else if (isCampoVazio(hora)) { //horaDetalhe
+            alertField(getString(R.string.aviso_hora_validacao));
+            value_ed_hora.requestFocus();
+            return;
+        } else if (isCampoVazio(data)) {
+            alertField(getString(R.string.aviso_data_validacao));
+            cv_data.requestFocus();
+            return;
+        } else if (isCampoVazio(local)) {
+            alertField(getString(R.string.aviso_local_validacao));
+            ed_local.requestFocus();
+            return;
+        } else if (isCampoVazio(estilo)) {
+            alertField(getString(R.string.aviso_estilo_validacao));
+            ed_estilo.requestFocus();
+            return;
+        }else if (valor < 0) {
+            alertField(getString(R.string.aviso_valor_validacao));
+            ed_valor.requestFocus();
+            return;
+        }
+
+        List<Address> enderecos = Util.getNomeLocalFromEndereco(EditEventoActivity.this,local);
+
+        if(enderecos.size() == 0) {//verifica se veio algum endereço
+            alertField( getString(R.string.alerta_endereco_invalido));
+            progress.setVisibility(View.GONE);
+            ed_local.requestFocus();
+            return;
+        }
+
+        double lat = enderecos.get(0).getLatitude();
+        double lng = enderecos.get(0).getLongitude();
+
+        atualizarCamposEvento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
+
+        //Se tiver algo na galeria, atualiza a imagem e url no banco
+        if(bitmapGaleria != null) {
+            try {
+                uploadFirebaseBytes(bitmapGaleria, eventoEdit.getKey());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {//se não, atualiza apenas os campos alterados
+            atualizaEvento();
+        }
+        //Se não for um evento verificado, muda a referência para a tabela temporária
+        customAlert("Sucesso!", "Evento editado com sucesso!");
+    }
 
 
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_salvar, menu);
+        return super.onCreateOptionsMenu(menu);
+        //return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_confirm) {
+            editarEvento();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     private void customAlert(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
