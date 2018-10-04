@@ -27,8 +27,10 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -93,6 +95,9 @@ public class EventoActivity extends AppCompatActivity
             bandasDetalhe, estiloDetalhe, casaDetalhe, donoDetalhe, descricaoDetalhe;
     public static ImageView imagemDetalhe;
     public static FloatingActionButton fabMapaDetalhe;
+
+    //Campo de busca dos eventos
+    private TextView campoBusca;
 
 
     @Override
@@ -189,6 +194,10 @@ public class EventoActivity extends AppCompatActivity
             }
         }
     };
+
+    private void buscaEventosGeral() {
+
+    }
 
     public void buscaEventos(String slave){
 
@@ -547,11 +556,37 @@ public class EventoActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.menu_filtro_estilos, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_filtro_estilos, menu);
+
+        //Pega o Componente de busca do actionBar
+        SearchView searchView = (SearchView) menu.findItem(R.id.ic_search).getActionView();
+        //Define um texto de ajuda 'texto fantasma':
+        searchView.setQueryHint(getString(R.string.texto_hint_campoBusca));
+        // exemplos de utilização:
+        buscarEvento(searchView);
+
+//            getMenuInflater().inflate(R.menu.menu_filtro_estilos, menu);
             return super.onCreateOptionsMenu(menu);
         //return true;
     }
+
+    private void buscarEvento(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String valorBuscado) {
+                if (eventoAdapter != null)
+                    eventoAdapter.getFilter().filter(valorBuscado); //Inicia ao filtro das buscas
+                return false;
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection

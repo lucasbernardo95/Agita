@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,6 +34,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
 
@@ -49,13 +53,14 @@ import static java.security.AccessController.getContext;
 * fornecer os métodos necessários para usar a lista
 * */
 
-public class EventoAdapter extends RecyclerView.Adapter{
+public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
 
-    private List<Evento> eventos; //eventos do banco
+    private List<Evento> eventos, backuplista; //eventos  = lista filtrada (eventos que estão sendo exibidos) | backuplista = lista com todos os eventos
     private Context context;
 
     public EventoAdapter(List<Evento> eventos, Context context) {
         this.eventos = eventos;
+        this.backuplista = eventos;
         this.context = context;       ;
     }
 
@@ -225,6 +230,54 @@ public class EventoAdapter extends RecyclerView.Adapter{
     @Override
     public int getItemCount() {
         return eventos == null ? 0 :  eventos.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+
+                String charString = charSequence.toString();
+                //Se a pesquisa for vazia, lista todos os eventos normalmente
+                if (charString.isEmpty()) {
+                    eventos = backuplista;
+                } else {
+
+                    ArrayList<Evento> filteredList = new ArrayList<>();
+
+                    for (Evento evento : backuplista) {
+                        //Se o que foi digitado estiver contido e qualquer um dos campos do evento
+                        // listados abaixo, coloca esse evento na lista filtrada
+                        if (evento.getNome().toLowerCase().contains(charString) ||
+                                evento.getBandas().toLowerCase().contains(charString) ||
+                                evento.getDescricao().toLowerCase().contains(charString) ||
+                                evento.getCasashow().toLowerCase().contains(charString) ||
+                                evento.getEstilo().toLowerCase().contains(charString) ||
+                                evento.getLocal().toLowerCase().contains(charString) ||
+                                evento.getData().toLowerCase().contains(charString) ||
+                                evento.getHora().toLowerCase().contains(charString) ||
+                                evento.getDono().toLowerCase().contains(charString) ||
+                                String.valueOf(evento.getValor()).toLowerCase().contains(charString) ) {
+
+                            filteredList.add(evento);
+                        }
+                    }
+                    //Os eventos que estão sendo exibidos recebem a nova lista de eventos filtrados
+                    eventos = filteredList;
+                }
+                //Adiciona a lista de eventos filtrados ao retorno do método
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = eventos;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                eventos = (ArrayList<Evento>) filterResults.values; //recebe o retorno de performFiltering, onde os resultados foram filtrados (eventos)
+                notifyDataSetChanged();
+            }
+        };
     }
 
 
