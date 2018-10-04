@@ -55,11 +55,11 @@ public class Evento implements Serializable {
         this.qtdParticipantes = qtdParticipantes;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
