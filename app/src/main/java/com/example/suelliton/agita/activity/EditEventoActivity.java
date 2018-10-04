@@ -84,6 +84,7 @@ public class EditEventoActivity extends AppCompatActivity {
     ProgressBar progress;
     private DatabaseReference referenceEventoTemporario;
     private final String TAG = "teste";
+    //Lista de estilos músicais para o cadastro e ediçã ode eventos
     public static final String[] listaEstilos = new String[] {
             "Rock", "Pop", "Eletrônica", "Forró", "Sertanejo", "Brega", "Swingueira", "Reggae",
             "Gospel", "Funk", "MPB", "Clássico", "Hip Hop/Rap", "Samba", "Dance", "Axé",
@@ -118,6 +119,7 @@ public class EditEventoActivity extends AppCompatActivity {
         bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
         ed_local = (AutoCompleteTextView) findViewById(R.id.local_cadastro);
 
+        //Seta a lista de estilos num adapter
         ed_estilo = (AutoCompleteTextView) findViewById(R.id.estilo_cadastro);
         ArrayAdapter<String> adaptadorEstilos = new
                 ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, listaEstilos);

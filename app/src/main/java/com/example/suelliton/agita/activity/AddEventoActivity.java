@@ -149,6 +149,7 @@ public class AddEventoActivity extends AppCompatActivity {
         bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
         ed_local = (AutoCompleteTextView) findViewById(R.id.local_cadastro);
 
+        //Seta a lista de estilos no adapter
         ed_estilo = (AutoCompleteTextView) findViewById(R.id.estilo_cadastro);
         ArrayAdapter<String> adaptadorEstilos = new
                 ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, listaEstilos);//pega a lista do EditEventActivity
