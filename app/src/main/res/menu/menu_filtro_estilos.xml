@@ -43,9 +43,27 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/opcao_filtro_funk"
+        android:orderInCategory="100"
+        android:title="@string/filtro_funk"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_funkCarioca"
+        android:orderInCategory="100"
+        android:title="@string/filtro_funkCarioca"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/opcao_filtro_sertanejo"
         android:orderInCategory="100"
         android:title="@string/filtro_sertanejo"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_swingueira"
+        android:orderInCategory="100"
+        android:title="@string/filtro_swingueira"
         app:showAsAction="never" />
 
     <item
@@ -55,9 +73,94 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/opcao_filtro_swingueira"
+        android:id="@+id/opcao_filtro_reggae"
         android:orderInCategory="100"
-        android:title="@string/filtro_swingueira"
+        android:title="@string/filtro_reggae"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_reggaeton"
+        android:orderInCategory="100"
+        android:title="@string/filtro_reggaeton"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_gospel"
+        android:orderInCategory="100"
+        android:title="@string/filtro_gospel"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_mpb"
+        android:orderInCategory="100"
+        android:title="@string/filtro_mpb"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_classico"
+        android:orderInCategory="100"
+        android:title="@string/filtro_classico"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_hiphop_rap"
+        android:orderInCategory="100"
+        android:title="@string/filtro_hiphop_rap"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_samba"
+        android:orderInCategory="100"
+        android:title="@string/filtro_samba"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_dance"
+        android:orderInCategory="100"
+        android:title="@string/filtro_dance"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_axe"
+        android:orderInCategory="100"
+        android:title="@string/filtro_axe"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_heavymetal"
+        android:orderInCategory="100"
+        android:title="@string/filtro_heavymetal"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/opcao_filtro_instrumental"
+        android:orderInCategory="100"
+        android:title="@string/filtro_instrumental"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/opcao_filtro_jazz"
+        android:orderInCategory="100"
+        android:title="@string/filtro_jazz"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/opcao_filtro_pagode"
+        android:orderInCategory="100"
+        android:title="@string/filtro_pagode"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/opcao_filtro_progressivo"
+        android:orderInCategory="100"
+        android:title="@string/filtro_progressivo"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/opcao_filtro_country"
+        android:orderInCategory="100"
+        android:title="@string/filtro_country"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/opcao_filtro_outros"
+        android:orderInCategory="100"
+        android:title="@string/filtro_outros"
         app:showAsAction="never" />
 
 </menu>

@@ -253,7 +253,7 @@ public class AddEventoActivity extends AppCompatActivity {
                             urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
                         }
 
-                        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
+                        novoEvento = new Evento(nome, data, hora, local, estilo.toLowerCase(), lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
                         //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
                         referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override

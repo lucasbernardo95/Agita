@@ -262,7 +262,7 @@ public class EditEventoActivity extends AppCompatActivity {
                 double lat = enderecos.get(0).getLatitude();
                 double lng = enderecos.get(0).getLongitude();
 
-                atualizarCamposEvento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
+                atualizarCamposEvento(nome, data, hora, local, estilo.toLowerCase(), lat, lng, bandas, valor, descricao, eventoEdit.getUrlBanner(), liberado, casa, false, usuarioLogado.getLogin());
 
                 //Se tiver algo na galeria, atualiza a imagem e url no banco
                 if(bitmapGaleria != null) {
