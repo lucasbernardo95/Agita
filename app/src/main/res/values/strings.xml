@@ -52,6 +52,8 @@
     <string name="filtro_country">Country</string>
     <string name="filtro_outros">Outros</string>
 
+    <string name="campoBuscaEventos">Buscar</string>
+
 
     <string name="botaoEditarEvento">Editar</string>
     <string name="botaoSalvarUsuario">Salvar</string>
@@ -68,4 +70,5 @@
     <string name="email_validacao">Já existe um usuário para este email.</string>
     <string name="sms_ajuda_local">Exemplo: Rua ou Av, cidade, sigla do estado</string>
     <string name="dica_autcoComplete_cadastroEvent">Informe o estilo musical do evento!</string>
+    <string name="texto_hint_campoBusca">Buscar</string>
 </resources>
