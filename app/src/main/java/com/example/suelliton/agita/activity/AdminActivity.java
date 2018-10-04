@@ -9,6 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventAdapterAdmin;
 import com.example.suelliton.agita.model.Evento;
@@ -44,6 +48,36 @@ public class AdminActivity extends AppCompatActivity {
         adapterAdmin = new EventAdapterAdmin(listaEventos,this);
         recyler.setAdapter(adapterAdmin);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_busca_admin, menu);
+
+        //Pega o Componente de busca do actionBar
+        SearchView searchView = (SearchView) menu.findItem(R.id.ic_search_admin).getActionView();
+        //Define um texto de ajuda 'texto fantasma':
+        searchView.setQueryHint(getString(R.string.texto_hint_campoBusca));
+        // exemplos de utilização:
+        buscarEvento(searchView);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void buscarEvento(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String valorBuscado) {
+                if (adapterAdmin != null)
+                    adapterAdmin.getFilter().filter(valorBuscado); //Inicia ao filtro das buscas
+                return false;
+            }
+        });
     }
 
     @Override
@@ -88,6 +122,8 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }
 
