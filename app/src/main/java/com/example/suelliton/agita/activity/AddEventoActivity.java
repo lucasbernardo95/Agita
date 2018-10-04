@@ -50,6 +50,7 @@ import java.util.Calendar;
 import java.util.List;
 
 
+import static com.example.suelliton.agita.activity.EditEventoActivity.listaEstilos;
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
@@ -61,7 +62,7 @@ public class AddEventoActivity extends AppCompatActivity {
     TextView value_ed_hora; //exibe o valorDetalhe da horaDetalhe
     ImageButton bt_ed_hora; //chama o relógio para editar a horaDetalhe
     AutoCompleteTextView ed_local;
-    EditText ed_estilo;
+    AutoCompleteTextView ed_estilo;
     EditText ed_bandas;
     EditText ed_valor;
     EditText ed_descricao;
@@ -147,7 +148,12 @@ public class AddEventoActivity extends AppCompatActivity {
         value_ed_hora = (TextView) findViewById(R.id.value_hora_cadastro);
         bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
         ed_local = (AutoCompleteTextView) findViewById(R.id.local_cadastro);
-        ed_estilo = (EditText) findViewById(R.id.estilo_cadastro);
+
+        ed_estilo = (AutoCompleteTextView) findViewById(R.id.estilo_cadastro);
+        ArrayAdapter<String> adaptadorEstilos = new
+                ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, listaEstilos);//pega a lista do EditEventActivity
+        ed_estilo.setAdapter(adaptadorEstilos);
+
         ed_bandas = (EditText) findViewById(R.id.bandas_cadastro);
         ed_valor = (EditText) findViewById(R.id.valor_cadastro);
         ed_descricao = (EditText) findViewById(R.id.descricao_cadastro);

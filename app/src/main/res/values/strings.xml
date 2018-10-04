@@ -48,4 +48,5 @@
     <string name="login_validacao">Username já cadastrado!</string>
     <string name="email_validacao">Já existe um usuário para este email.</string>
     <string name="sms_ajuda_local">Exemplo: Rua ou Av, cidade, sigla do estado</string>
+    <string name="dica_autcoComplete_cadastroEvent">Informe o estilo musical do evento!</string>
 </resources>

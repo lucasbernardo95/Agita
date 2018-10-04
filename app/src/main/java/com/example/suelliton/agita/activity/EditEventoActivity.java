@@ -68,7 +68,7 @@ public class EditEventoActivity extends AppCompatActivity {
     TextView value_ed_hora; //exibe o valorDetalhe da horaDetalhe
     ImageButton bt_ed_hora; //chama o relógio para editar a horaDetalhe
     AutoCompleteTextView ed_local;
-    EditText ed_estilo;
+    AutoCompleteTextView ed_estilo;
     EditText ed_bandas;
     EditText ed_valor;
     EditText ed_descricao;
@@ -78,12 +78,17 @@ public class EditEventoActivity extends AppCompatActivity {
     ImageView imageView;
     FirebaseStorage storage;
     StorageReference storageReference;
-    Bitmap bitmapGaleria = null, bannerBACKUP = null;
-    private String urlBanner = "";
-    private Evento eventoEdit, novoEvento;
+    Bitmap bitmapGaleria = null;
+
+    private Evento eventoEdit;
     ProgressBar progress;
     private DatabaseReference referenceEventoTemporario;
     private final String TAG = "teste";
+    public static final String[] listaEstilos = new String[] {
+            "Rock", "Pop", "Eletrônica", "Forró", "Sertanejo", "Brega", "Swingueira", "Reggae",
+            "Gospel", "Funk", "MPB", "Clássico", "Hip Hop/Rap", "Samba", "Dance", "Axé",
+            "Funk carioca", "Heavy Metal", "Instrumental", "Jazz", "Pagode", "Reggaeton",
+            "Progressivo", "Country", "Outros"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +117,12 @@ public class EditEventoActivity extends AppCompatActivity {
         value_ed_hora = (TextView) findViewById(R.id.value_hora_cadastro);
         bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
         ed_local = (AutoCompleteTextView) findViewById(R.id.local_cadastro);
-        ed_estilo = (EditText) findViewById(R.id.estilo_cadastro);
+
+        ed_estilo = (AutoCompleteTextView) findViewById(R.id.estilo_cadastro);
+        ArrayAdapter<String> adaptadorEstilos = new
+                ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, listaEstilos);
+        ed_estilo.setAdapter(adaptadorEstilos);
+
         ed_bandas = (EditText) findViewById(R.id.bandas_cadastro);
         ed_valor = (EditText) findViewById(R.id.valor_cadastro);
         ed_descricao = (EditText) findViewById(R.id.descricao_cadastro);
@@ -142,8 +152,6 @@ public class EditEventoActivity extends AppCompatActivity {
         ed_casaShow.setText(eventoEdit.getCasashow());
         ed_liberado.setChecked(eventoEdit.isLiberado());
         btnSalvarEvento.setText(R.string.botaoEditarEvento);
-        //Salva o banner original do evento para verificar, posteriormente, se houve alguma modificação
-        bannerBACKUP = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
 
         bt_ed_hora.setOnClickListener(new View.OnClickListener() {
             @Override
