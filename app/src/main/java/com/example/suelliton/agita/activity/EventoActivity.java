@@ -189,6 +189,7 @@ public class EventoActivity extends AppCompatActivity
             }
         }
     };
+
     public void buscaEventos(String slave){
 
         switch (master){
@@ -207,6 +208,7 @@ public class EventoActivity extends AppCompatActivity
         }
 
     }
+
     public void removeListenersFirebase(){
         if(valueListener != null)eventosReference.removeEventListener(valueListener);
         if(childListener != null)eventosReference.removeEventListener(childListener);
@@ -564,32 +566,104 @@ public class EventoActivity extends AppCompatActivity
                 setFilterTextView("Filtrado por nome");
                 return true;
             case R.id.opcao_filtro_rock:
-                buscaEventos("Rock");
+                buscaEventos("Rock".toLowerCase());
                 setFilterTextView("Filtrado pelo estilo rock");
                 return true;
             case R.id.opcao_filtro_pop:
-                buscaEventos("Pop");
+                buscaEventos("Pop".toLowerCase());
                 setFilterTextView("Filtrado pelo estilo pop");
                 return true;
             case R.id.opcao_filtro_eletronica:
-                buscaEventos("Eletrônica");
+                buscaEventos("Eletrônica".toLowerCase());
                 setFilterTextView("Filtrado pelo estilo eletrônica");
                 return true;
             case R.id.opcao_filtro_forro:
-                buscaEventos("Forró");
+                buscaEventos("Forró".toLowerCase());
                 setFilterTextView("Filtrado pelo estilo forró");
                 return true;
             case R.id.opcao_filtro_sertanejo:
-                buscaEventos("Sertanejo");
+                buscaEventos("Sertanejo".toLowerCase());
                 setFilterTextView("Filtrado pelo estilo sertanejo");
                 return true;
             case R.id.opcao_filtro_brega:
-                buscaEventos("Brega");
+                buscaEventos("Brega".toLowerCase());
                 setFilterTextView("Filtrado pelo estilo brega");
                 return true;
             case R.id.opcao_filtro_swingueira:
-                buscaEventos("Swingueira");
+                buscaEventos("Swingueira".toLowerCase());
                 setFilterTextView("Filtrado pelo estilo swingueira");
+                return true;
+            case R.id.opcao_filtro_reggae:
+                buscaEventos("Reggae".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo reggae");
+                return true;
+            case R.id.opcao_filtro_reggaeton:
+                buscaEventos("Reggaeton".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo reggaeton");
+                return true;
+            case R.id.opcao_filtro_funk:
+                buscaEventos("Funk".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo funk");
+                return true;
+            case R.id.opcao_filtro_funkCarioca:
+                buscaEventos("Funk carioca".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo funk carioca");
+                return true;
+            case R.id.opcao_filtro_gospel:
+                buscaEventos("Gospel".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo gospel");
+                return true;
+            case R.id.opcao_filtro_mpb:
+                buscaEventos("MPB".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo MPB");
+                return true;
+            case R.id.opcao_filtro_classico:
+                buscaEventos("Clássico".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo clássico");
+                return true;
+            case R.id.opcao_filtro_hiphop_rap:
+                buscaEventos("Hip Hop/Rap".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo Hip Hop/Rap");
+                return true;
+            case R.id.opcao_filtro_samba:
+                buscaEventos("Samba".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo samba");
+                return true;
+            case R.id.opcao_filtro_dance:
+                buscaEventos("Dance".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo dance");
+                return true;
+            case R.id.opcao_filtro_axe:
+                buscaEventos("Axé".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo axé");
+                return true;
+            case R.id.opcao_filtro_heavymetal:
+                buscaEventos("Heavy Metal".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo heavy metal");
+                return true;
+            case R.id.opcao_filtro_instrumental:
+                buscaEventos("Instrumental".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo instrumental");
+                return true;
+            case R.id.opcao_filtro_jazz:
+                buscaEventos("Jazz".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo Jazz");
+                return true;
+            case R.id.opcao_filtro_pagode:
+                buscaEventos("Pagode".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo pagode");
+                return true;
+            case R.id.opcao_filtro_progressivo:
+                buscaEventos("Progressivo".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo progressivo");
+                return true;
+            case R.id.opcao_filtro_country:
+                buscaEventos("Country".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo country");
+                return true;
+            case R.id.opcao_filtro_outros:
+                buscaEventos("Outros".toLowerCase());
+                setFilterTextView("Filtrado pelo estilo Outros");
                 return true;
 
             default:

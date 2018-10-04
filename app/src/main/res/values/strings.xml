@@ -33,6 +33,25 @@
     <string name="filtro_sertanejo">Sertanejo</string>
     <string name="filtro_brega">Brega</string>
     <string name="filtro_swingueira">Swingueira</string>
+    <string name="filtro_reggae">Reggae</string>
+    <string name="filtro_reggaeton">Reggaeton</string>
+    <string name="filtro_funk">Funk</string>
+    <string name="filtro_funkCarioca">Funk carioca</string>
+    <string name="filtro_gospel">Gospel</string>
+    <string name="filtro_mpb">MPB</string>
+    <string name="filtro_classico">Clássico</string>
+    <string name="filtro_hiphop_rap">Hip Hop/Rap</string>
+    <string name="filtro_samba">Samba</string>
+    <string name="filtro_dance">Dance</string>
+    <string name="filtro_axe">Axé</string>
+    <string name="filtro_heavymetal">Heavy Metal</string>
+    <string name="filtro_instrumental">Instrumental</string>
+    <string name="filtro_jazz">Jazz</string>
+    <string name="filtro_pagode">Pagode</string>
+    <string name="filtro_progressivo">Progressivo</string>
+    <string name="filtro_country">Country</string>
+    <string name="filtro_outros">Outros</string>
+
 
     <string name="botaoEditarEvento">Editar</string>
     <string name="botaoSalvarUsuario">Salvar</string>
