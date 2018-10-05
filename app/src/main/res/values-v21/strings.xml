@@ -11,4 +11,8 @@
     <string name="email_validacao">Já existe um usuário para este email.</string>
     <string name="sms_ajuda_local">Exemplo: Rua ou Av, cidade, sigla do estado</string>
     <string name="texto_hint_campoBusca">Buscar</string>
+    <string name="botaoRecuperaUsuario">Recuperar</string>
+    <string name="campoCPF_recupera">CPF somente números</string>
+    <string name="campoEmail_recupera">E-mail</string>
+    <string name="tituloRecupera">Recuperaçãoa de dados cadastrais</string>
 </resources>

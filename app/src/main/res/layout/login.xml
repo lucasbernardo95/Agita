@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:paddingTop="56dp">
+        >
 
         <ImageView
             android:layout_width="wrap_content"
@@ -79,7 +79,16 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:gravity="center"
-            android:text="Não tem conta? Crie uma!"
+            android:text="Não tem conta? Clique aqui para criar"
+            android:textSize="16dip" />
+
+        <TextView
+            android:id="@+id/link_recuperar"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Recuperar login ou senha"
             android:textSize="16dip" />
 
     </LinearLayout>

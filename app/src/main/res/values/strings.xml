@@ -71,4 +71,11 @@
     <string name="sms_ajuda_local">Exemplo: Rua ou Av, cidade, sigla do estado</string>
     <string name="dica_autcoComplete_cadastroEvent">Informe o estilo musical do evento!</string>
     <string name="texto_hint_campoBusca">Buscar</string>
+    <string name="botaoRecuperaUsuario">Recuperar</string>
+    <string name="campoCPF_recupera">CPF somente números</string>
+    <string name="campoEmail_recupera">E-mail</string>
+    <string name="tituloRecupera">Recuperaçãoa de dados cadastrais</string>
+    <string name="texto_atualizaLogin_recuperado">Informe um novo login!</string>
+    <string name="texto_atualizaSenha_recuperada">Informe uma nova senha</string>
+    <string name="Texto_botao_ConfirmaAlteracoes">Confirmar</string>
 </resources>
