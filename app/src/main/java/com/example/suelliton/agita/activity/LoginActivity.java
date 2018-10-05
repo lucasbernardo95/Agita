@@ -36,7 +36,7 @@ public class LoginActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
     private EditText ed_password;
     private View progressView;
-    private TextView linkCadastro;
+    private TextView linkCadastro, linkRecuperaUsuario;
     private EditText ed_login;
     private Button btn_login;
 
@@ -50,14 +50,16 @@ public class LoginActivity extends AppCompatActivity{
         setViewListeners();
     }
 
-public void findView(){
-    ed_login = (EditText) findViewById(R.id.input_user);
-    ed_password = (EditText) findViewById(R.id.input_password);
-    btn_login = (Button) findViewById(R.id.btn_login);
-    linkCadastro = (TextView) findViewById(R.id.link_signup);
-    progressView = (ProgressBar) findViewById(R.id.progress_login);
+    public void findView(){
+        ed_login = (EditText) findViewById(R.id.input_user);
+        ed_password = (EditText) findViewById(R.id.input_password);
+        btn_login = (Button) findViewById(R.id.btn_login);
+        linkCadastro = (TextView) findViewById(R.id.link_signup);
+        linkRecuperaUsuario = (TextView) findViewById(R.id.link_recuperar);
 
-}
+        progressView = (ProgressBar) findViewById(R.id.progress_login);
+
+    }
     public void setViewListeners(){
         ed_login.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -90,6 +92,14 @@ public void findView(){
             public void onClick(View view) {
                 startActivity(new Intent(LoginActivity.this,AddUserActivity.class));
                 finish();
+            }
+        });
+
+        linkRecuperaUsuario.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LoginActivity.this,RecuperaActivity.class));
+//                finish();
             }
         });
 

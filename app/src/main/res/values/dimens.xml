@@ -13,4 +13,5 @@
     <!--Controle da margem do topo para o recyclerview da tela de meus eventos-->
     <dimen name="marginToprecyclerView">-220dp</dimen>
     <dimen name="dimem_layout_height_carrossel">200dp</dimen>
+    <dimen name="tamanhoTituloRecupera">18dp</dimen>
 </resources>
