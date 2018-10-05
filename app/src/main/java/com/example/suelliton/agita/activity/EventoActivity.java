@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -35,8 +34,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.suelliton.agita.R;
@@ -72,7 +69,7 @@ public class EventoActivity extends AppCompatActivity
     static Toolbar toolbar ;
 
 
-    public static List<String> eventosParticiparei ;
+    public static List<String> eventosCurtidos;
     public static Evento eventoClicado;
     public static String  master ;
     private List<Evento> listaEventos;
@@ -109,7 +106,7 @@ public class EventoActivity extends AppCompatActivity
         findViews();
         setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
         setViewListener();
-        if(usuarioLogado != null)atualizaUsuarioLogado();//se tiver usuario logado
+        if(usuarioLogado != null) listenerUsuarioLogado();//se tiver usuario logado
 
         eventosCarousel = new ArrayList<>();
         listaEventos = new ArrayList<>();
@@ -148,15 +145,15 @@ public class EventoActivity extends AppCompatActivity
             nav_Menu.findItem(R.id.nav_login).setVisible(true);
             nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
             nav_Menu.findItem(R.id.nav_todos_eventos).setVisible(false);
-            nav_Menu.findItem(R.id.nav_eventos_irei).setVisible(false);
+            nav_Menu.findItem(R.id.nav_eventos_curtidos).setVisible(false);
             nav_Menu.findItem(R.id.nav_edit_user).setVisible(false);
         }else if(usuarioLogado.isAdmin()) {//se for administrador
             nav_Menu.findItem(R.id.nav_login).setVisible(false);
-            atualizaUsuarioLogado();
+            listenerUsuarioLogado();
         }else {//se for usuário normal
             nav_Menu.findItem(R.id.nav_login).setVisible(false);
             nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
-            atualizaUsuarioLogado();
+            listenerUsuarioLogado();
         }
     }
 
@@ -195,10 +192,6 @@ public class EventoActivity extends AppCompatActivity
         }
     };
 
-    private void buscaEventosGeral() {
-
-    }
-
     public void buscaEventos(String slave){
 
         switch (master){
@@ -209,7 +202,7 @@ public class EventoActivity extends AppCompatActivity
                     getMeusEventos(slave);
                 break;
             case "ireiEventos":
-                    getIreiEventos(slave);
+                    getCurtiEventos(slave);
                 break;
             case "pertoEventos":
                     getPertoEventos(slave);
@@ -294,10 +287,10 @@ public class EventoActivity extends AppCompatActivity
         }
 
     }
-    public void getIreiEventos(final String slave){
+    public void getCurtiEventos(final String slave){
         removeListenersFirebase();
         listaEventos.removeAll(listaEventos);
-        List<String> keyEventos = usuarioLogado.getParticiparei();
+        List<String> keyEventos = usuarioLogado.getCurtidos();
         if(keyEventos == null) keyEventos = new ArrayList<>();
 
         for (String key : keyEventos ) {
@@ -398,9 +391,9 @@ public class EventoActivity extends AppCompatActivity
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Evento evento = dataSnapshot.getValue(Evento.class);
                 //preenche carousel
-                if (evento.getQtdParticipantes() >= qtdAnterior && count < 6) {
+                if (evento.getQtdCurtidas() >= qtdAnterior && count < 6) {
                     eventosCarousel.add(evento);
-                    qtdAnterior = evento.getQtdParticipantes();
+                    qtdAnterior = evento.getQtdCurtidas();
                     count++;
                 }
                 listaEventos.add(evento);
@@ -429,18 +422,19 @@ public class EventoActivity extends AppCompatActivity
         });
     }
 
-    public void atualizaUsuarioLogado(){
-        Query query = usuarioReference.child(usuarioLogado.getLogin());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+    public void listenerUsuarioLogado(){
+
+        usuarioReference.child(usuarioLogado.getLogin()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuarioLogado = dataSnapshot.getValue(Usuario.class);
-                eventosParticiparei = usuarioLogado.getParticiparei();
+                eventosCurtidos = usuarioLogado.getCurtidos();
                 //Toast.makeText(EventoActivity.this, "nomeDetalhe "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
-                if(eventosParticiparei == null){
-                    eventosParticiparei = new ArrayList<>();
+                if(eventosCurtidos == null){
+                    eventosCurtidos = new ArrayList<>();
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -470,7 +464,6 @@ public class EventoActivity extends AppCompatActivity
         descricaoDetalhe = (TextView) findViewById(R.id.textDescricaoEventoDetalhe);
         imagemDetalhe = (ImageView) findViewById(R.id.imageEventoDetalhe);
         fabMapaDetalhe = (FloatingActionButton) findViewById(R.id.butonMap);
-
         cardView = (CardView) findViewById(R.id.cardView);
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
@@ -479,8 +472,8 @@ public class EventoActivity extends AppCompatActivity
         nomeDetalhe.setText(eventoClicado.getNome());
         horaDetalhe.setText(String.valueOf(eventoClicado.getHora()));
         dataDetalhe.setText(String.valueOf(eventoClicado.getData()));
-        valorDetalhe.setText(String.valueOf(eventoClicado.getValor()));
-        localDetalhe.setText(eventoClicado.getLocal());
+        valorDetalhe.setText(String.valueOf(eventoClicado.getEntrada()));
+        localDetalhe.setText(eventoClicado.getEndereco());
         bandasDetalhe.setText(eventoClicado.getBandas());
         estiloDetalhe.setText(eventoClicado.getEstilo());
         casaDetalhe.setText(eventoClicado.getCasashow());
@@ -726,11 +719,11 @@ public class EventoActivity extends AppCompatActivity
             master = "meusEventos";
             buscaEventos("");
             setTitleActionBar("Meus eventos");
-        } else if (id == R.id.nav_eventos_irei) {
+        } else if (id == R.id.nav_eventos_curtidos) {
             carrossel.setVisibility(View.GONE);
             master = "ireiEventos";
             buscaEventos("");
-            setTitleActionBar("Eventos que irei");
+            setTitleActionBar("Eventos curtidos");
         } else if (id == R.id.nav_todos_eventos) {
             carrossel.setVisibility(View.VISIBLE);
             master = "todosEventos";

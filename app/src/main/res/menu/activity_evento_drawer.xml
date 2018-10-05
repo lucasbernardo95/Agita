@@ -14,8 +14,8 @@
             android:id="@+id/nav_meus_eventos"
             android:title="Meus eventos" />
         <item
-            android:id="@+id/nav_eventos_irei"
-            android:title="Eventos que irei" />
+            android:id="@+id/nav_eventos_curtidos"
+            android:title="Eventos curtidos" />
         <item
             android:id="@+id/nav_aprova_anuncios"
             android:title="Avaliar eventos" />

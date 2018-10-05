@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -19,6 +20,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
+import static com.example.suelliton.agita.activity.EventoActivity.eventosCurtidos;
 
 public class SplashActivity extends AppCompatActivity {
     public String LOGADO;
@@ -27,6 +33,8 @@ public class SplashActivity extends AppCompatActivity {
     public static DatabaseReference eventosReference;
     public static DatabaseReference locaisReference;
     public static Usuario usuarioLogado;
+    ChildEventListener childListener;
+    ValueEventListener valueListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,13 +66,15 @@ public class SplashActivity extends AppCompatActivity {
         Query queryUsuario = usuarioReference.orderByChild("login").equalTo(LOGADO).limitToFirst(1);
 
         if (!LOGADO.equals("")) {
-            queryUsuario.addChildEventListener(new ChildEventListener() {
+            childListener = queryUsuario.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     try {
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if (usuario != null) {
                             usuarioLogado = usuario;
+                            removeListenersFirebase();
+                            listenerUsuarioLogado();
                             //Toast.makeText(SplashActivity.this, "usuario logado : "+usuario.getEmail(), Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(SplashActivity.this, EventoActivity.class));
                             finish();
@@ -114,6 +124,30 @@ public class SplashActivity extends AppCompatActivity {
 
 
 
+    }
+    public void listenerUsuarioLogado(){
+        removeListenersFirebase();
+        usuarioReference.child(usuarioLogado.getLogin()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                usuarioLogado = dataSnapshot.getValue(Usuario.class);
+                eventosCurtidos = usuarioLogado.getCurtidos();
+                //Toast.makeText(EventoActivity.this, "nomeDetalhe "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
+                if(eventosCurtidos == null){
+                    eventosCurtidos = new ArrayList<>();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+    public void removeListenersFirebase(){
+        if(childListener != null)eventosReference.removeEventListener(childListener);
+        if(valueListener != null)eventosReference.removeEventListener(valueListener);
     }
 
     //VERIFICA SE EXISTE WIFI

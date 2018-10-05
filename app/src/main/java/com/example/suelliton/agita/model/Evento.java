@@ -7,52 +7,48 @@ public class Evento implements Serializable {
     private String nome;
     private String data;
     private String hora;
-    private String local;
+    private String endereco;
     private String estilo;
     private double latitude;
     private double longitude;
     private String bandas;
-    private double valor;
+    private double entrada;
     private String descricao;
     private String urlBanner;
-    private boolean liberado;
     private String casashow;
-    private boolean cover;
     private String dono;
     private boolean verificado = false;
-    private int qtdParticipantes;
+    private int qtdCurtidas;
     //private List<String> participantes = new ArrayList<>();
 
     public Evento() {
     }
 
-    public Evento(String nome, String data, String hora, String local, String estilo, double latitude, double longitude, String bandas, double valor, String descricao, String urlBanner, boolean liberado, String casashow, boolean cover, String dono) {
+    public Evento(String nome, String data, String hora, String endereco, String estilo, double latitude, double longitude, String bandas, double entrada, String descricao, String urlBanner,String casashow, String dono) {
         this.nome = nome;
         this.data = data;
         this.hora = hora;
-        this.local = local;
+        this.endereco = endereco;
         this.estilo = estilo;
         this.latitude = latitude;
         this.longitude = longitude;
         this.bandas = bandas;
-        this.valor = valor;
+        this.entrada = entrada;
         this.descricao = descricao;
         this.urlBanner = urlBanner;
-        this.liberado = liberado;
         this.casashow = casashow;
-        this.cover = cover;
         this.dono = dono;
         this.key = "";
-        this.qtdParticipantes = 0;
+        this.qtdCurtidas = 0;
 //        this.participantes = new ArrayList<>();
     }
 
-    public int getQtdParticipantes() {
-        return qtdParticipantes;
+    public int getQtdCurtidas() {
+        return qtdCurtidas;
     }
 
-    public void setQtdParticipantes(int qtdParticipantes) {
-        this.qtdParticipantes = qtdParticipantes;
+    public void setQtdCurtidas(int qtdCurtidas) {
+        this.qtdCurtidas = qtdCurtidas;
     }
 
     public void setLatitude(double latitude) {
@@ -95,12 +91,12 @@ public class Evento implements Serializable {
         this.hora = hora;
     }
 
-    public String getLocal() {
-        return local;
+    public String getEndereco() {
+        return endereco;
     }
 
-    public void setLocal(String local) {
-        this.local = local;
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
     }
 
     public String getEstilo() {
@@ -129,12 +125,12 @@ public class Evento implements Serializable {
         this.bandas = bandas;
     }
 
-    public double getValor() {
-        return valor;
+    public double getEntrada() {
+        return entrada;
     }
 
-    public void setValor(double valor) {
-        this.valor = valor;
+    public void setEntrada(double valor) {
+        this.entrada = entrada;
     }
 
     public String getDescricao() {
@@ -153,28 +149,12 @@ public class Evento implements Serializable {
         this.urlBanner = urlBanner;
     }
 
-    public boolean isLiberado() {
-        return liberado;
-    }
-
-    public void setLiberado(boolean liberado) {
-        this.liberado = liberado;
-    }
-
     public String getCasashow() {
         return casashow;
     }
 
     public void setCasashow(String casashow) {
         this.casashow = casashow;
-    }
-
-    public boolean isCover() {
-        return cover;
-    }
-
-    public void setCover(boolean cover) {
-        this.cover = cover;
     }
 
     public String getDono() {
@@ -200,20 +180,17 @@ public class Evento implements Serializable {
                 ", nomeDetalhe='" + nome + '\'' +
                 ", dataDetalhe='" + data + '\'' +
                 ", horaDetalhe='" + hora + '\'' +
-                ", localDetalhe='" + local + '\'' +
+                ", localDetalhe='" + endereco + '\'' +
                 ", estiloDetalhe='" + estilo + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", bandasDetalhe='" + bandas + '\'' +
-                ", valorDetalhe=" + valor +
                 ", descricaoDetalhe='" + descricao + '\'' +
                 ", urlBanner='" + urlBanner + '\'' +
-                ", liberado=" + liberado +
                 ", casashow='" + casashow + '\'' +
-                ", cover=" + cover +
                 ", donoDetalhe='" + dono + '\'' +
                 ", verificado=" + verificado +
-                ", qtdParticipantes=" + qtdParticipantes +
+                ", qtdParticipantes=" + qtdCurtidas +
                 '}';
     }
 }

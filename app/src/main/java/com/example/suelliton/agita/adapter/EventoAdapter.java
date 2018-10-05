@@ -5,14 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
@@ -22,13 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.suelliton.agita.R;
-import com.example.suelliton.agita.activity.AddEventoActivity;
 import com.example.suelliton.agita.activity.EditEventoActivity;
 import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
-import com.example.suelliton.agita.utils.PaletteListener;
-import com.github.chrisbanes.photoview.PhotoView;
-import com.github.chrisbanes.photoview.PhotoViewAttacher;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.FirebaseStorage;
@@ -37,16 +29,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventoClicado;
-import static com.example.suelliton.agita.activity.EventoActivity.eventosParticiparei;
+import static com.example.suelliton.agita.activity.EventoActivity.eventosCurtidos;
 import static com.example.suelliton.agita.activity.EventoActivity.master;
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
-import static java.security.AccessController.getContext;
 /*
 * É necessário o uso de um adapter para:
 * fornecer dados para a lista de eventos e
@@ -146,8 +136,8 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
         //implemmenta o click do botão like
         final boolean[] like = new boolean[1];
         if(usuarioLogado != null) {
-            if (eventosParticiparei != null){
-                if (eventosParticiparei.contains(escolhido.getKey())) {
+            if (eventosCurtidos != null){
+                if (eventosCurtidos.contains(escolhido.getKey())) {
                     like[0] = true;
                     myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
                 } else {
@@ -165,15 +155,15 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
                     if (like[0]) {
                         like[0] = false;
                         myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-                        eventosParticiparei.remove(escolhido.getKey());
-                        eventosReference.child(escolhido.getKey()).child("qtdParticipantes").setValue(escolhido.getQtdParticipantes() - 1);
+                        eventosCurtidos.remove(escolhido.getKey());
+                        eventosReference.child(escolhido.getKey()).child("qtdParticipantes").setValue(escolhido.getQtdCurtidas() - 1);
                     } else {
                         like[0] = true;
                         myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                        eventosParticiparei.add(escolhido.getKey());
-                        eventosReference.child(escolhido.getKey()).child("qtdParticipantes").setValue(escolhido.getQtdParticipantes() + 1);
+                        eventosCurtidos.add(escolhido.getKey());
+                        eventosReference.child(escolhido.getKey()).child("qtdParticipantes").setValue(escolhido.getQtdCurtidas() + 1);
                     }
-                    usuarioLogado.setParticiparei(eventosParticiparei);
+                    usuarioLogado.setCurtidos(eventosCurtidos);
                     usuarioReference.child(usuarioLogado.getLogin()).setValue(usuarioLogado);
                     view.requestFocus();
 
@@ -254,11 +244,11 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
                                 evento.getDescricao().toLowerCase().contains(charString) ||
                                 evento.getCasashow().toLowerCase().contains(charString) ||
                                 evento.getEstilo().toLowerCase().contains(charString) ||
-                                evento.getLocal().toLowerCase().contains(charString) ||
+                                evento.getEndereco().toLowerCase().contains(charString) ||
                                 evento.getData().toLowerCase().contains(charString) ||
                                 evento.getHora().toLowerCase().contains(charString) ||
                                 evento.getDono().toLowerCase().contains(charString) ||
-                                String.valueOf(evento.getValor()).toLowerCase().contains(charString) ) {
+                                String.valueOf(evento.getEntrada()).toLowerCase().contains(charString) ) {
 
                             filteredList.add(evento);
                         }

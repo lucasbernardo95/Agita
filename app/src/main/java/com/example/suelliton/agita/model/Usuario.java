@@ -11,7 +11,7 @@ public class Usuario {
     private String cpf_cnpj;
     private boolean admin;
     private String email;
-    private List<String> participarei =  new ArrayList<>();;
+    private List<String> curtidos =  new ArrayList<>();;
 
 
     public Usuario() {
@@ -28,12 +28,12 @@ public class Usuario {
 //        this.participarei =  new ArrayList<>();
     }
 
-    public List<String> getParticiparei() {
-        return participarei;
+    public List<String> getCurtidos() {
+        return curtidos;
     }
 
-    public void setParticiparei(List<String> participarei) {
-        this.participarei = participarei;
+    public void setCurtidos(List<String> curtidos) {
+        this.curtidos = curtidos;
     }
 
     public String getNome() {

@@ -68,7 +68,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
         final Evento escolhido = eventos.get(position);
 
         myHolder.nome.setText(escolhido.getNome());
-        myHolder.local.setText(escolhido.getLocal());
+        myHolder.local.setText(escolhido.getEndereco());
         myHolder.estilo.setText(escolhido.getEstilo());
         myHolder.dono.setText(escolhido.getDono());
 
@@ -118,8 +118,8 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
                                 "Nome: " + escolhido.getNome() + "\n"
                                         +"Data: "+ escolhido.getData() + "\n"
                                         +"Hora: "+ escolhido.getHora() + "\n"
-                                        +"Local: "+ escolhido.getLocal() + "\n"
-                                        +"Valor: "+ escolhido.getValor() + "\n"
+                                        +"Local: "+ escolhido.getEndereco() + "\n"
+                                        +"Valor: "+ escolhido.getEntrada() + "\n"
                                         +"Estilo: "+ escolhido.getEstilo() + "\n"
                                         +"Organização: "+ escolhido.getCasashow() + "\n"
                                         +"Bandas: "+ escolhido.getBandas() + "\n"
@@ -197,11 +197,11 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
                                 evento.getDescricao().toLowerCase().contains(charString) ||
                                 evento.getCasashow().toLowerCase().contains(charString) ||
                                 evento.getEstilo().toLowerCase().contains(charString) ||
-                                evento.getLocal().toLowerCase().contains(charString) ||
+                                evento.getEndereco().toLowerCase().contains(charString) ||
                                 evento.getData().toLowerCase().contains(charString) ||
                                 evento.getHora().toLowerCase().contains(charString) ||
                                 evento.getDono().toLowerCase().contains(charString) ||
-                                String.valueOf(evento.getValor()).toLowerCase().contains(charString) ) {
+                                String.valueOf(evento.getEntrada()).toLowerCase().contains(charString) ) {
 
                             filteredList.add(evento);
                         }

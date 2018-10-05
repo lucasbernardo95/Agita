@@ -44,7 +44,7 @@
             android:layout_marginTop="8dp">
 
             <AutoCompleteTextView
-                android:id="@+id/local_cadastro"
+                android:id="@+id/endereco_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Logradouro, cidade, estado"
@@ -87,7 +87,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp">
             <EditText
-                android:id="@+id/valor_cadastro"
+                android:id="@+id/entrada_cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Valor entrada"

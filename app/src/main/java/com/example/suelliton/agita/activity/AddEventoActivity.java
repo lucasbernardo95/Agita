@@ -20,9 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CalendarView;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -63,14 +61,12 @@ public class AddEventoActivity extends AppCompatActivity {
     CalendarView cv_data;
     TextView value_ed_hora; //exibe o valorDetalhe da horaDetalhe
     ImageButton bt_ed_hora; //chama o relógio para editar a horaDetalhe
-    AutoCompleteTextView ed_local;
+    AutoCompleteTextView ed_endereco;
     AutoCompleteTextView ed_estilo;
     EditText ed_bandas;
-    EditText ed_valor;
+    EditText ed_entrada;
     EditText ed_descricao;
     EditText ed_casaShow;
-    CheckedTextView ed_liberado;
-
     ImageView imageView;
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -132,8 +128,8 @@ public class AddEventoActivity extends AppCompatActivity {
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(AddEventoActivity.this,
                         android.R.layout.simple_dropdown_item_1line, listaLocais);
-                ed_local.setThreshold(1);
-                ed_local.setAdapter(adapter);
+                ed_endereco.setThreshold(1);
+                ed_endereco.setAdapter(adapter);
             }
 
             @Override
@@ -149,24 +145,18 @@ public class AddEventoActivity extends AppCompatActivity {
         cv_data = (CalendarView) findViewById(R.id.cv_dataCadastro);
         value_ed_hora = (TextView) findViewById(R.id.value_hora_cadastro);
         bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
-        ed_local = (AutoCompleteTextView) findViewById(R.id.local_cadastro);
+        ed_endereco = (AutoCompleteTextView) findViewById(R.id.endereco_cadastro);
 
         //Seta a lista de estilos no adapter
         ed_estilo = (AutoCompleteTextView) findViewById(R.id.estilo_cadastro);
         ArrayAdapter<String> adaptadorEstilos = new
                 ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, listaEstilos);//pega a lista do EditEventActivity
         ed_estilo.setAdapter(adaptadorEstilos);
-
         ed_bandas = (EditText) findViewById(R.id.bandas_cadastro);
-        ed_valor = (EditText) findViewById(R.id.valor_cadastro);
+        ed_entrada = (EditText) findViewById(R.id.entrada_cadastro);
         ed_descricao = (EditText) findViewById(R.id.descricao_cadastro);
         ed_casaShow = (EditText) findViewById(R.id.casa_show_cadastro);
-        ed_liberado = (CheckedTextView) findViewById(R.id.liberado_cadastro);
-        ed_liberado.setChecked(true); //inicia como true
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
-
-
-
         bt_ed_hora.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -208,18 +198,6 @@ public class AddEventoActivity extends AppCompatActivity {
             }
         });
 
-        ed_liberado.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(ed_liberado.isChecked()){
-                    ed_liberado.setCheckMarkDrawable(R.drawable.unchecked);
-                    ed_liberado.setChecked(false);
-                }else{
-                    ed_liberado.setCheckMarkDrawable(R.drawable.checked);
-                    ed_liberado.setChecked(true);
-                }
-            }
-        });
     }
 
 public void salvarEvento(){
@@ -227,13 +205,12 @@ public void salvarEvento(){
     String nome = ed_nome.getText().toString();
     String hora = value_ed_hora.getText().toString();
     String data = Util.convertMillisToDate(cv_data.getDate());
-    final String local = ed_local.getText().toString();
+    final String local = ed_endereco.getText().toString();
     String estilo = ed_estilo.getText().toString();
     String bandas = ed_bandas.getText().toString();
-    double valor = ed_valor.getText().toString() == null? 0 : Double.parseDouble(ed_valor.getText().toString());
+    double entrada = ed_entrada.getText().toString() == null? 0 : Double.parseDouble(ed_entrada.getText().toString());
     String descricao = ed_descricao.getText().toString();
     String casa = ed_casaShow.getText().toString();
-    boolean liberado = ed_liberado.isChecked();//verifica o estado do botão se marcado ou não
 
     if (isCampoVazio(nome)) { //verificação do nomeDetalhe
         alertField(getString(R.string.aviso_nome_validacao));
@@ -249,15 +226,15 @@ public void salvarEvento(){
         return;
     } else if (isCampoVazio(local)) {
         alertField(getString(R.string.aviso_local_validacao));
-        ed_local.requestFocus();
+        ed_endereco.requestFocus();
         return;
     } else if (isCampoVazio(estilo)) {
         alertField(getString(R.string.aviso_estilo_validacao));
         ed_estilo.requestFocus();
         return;
-    }else if (valor < 0) {
+    }else if (entrada < 0) {
         alertField(getString(R.string.aviso_valor_validacao));
-        ed_valor.requestFocus();
+        ed_entrada.requestFocus();
         return;
     }
 
@@ -266,7 +243,7 @@ public void salvarEvento(){
     if(enderecos.size()== 0) {//verifica se veio algum endereço
         alertField( getString(R.string.alerta_endereco_invalido));
         progress.setVisibility(View.GONE);
-        ed_local.requestFocus();
+        ed_endereco.requestFocus();
     }else{
         double lat = enderecos.get(0).getLatitude();
         double lng = enderecos.get(0).getLongitude();
@@ -276,7 +253,7 @@ public void salvarEvento(){
             urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
         }
 
-        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, valor, descricao, urlBanner, liberado, casa, false, usuarioLogado.getLogin());
+        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, entrada, descricao, urlBanner,  casa,usuarioLogado.getLogin());
         //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
         referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
