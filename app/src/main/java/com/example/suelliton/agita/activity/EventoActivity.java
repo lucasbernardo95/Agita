@@ -106,7 +106,6 @@ public class EventoActivity extends AppCompatActivity
         findViews();
         setSupportActionBar(toolbar);//tem que ficar aqui devido a chamada da toolbar
         setViewListener();
-        if(usuarioLogado != null) listenerUsuarioLogado();//se tiver usuario logado
 
         eventosCarousel = new ArrayList<>();
         listaEventos = new ArrayList<>();
@@ -149,11 +148,9 @@ public class EventoActivity extends AppCompatActivity
             nav_Menu.findItem(R.id.nav_edit_user).setVisible(false);
         }else if(usuarioLogado.isAdmin()) {//se for administrador
             nav_Menu.findItem(R.id.nav_login).setVisible(false);
-            listenerUsuarioLogado();
         }else {//se for usuário normal
             nav_Menu.findItem(R.id.nav_login).setVisible(false);
             nav_Menu.findItem(R.id.nav_aprova_anuncios).setVisible(false);
-            listenerUsuarioLogado();
         }
     }
 
@@ -378,6 +375,7 @@ public class EventoActivity extends AppCompatActivity
         }
     }
     public void getTodosEventos(String slave){
+
         removeListenersFirebase();
         listaEventos.removeAll(listaEventos);
         Query query = null;
@@ -391,7 +389,7 @@ public class EventoActivity extends AppCompatActivity
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Evento evento = dataSnapshot.getValue(Evento.class);
                 //preenche carousel
-                if (evento.getQtdCurtidas() >= qtdAnterior && count < 6) {
+                if (evento.getQtdCurtidas() >= qtdAnterior && count < 10) {
                     eventosCarousel.add(evento);
                     qtdAnterior = evento.getQtdCurtidas();
                     count++;
@@ -422,26 +420,7 @@ public class EventoActivity extends AppCompatActivity
         });
     }
 
-    public void listenerUsuarioLogado(){
 
-        usuarioReference.child(usuarioLogado.getLogin()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                usuarioLogado = dataSnapshot.getValue(Usuario.class);
-                eventosCurtidos = usuarioLogado.getCurtidos();
-                //Toast.makeText(EventoActivity.this, "nomeDetalhe "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
-                if(eventosCurtidos == null){
-                    eventosCurtidos = new ArrayList<>();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
     public void findViews(){
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toolbar = (Toolbar) findViewById(R.id.toolbar);

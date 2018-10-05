@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +100,7 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
                     //Se o evento ainda não foi verificado, mostra um botão de alerta
                     myHolder.botaoAlerta.setVisibility(View.GONE);
                     myHolder.nome.setVisibility(View.VISIBLE);
+                    myHolder.botaoLike.setVisibility(View.VISIBLE);
             }
         }
 
@@ -136,15 +138,13 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
         //implemmenta o click do botão like
         final boolean[] like = new boolean[1];
         if(usuarioLogado != null) {
-            if (eventosCurtidos != null){
-                if (eventosCurtidos.contains(escolhido.getKey())) {
+                if (eventosCurtidos != null && eventosCurtidos.contains(escolhido.getKey())) {
                     like[0] = true;
                     myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                } else {
+                }else {
                     like[0] = false;
                     myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
                 }
-            }
         }
         myHolder.botaoLike.setOnClickListener(new View.OnClickListener() {
 
