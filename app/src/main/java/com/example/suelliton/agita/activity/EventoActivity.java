@@ -137,9 +137,6 @@ public class EventoActivity extends AppCompatActivity
         myrecycler.setAdapter(eventoAdapter);
 
         master = "todosEventos";//aba de inicio
-
-
-
     }
 
     public void controlaExibicaoMenu(){
@@ -166,12 +163,13 @@ public class EventoActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        buscaEventos("data");
+//        buscaEventos("data");
         PermissionUtils.validate(EventoActivity.this,2, PERMISSIONS_STORAGE);
     }
     @Override
     protected void onResume() {
         super.onResume();
+        buscaEventos("data");
         carrossel.requestFocus();
     }
     @Override
