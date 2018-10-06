@@ -643,103 +643,103 @@ public class EventoActivity extends AppCompatActivity
                 setFilterTextView("Filtrado por nome");
                 return true;
             case R.id.opcao_filtro_rock:
-                buscaEventos("Rock".toLowerCase());
+                buscaEventos("Rock");
                 setFilterTextView("Filtrado pelo estilo rock");
                 return true;
             case R.id.opcao_filtro_pop:
-                buscaEventos("Pop".toLowerCase());
+                buscaEventos("Pop");
                 setFilterTextView("Filtrado pelo estilo pop");
                 return true;
             case R.id.opcao_filtro_eletronica:
-                buscaEventos("Eletrônica".toLowerCase());
+                buscaEventos("Eletrônica");
                 setFilterTextView("Filtrado pelo estilo eletrônica");
                 return true;
             case R.id.opcao_filtro_forro:
-                buscaEventos("Forró".toLowerCase());
+                buscaEventos("Forró");
                 setFilterTextView("Filtrado pelo estilo forró");
                 return true;
             case R.id.opcao_filtro_sertanejo:
-                buscaEventos("Sertanejo".toLowerCase());
+                buscaEventos("Sertanejo");
                 setFilterTextView("Filtrado pelo estilo sertanejo");
                 return true;
             case R.id.opcao_filtro_brega:
-                buscaEventos("Brega".toLowerCase());
+                buscaEventos("Brega");
                 setFilterTextView("Filtrado pelo estilo brega");
                 return true;
             case R.id.opcao_filtro_swingueira:
-                buscaEventos("Swingueira".toLowerCase());
+                buscaEventos("Swingueira");
                 setFilterTextView("Filtrado pelo estilo swingueira");
                 return true;
             case R.id.opcao_filtro_reggae:
-                buscaEventos("Reggae".toLowerCase());
+                buscaEventos("Reggae");
                 setFilterTextView("Filtrado pelo estilo reggae");
                 return true;
             case R.id.opcao_filtro_reggaeton:
-                buscaEventos("Reggaeton".toLowerCase());
+                buscaEventos("Reggaeton");
                 setFilterTextView("Filtrado pelo estilo reggaeton");
                 return true;
             case R.id.opcao_filtro_funk:
-                buscaEventos("Funk".toLowerCase());
+                buscaEventos("Funk");
                 setFilterTextView("Filtrado pelo estilo funk");
                 return true;
             case R.id.opcao_filtro_funkCarioca:
-                buscaEventos("Funk carioca".toLowerCase());
+                buscaEventos("Funk carioca");
                 setFilterTextView("Filtrado pelo estilo funk carioca");
                 return true;
             case R.id.opcao_filtro_gospel:
-                buscaEventos("Gospel".toLowerCase());
+                buscaEventos("Gospel");
                 setFilterTextView("Filtrado pelo estilo gospel");
                 return true;
             case R.id.opcao_filtro_mpb:
-                buscaEventos("MPB".toLowerCase());
+                buscaEventos("MPB");
                 setFilterTextView("Filtrado pelo estilo MPB");
                 return true;
             case R.id.opcao_filtro_classico:
-                buscaEventos("Clássico".toLowerCase());
+                buscaEventos("Clássico");
                 setFilterTextView("Filtrado pelo estilo clássico");
                 return true;
             case R.id.opcao_filtro_hiphop_rap:
-                buscaEventos("Hip Hop/Rap".toLowerCase());
+                buscaEventos("Hip Hop/Rap");
                 setFilterTextView("Filtrado pelo estilo Hip Hop/Rap");
                 return true;
             case R.id.opcao_filtro_samba:
-                buscaEventos("Samba".toLowerCase());
+                buscaEventos("Samba");
                 setFilterTextView("Filtrado pelo estilo samba");
                 return true;
             case R.id.opcao_filtro_dance:
-                buscaEventos("Dance".toLowerCase());
+                buscaEventos("Dance");
                 setFilterTextView("Filtrado pelo estilo dance");
                 return true;
             case R.id.opcao_filtro_axe:
-                buscaEventos("Axé".toLowerCase());
+                buscaEventos("Axé");
                 setFilterTextView("Filtrado pelo estilo axé");
                 return true;
             case R.id.opcao_filtro_heavymetal:
-                buscaEventos("Heavy Metal".toLowerCase());
+                buscaEventos("Heavy Metal");
                 setFilterTextView("Filtrado pelo estilo heavy metal");
                 return true;
             case R.id.opcao_filtro_instrumental:
-                buscaEventos("Instrumental".toLowerCase());
+                buscaEventos("Instrumental");
                 setFilterTextView("Filtrado pelo estilo instrumental");
                 return true;
             case R.id.opcao_filtro_jazz:
-                buscaEventos("Jazz".toLowerCase());
+                buscaEventos("Jazz");
                 setFilterTextView("Filtrado pelo estilo Jazz");
                 return true;
             case R.id.opcao_filtro_pagode:
-                buscaEventos("Pagode".toLowerCase());
+                buscaEventos("Pagode");
                 setFilterTextView("Filtrado pelo estilo pagode");
                 return true;
             case R.id.opcao_filtro_progressivo:
-                buscaEventos("Progressivo".toLowerCase());
+                buscaEventos("Progressivo");
                 setFilterTextView("Filtrado pelo estilo progressivo");
                 return true;
             case R.id.opcao_filtro_country:
-                buscaEventos("Country".toLowerCase());
+                buscaEventos("Country");
                 setFilterTextView("Filtrado pelo estilo country");
                 return true;
             case R.id.opcao_filtro_outros:
-                buscaEventos("Outros".toLowerCase());
+                buscaEventos("Outros");
                 setFilterTextView("Filtrado pelo estilo Outros");
                 return true;
 
