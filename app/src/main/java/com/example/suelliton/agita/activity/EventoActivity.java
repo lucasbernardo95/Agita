@@ -28,6 +28,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -118,17 +119,17 @@ public class EventoActivity extends AppCompatActivity
         eventosCarousel = new ArrayList<>();
         listaEventos = new ArrayList<>();
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //populateCarousel();
-                carrossel.setImageListener(clickImagem);/*implementa a listagem de eventosCarousel do carrossel.*/
-                carrossel.setPageCount(eventosCarousel.size()); /*informa a quantidade de elementos que irá conter no carrossel*/
-                //carrossel.notify();
-
-            }
-        },500);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                //populateCarousel();
+//                carrossel.setImageListener(clickImagem);/*implementa a listagem de eventosCarousel do carrossel.*/
+//                carrossel.setPageCount(eventosCarousel.size()); /*informa a quantidade de elementos que irá conter no carrossel*/
+//                //carrossel.notify();
+//
+//            }
+//        },500);
 
         controlaExibicaoMenu();
 
@@ -170,6 +171,17 @@ public class EventoActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         buscaEventos("data");
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //populateCarousel();
+                carrossel.setImageListener(clickImagem);/*implementa a listagem de eventosCarousel do carrossel.*/
+                carrossel.setPageCount(eventosCarousel.size()); /*informa a quantidade de elementos que irá conter no carrossel*/
+                //carrossel.notify();
+
+            }
+        },500);
         carrossel.requestFocus();
     }
     @Override
@@ -479,13 +491,28 @@ public class EventoActivity extends AppCompatActivity
         donoDetalhe.setText(eventoClicado.getDono());
         descricaoDetalhe.setText(eventoClicado.getDescricao());
         Picasso.get().load(eventoClicado.getUrlBanner()).into(imagemDetalhe);
-        if(eventoClicado!= null) {
-            if (eventosIrei.contains(eventoClicado.getKey()) || eventosTalvez.contains(eventoClicado.getKey())) {
+
+
+
+        if (usuarioLogado != null ){
+            eventosIrei =  usuarioLogado.getIrei();
+            eventosTalvez = usuarioLogado.getTalvez();
+            if (eventoClicado != null) {
+
+                if (eventosIrei.contains(eventoClicado.getKey()) || eventosTalvez.contains(eventoClicado.getKey())) {
+                    linearInteresse.setVisibility(View.GONE);
+                } else {
+                    linearInteresse.setVisibility(View.VISIBLE);
+                }
+            }
+        } else {
+            if (eventoClicado != null) {
                 linearInteresse.setVisibility(View.GONE);
-            }else{
-                linearInteresse.setVisibility(View.VISIBLE);
             }
         }
+
+
+
     }
 
     public void setViewListener(){//seta acoes para as views
