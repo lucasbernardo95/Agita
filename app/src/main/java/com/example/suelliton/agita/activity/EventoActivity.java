@@ -154,6 +154,7 @@ public class EventoActivity extends AppCompatActivity
             nav_Menu.findItem(R.id.nav_todos_eventos).setVisible(false);
             nav_Menu.findItem(R.id.nav_eventos_curtidos).setVisible(false);
             nav_Menu.findItem(R.id.nav_edit_user).setVisible(false);
+            nav_Menu.findItem(R.id.nav_eventos_irei).setVisible(false);
         }else if(usuarioLogado.isAdmin()) {//se for administrador
             nav_Menu.findItem(R.id.nav_login).setVisible(false);
         }else {//se for usuário normal
