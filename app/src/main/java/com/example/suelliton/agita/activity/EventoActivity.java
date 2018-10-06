@@ -43,6 +43,7 @@ import com.example.suelliton.agita.adapter.EventoAdapter;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.GPSTracker;
+import com.example.suelliton.agita.utils.MyDialog;
 import com.example.suelliton.agita.utils.PermissionUtils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
@@ -800,6 +801,9 @@ public class EventoActivity extends AppCompatActivity
         }else if(id == R.id.nav_login){
             startActivity(new Intent(EventoActivity.this,LoginActivity.class));
             finish();
+        } else if (id == R.id.nav_sobre){
+            MyDialog dialogo = new MyDialog(this);
+            dialogo.createDialogSobre();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

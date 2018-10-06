@@ -78,4 +78,5 @@
     <string name="texto_atualizaLogin_recuperado">Informe um novo login!</string>
     <string name="texto_atualizaSenha_recuperada">Informe uma nova senha</string>
     <string name="Texto_botao_ConfirmaAlteracoes">Confirmar</string>
+    <string name="texto_menu_sobre">Sobre</string>
 </resources>

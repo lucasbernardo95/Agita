@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -76,4 +78,19 @@ public class MyDialog extends Dialog {
             }
         });
     }
+
+    public void createDialogSobre() {
+
+        LayoutInflater factory = LayoutInflater.from(context);
+        final View v = factory.inflate(R.layout.layout_sobre, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setPositiveButton("Fechar", null);
+        AlertDialog dialog = builder.create();
+        dialog.setView(v);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        dialog.show();
+    }
+
+
 }
