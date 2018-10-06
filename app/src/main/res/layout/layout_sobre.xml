@@ -12,47 +12,163 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/informacoesTituloDevs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/carrosselColorBlack"
+            android:text="Sobre"
+            android:gravity="center"
+            android:textSize="17dp"
+            android:paddingTop="20dp"/>
+        <TextView
             android:id="@+id/informacoesGerais"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="A história do Metallica começa em Los Angeles, no ano de 1981, quando Lars Ulrich e James Hetfield resolvem formar a banda. Ron McGovney (baixo) e Dave Mustaine (guitarra) vem para completar o time. Dois anos depois, Cliff Burton entra na banda como o novo baixista."/>
-        <TextView
-            android:id="@+id/informacoesTituloContato"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Contato: "/>
+            android:text="O Agita concentra em um só lugar todos os eventos que acontecem
+ na região de Caxias-MA e cidades adjacentes."/>
 
-        <TextView
-            android:id="@+id/informacoesTelefone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="+55 11 99999-9999"/>
-        <TextView
-            android:id="@+id/informacoesContato"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="E-mail: agita@gmail.com"/>
 
         <TextView
             android:id="@+id/informacoesTituloDevs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Desenvolvedores"
+            android:textColor="@color/carrosselColorBlack"
+            android:text="Equipe"
             android:gravity="center"
             android:textSize="17dp"
             android:paddingTop="20dp"/>
-
     </LinearLayout>
 
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/imgFrancisco"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/foto_suelliton_round" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:textColor="@color/carrosselColorBlack"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Francisco dos Santos" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="+55 (99) 98826-8658"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="francisco@gmail.com"
+                    android:textSize="12sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Administrador"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/imgWanderson"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/foto_lucas_round" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:textColor="@color/carrosselColorBlack"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wanderson" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="+55 (99) 8123-8658"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Wanderson@ufrn.edu.br"
+                    android:textSize="12sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Administrador"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+
+    </android.support.v7.widget.CardView>
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
                     android:orientation="horizontal">
+
                     <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -65,24 +181,35 @@
                             android:layout_gravity="center"
                             android:src="@mipmap/foto_suelliton_round" />
                     </FrameLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:orientation="vertical">
 
                         <TextView
+                            android:textColor="@color/carrosselColorBlack"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Suélliton Santos" />
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="+55 (84) 9 8894-0462" />
+                            android:text="Suéliton Santos" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="suelliton@ufrn.edu.br" />
+                            android:text="+55 (84) 9 8894-0462"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="suelliton@ufrn.edu.br"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Desenvolvedor"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -94,11 +221,15 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp">
+                >
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
+                    android:orientation="horizontal">
+
                     <FrameLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -111,12 +242,15 @@
                             android:layout_gravity="center"
                             android:src="@mipmap/foto_lucas_round" />
                     </FrameLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:orientation="vertical">
 
                         <TextView
+                            android:textColor="@color/carrosselColorBlack"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Lucas Bernardo" />
@@ -124,12 +258,19 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="+55 (84) 9 9177-0750" />
+                            android:text="+55 (84) 9 9177-0750"
+                            android:textSize="12sp" />
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="lucasbernardo@ufrn.edu.br" />
+                            android:text="lucasbernardo@ufrn.edu.br"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Desenvolvedor"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
