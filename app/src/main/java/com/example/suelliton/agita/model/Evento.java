@@ -150,7 +150,7 @@ public class Evento implements Serializable {
         return entrada;
     }
 
-    public void setEntrada(double valor) {
+    public void setEntrada(double entrada) {
         this.entrada = entrada;
     }
 
@@ -198,20 +198,23 @@ public class Evento implements Serializable {
     public String toString() {
         return "Evento{" +
                 "key='" + key + '\'' +
-                ", nomeDetalhe='" + nome + '\'' +
-                ", dataDetalhe='" + data + '\'' +
-                ", horaDetalhe='" + hora + '\'' +
-                ", localDetalhe='" + endereco + '\'' +
-                ", estiloDetalhe='" + estilo + '\'' +
+                ", nome='" + nome + '\'' +
+                ", data='" + data + '\'' +
+                ", hora='" + hora + '\'' +
+                ", endereco='" + endereco + '\'' +
+                ", estilo='" + estilo + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", bandasDetalhe='" + bandas + '\'' +
-                ", descricaoDetalhe='" + descricao + '\'' +
+                ", bandas='" + bandas + '\'' +
+                ", entrada=" + entrada +
+                ", descricao='" + descricao + '\'' +
                 ", urlBanner='" + urlBanner + '\'' +
                 ", casashow='" + casashow + '\'' +
-                ", donoDetalhe='" + dono + '\'' +
+                ", dono='" + dono + '\'' +
                 ", verificado=" + verificado +
-                ", qtdParticipantes=" + qtdCurtidas +
+                ", qtdCurtidas=" + qtdCurtidas +
+                ", qtdIrao=" + qtdIrao +
+                ", qtdTalvez=" + qtdTalvez +
                 '}';
     }
 }

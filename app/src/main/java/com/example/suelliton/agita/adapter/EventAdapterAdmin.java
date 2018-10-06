@@ -119,7 +119,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
                                         +"Data: "+ escolhido.getData() + "\n"
                                         +"Hora: "+ escolhido.getHora() + "\n"
                                         +"Local: "+ escolhido.getEndereco() + "\n"
-                                        +"Valor: "+ escolhido.getEntrada() + "\n"
+                                        +"Entrada: "+ escolhido.getEntrada() + "\n"
                                         +"Estilo: "+ escolhido.getEstilo() + "\n"
                                         +"Organização: "+ escolhido.getCasashow() + "\n"
                                         +"Bandas: "+ escolhido.getBandas() + "\n"

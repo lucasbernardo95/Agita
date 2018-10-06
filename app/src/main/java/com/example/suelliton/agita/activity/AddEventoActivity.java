@@ -270,7 +270,7 @@ public void salvarEvento(){
                         }else{//Caso contrário, se tem uma foto, faz p upload
                             try {
                                 uploadFirebaseBytes(bitmapGaleria, dataSnapshot.getRef().getKey());
-                                customAlert("Evento cadastrado!", "Operaçãoa realizada com sucesso!");
+                                customAlert("Evento cadastrado!", "Operação realizada com sucesso!");
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }

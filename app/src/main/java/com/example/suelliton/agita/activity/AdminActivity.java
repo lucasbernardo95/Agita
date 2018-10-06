@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -19,11 +20,13 @@ import com.example.suelliton.agita.model.Evento;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.suelliton.agita.activity.EventoActivity.temporarioReference;
+import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
 
 
 public class AdminActivity extends AppCompatActivity {
@@ -31,6 +34,7 @@ public class AdminActivity extends AppCompatActivity {
     private RecyclerView recyler;
     public static EventAdapterAdmin adapterAdmin;
     public static List<Evento> listaEventos;
+    private ChildEventListener childListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +97,8 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void iniciaLista() {
-        temporarioReference.orderByKey().addChildEventListener(new ChildEventListener() {
+//        Query query = temporarioReference;
+        childListener = temporarioReference.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 listaEventos.add(dataSnapshot.getValue(Evento.class));
@@ -122,7 +127,26 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        removeListenersFirebase();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        removeListenersFirebase();
+    }
 
+    @Override
+    public void finish() {
+        super.finish();
+        removeListenersFirebase();
+    }
+
+    public void removeListenersFirebase(){
+        if(childListener != null)eventosReference.removeEventListener(childListener);
+    }
 }
 
