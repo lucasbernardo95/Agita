@@ -32,8 +32,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.suelliton.agita.R;
@@ -42,6 +44,7 @@ import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.GPSTracker;
 import com.example.suelliton.agita.utils.PermissionUtils;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,8 +57,12 @@ import com.synnapps.carouselview.ImageListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.suelliton.agita.activity.AdminActivity.adapterAdmin;
+import static com.example.suelliton.agita.activity.AdminActivity.listaEventos;
 import static com.example.suelliton.agita.activity.SplashActivity.database;
+import static com.example.suelliton.agita.activity.SplashActivity.eventosIrei;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
+import static com.example.suelliton.agita.activity.SplashActivity.eventosTalvez;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
@@ -83,6 +90,7 @@ public class EventoActivity extends AppCompatActivity
     TextView text_filtro;
     ChildEventListener childListener;
     ValueEventListener valueListener;
+    static LinearLayout linearInteresse;
     CardView cardView;
     //--------------
     GPSTracker gpsTracker;
@@ -93,8 +101,7 @@ public class EventoActivity extends AppCompatActivity
     public static ImageView imagemDetalhe;
     public static FloatingActionButton fabMapaDetalhe;
 
-    //Campo de busca dos eventos
-    private TextView campoBusca;
+    TextView textSim,textTalvez ;
 
 
     @Override
@@ -198,8 +205,11 @@ public class EventoActivity extends AppCompatActivity
             case "meusEventos":
                     getMeusEventos(slave);
                 break;
-            case "ireiEventos":
+            case "curtidosEventos":
                     getCurtiEventos(slave);
+                break;
+            case "ireiEventos":
+                getCurtiEventos(slave);
                 break;
             case "pertoEventos":
                     getPertoEventos(slave);
@@ -287,8 +297,15 @@ public class EventoActivity extends AppCompatActivity
     public void getCurtiEventos(final String slave){
         removeListenersFirebase();
         listaEventos.removeAll(listaEventos);
-        List<String> keyEventos = usuarioLogado.getCurtidos();
+        List<String> keyEventos = null;
+        if(slave.equals("")) {
+            keyEventos = usuarioLogado.getCurtidos();
+        }else if(slave.equals("ireiEventos")){
+            keyEventos = usuarioLogado.getIrei();
+        }
+
         if(keyEventos == null) keyEventos = new ArrayList<>();
+
 
         for (String key : keyEventos ) {
               valueListener = eventosReference.child(key).addValueEventListener(new ValueEventListener() {
@@ -305,7 +322,7 @@ public class EventoActivity extends AppCompatActivity
                               }
                           }
                           if (!existe) {
-                              if (slave.equals("") || slave.equals("data") || slave.equals("nome")) {//quando clica no menu principal
+                              if (slave.equals("ireiEventos")||slave.equals("") || slave.equals("data") || slave.equals("nome")) {//quando clica no menu principal
                                   listaEventos.add(evento);
                               } else {//quando clica no menu secundario de estilos
                                   if (evento.getEstilo().equals(slave)) {
@@ -443,7 +460,10 @@ public class EventoActivity extends AppCompatActivity
         descricaoDetalhe = (TextView) findViewById(R.id.textDescricaoEventoDetalhe);
         imagemDetalhe = (ImageView) findViewById(R.id.imageEventoDetalhe);
         fabMapaDetalhe = (FloatingActionButton) findViewById(R.id.butonMap);
+        linearInteresse = (LinearLayout) findViewById(R.id.linear_interesse);
         cardView = (CardView) findViewById(R.id.cardView);
+        textSim = (TextView) findViewById(R.id.text_sim);
+        textTalvez = (TextView) findViewById(R.id.text_talvez);
     }
     public static void setContentDetalhes() {//seta dados no frame de detalhes
         frameLayout.setVisibility(View.VISIBLE);//exibe o frame
@@ -459,6 +479,13 @@ public class EventoActivity extends AppCompatActivity
         donoDetalhe.setText(eventoClicado.getDono());
         descricaoDetalhe.setText(eventoClicado.getDescricao());
         Picasso.get().load(eventoClicado.getUrlBanner()).into(imagemDetalhe);
+        if(eventoClicado!= null) {
+            if (eventosIrei.contains(eventoClicado.getKey()) || eventosTalvez.contains(eventoClicado.getKey())) {
+                linearInteresse.setVisibility(View.GONE);
+            }else{
+                linearInteresse.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     public void setViewListener(){//seta acoes para as views
@@ -510,6 +537,47 @@ public class EventoActivity extends AppCompatActivity
                 }
 
 
+            }
+        });
+
+        textSim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new android.app.AlertDialog.Builder(EventoActivity.this)
+                        .setTitle("Sim eu vou!")
+                        .setMessage("Confirma interesse?")
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                               eventosReference.child(eventoClicado.getKey()).child("qtdIrao").setValue(eventoClicado.getQtdIrao()+1);
+                               eventosIrei.add(eventoClicado.getKey());
+                               usuarioReference.child(usuarioLogado.getLogin()).child("irei").setValue(eventosIrei);
+                               linearInteresse.setVisibility(View.GONE);
+                            }
+
+                        })
+                        .setNegativeButton("Não", null)
+                        .show();
+            }
+        });
+        textTalvez.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new android.app.AlertDialog.Builder(EventoActivity.this)
+                        .setTitle("Talves eu vá!")
+                        .setMessage("Confirma interesse?")
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                eventosReference.child(eventoClicado.getKey()).child("qtdTalvez").setValue(eventoClicado.getQtdTalvez()+1);
+                                eventosTalvez.add(eventoClicado.getKey());
+                                usuarioReference.child(usuarioLogado.getLogin()).child("talvez").setValue(eventosTalvez);
+                                linearInteresse.setVisibility(View.GONE);
+                            }
+
+                        })
+                        .setNegativeButton("Não", null)
+                        .show();
             }
         });
     }
@@ -700,10 +768,15 @@ public class EventoActivity extends AppCompatActivity
             setTitleActionBar("Meus eventos");
         } else if (id == R.id.nav_eventos_curtidos) {
             carrossel.setVisibility(View.GONE);
-            master = "ireiEventos";
+            master = "curtidosEventos";
             buscaEventos("");
             setTitleActionBar("Eventos curtidos");
-        } else if (id == R.id.nav_todos_eventos) {
+        }  else if (id == R.id.nav_eventos_irei) {
+            carrossel.setVisibility(View.GONE);
+            master = "ireiEventos";
+            buscaEventos("ireiEventos");
+            setTitleActionBar("Eventos que irei");
+        }else if (id == R.id.nav_todos_eventos) {
             carrossel.setVisibility(View.VISIBLE);
             master = "todosEventos";
             buscaEventos("data");

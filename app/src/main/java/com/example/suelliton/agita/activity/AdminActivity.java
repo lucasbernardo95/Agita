@@ -54,7 +54,6 @@ public class AdminActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_busca_admin, menu);
-
         //Pega o Componente de busca do actionBar
         SearchView searchView = (SearchView) menu.findItem(R.id.ic_search_admin).getActionView();
         //Define um texto de ajuda 'texto fantasma':

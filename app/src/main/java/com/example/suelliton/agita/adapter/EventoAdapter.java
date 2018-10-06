@@ -156,12 +156,12 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
                         like[0] = false;
                         myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
                         eventosCurtidos.remove(escolhido.getKey());
-                        eventosReference.child(escolhido.getKey()).child("qtdParticipantes").setValue(escolhido.getQtdCurtidas() - 1);
+                        eventosReference.child(escolhido.getKey()).child("curtidos").setValue(escolhido.getQtdCurtidas() - 1);
                     } else {
                         like[0] = true;
                         myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
                         eventosCurtidos.add(escolhido.getKey());
-                        eventosReference.child(escolhido.getKey()).child("qtdParticipantes").setValue(escolhido.getQtdCurtidas() + 1);
+                        eventosReference.child(escolhido.getKey()).child("curtidos").setValue(escolhido.getQtdCurtidas() + 1);
                     }
                     usuarioLogado.setCurtidos(eventosCurtidos);
                     usuarioReference.child(usuarioLogado.getLogin()).setValue(usuarioLogado);

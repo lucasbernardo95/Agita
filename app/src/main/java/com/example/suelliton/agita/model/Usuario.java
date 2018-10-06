@@ -12,8 +12,8 @@ public class Usuario {
     private boolean admin;
     private String email;
     private List<String> curtidos =  new ArrayList<>();;
-
-
+    private List<String> irei = new ArrayList<>();
+    private List<String> talvez = new ArrayList<>();
     public Usuario() {
     }
 
@@ -26,6 +26,22 @@ public class Usuario {
         this.admin = admin;
         this.email = email;
 //        this.participarei =  new ArrayList<>();
+    }
+
+    public List<String> getTalvez() {
+        return talvez;
+    }
+
+    public void setTalvez(List<String> talvez) {
+        this.talvez = talvez;
+    }
+
+    public List<String> getIrei() {
+        return irei;
+    }
+
+    public void setIrei(List<String> irei) {
+        this.irei = irei;
     }
 
     public List<String> getCurtidos() {

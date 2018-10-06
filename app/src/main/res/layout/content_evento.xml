@@ -90,7 +90,7 @@
                         xmlns:app="http://schemas.android.com/apk/res-auto"
                         android:id="@+id/cardView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="850dp"
                         app:cardCornerRadius="5dp"
                         app:cardBackgroundColor="@color/cardview_light_background"
                         android:layout_margin="5dp"
@@ -101,53 +101,88 @@
                         <LinearLayout
                             android:orientation="vertical"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="match_parent">
 
                     <ImageView
                         android:id="@+id/imageEventoDetalhe"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:layout_height="match_parent"
                         />
 
 
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_margin="15dp"
-                        android:background="@drawable/borda"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tv_evento_clicado"
-                        android:textSize="20dp"
-                        android:textColor="@color/colorAccent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="Nome do evento aqui" />
+                                <TextView
+                                    android:id="@+id/tv_evento_clicado"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="20dp"
+                                    android:text="Nome do evento aqui"
+                                    android:textColor="@color/colorAccent"
+                                    android:textSize="22dp" />
+                                <LinearLayout
+                                    android:id="@+id/linear_interesse"
+                                    android:orientation="horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
 
-                    </LinearLayout>
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_margin="15dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:text="Local"
-                            android:layout_weight="6"
-                            android:textColor="@color/common_google_signin_btn_text_light_pressed"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="0dp"
+                                        android:layout_weight="3"
+                                        android:textColor="@color/carrosselColorBlack"
+                                        android:text="Pretende ir ao evento?" />
+                                <TextView
+                                    android:id="@+id/text_talvez"
+                                    android:textSize="17dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/colorPrimary"
+                                    android:layout_weight="5"
+                                    android:text="Talvez" />
+                                    <TextView
+                                        android:id="@+id/text_sim"
+                                        android:textSize="17dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_weight="5"
+                                        android:text="Sim"
+                                        android:textColor="@color/colorPrimary" />
+                                </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/textLocalEventoDetalhe"
-                            android:layout_width="match_parent"
-                            android:textColor="@color/colorPrimary"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:layout_weight="2"
-                            android:text="Local do evento" />
-                    </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="15dp"
+                                android:layout_marginLeft="15dp"
+                                android:layout_marginRight="15dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="6"
+                                    android:text="Local"
+                                    android:textColor="@color/common_google_signin_btn_text_light_pressed" />
+
+                                <TextView
+                                    android:id="@+id/textLocalEventoDetalhe"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2"
+                                    android:gravity="center"
+                                    android:text="Local do evento"
+                                    android:textColor="@color/colorPrimary" />
+                            </LinearLayout>
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_margin="15dp"

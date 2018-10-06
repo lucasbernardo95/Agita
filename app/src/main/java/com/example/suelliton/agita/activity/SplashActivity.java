@@ -23,6 +23,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventosCurtidos;
 
@@ -33,6 +34,7 @@ public class SplashActivity extends AppCompatActivity {
     public static DatabaseReference eventosReference;
     public static DatabaseReference locaisReference;
     public static Usuario usuarioLogado;
+    public static List<String> eventosIrei,eventosTalvez ;
     ChildEventListener childListener;
     ValueEventListener valueListener;
     @Override
@@ -73,12 +75,10 @@ public class SplashActivity extends AppCompatActivity {
                         Usuario usuario = dataSnapshot.getValue(Usuario.class);
                         if (usuario != null) {
                             usuarioLogado = usuario;
-                            removeListenersFirebase();
                             listenerUsuarioLogado();
                             //Toast.makeText(SplashActivity.this, "usuario logado : "+usuario.getEmail(), Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(SplashActivity.this, EventoActivity.class));
                             finish();
-
                         }
 
                     } catch (Exception e) {
@@ -132,10 +132,20 @@ public class SplashActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 usuarioLogado = dataSnapshot.getValue(Usuario.class);
                 eventosCurtidos = usuarioLogado.getCurtidos();
+                eventosIrei =  usuarioLogado.getIrei();
+                eventosTalvez = usuarioLogado.getTalvez()
+                        ;
                 //Toast.makeText(EventoActivity.this, "nomeDetalhe "+usuarioLogado.getNome(), Toast.LENGTH_SHORT).show();
                 if(eventosCurtidos == null){
                     eventosCurtidos = new ArrayList<>();
                 }
+                if(eventosIrei ==  null){
+                    eventosIrei = new ArrayList<>();
+                }
+                if(eventosTalvez == null){
+                    eventosTalvez = new ArrayList<>();
+                }
+
             }
 
             @Override

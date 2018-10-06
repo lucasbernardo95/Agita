@@ -19,6 +19,9 @@ public class Evento implements Serializable {
     private String dono;
     private boolean verificado = false;
     private int qtdCurtidas;
+    private int qtdIrao;
+    private int qtdTalvez;
+
     //private List<String> participantes = new ArrayList<>();
 
     public Evento() {
@@ -40,7 +43,25 @@ public class Evento implements Serializable {
         this.dono = dono;
         this.key = "";
         this.qtdCurtidas = 0;
+        this.qtdIrao = 0;
+        this.qtdTalvez = 0;
 //        this.participantes = new ArrayList<>();
+    }
+
+    public int getQtdTalvez() {
+        return qtdTalvez;
+    }
+
+    public void setQtdTalvez(int qtdTalvez) {
+        this.qtdTalvez = qtdTalvez;
+    }
+
+    public int getQtdIrao() {
+        return qtdIrao;
+    }
+
+    public void setQtdIrao(int qtdIrao) {
+        this.qtdIrao = qtdIrao;
     }
 
     public int getQtdCurtidas() {
