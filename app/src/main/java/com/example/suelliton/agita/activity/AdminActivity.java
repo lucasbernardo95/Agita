@@ -47,7 +47,7 @@ public class AdminActivity extends AppCompatActivity {
 
         listaEventos = new ArrayList<>();
 
-        iniciaLista();
+//        iniciaLista();
 
         adapterAdmin = new EventAdapterAdmin(listaEventos,this);
         recyler.setAdapter(adapterAdmin);
@@ -87,6 +87,8 @@ public class AdminActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        iniciaLista();
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 500);
@@ -97,12 +99,10 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void iniciaLista() {
-//        Query query = temporarioReference;
         childListener = temporarioReference.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 listaEventos.add(dataSnapshot.getValue(Evento.class));
-//                adapterAdmin.notifyDataSetChanged();
             }
 
             @Override

@@ -7,8 +7,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
@@ -22,7 +24,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.example.suelliton.agita.activity.EventoActivity.eventosCurtidos;
@@ -33,6 +37,9 @@ public class SplashActivity extends AppCompatActivity {
     public static DatabaseReference usuarioReference;
     public static DatabaseReference eventosReference;
     public static DatabaseReference locaisReference;
+
+    //controla o id auto-incremento dos eventos
+    public static DatabaseReference idEventoReference;
     public static Usuario usuarioLogado;
     public static List<String> eventosIrei,eventosTalvez ;
     ChildEventListener childListener;
@@ -47,6 +54,7 @@ public class SplashActivity extends AppCompatActivity {
         usuarioReference = database.getReference("usuarios");
         eventosReference = database.getReference("eventos");
         locaisReference = database.getReference("locais");
+        idEventoReference = database.getReference("idEvento");
 
         //Usuario admin = new Usuario("admin","","admin","admin","",true,"");
         //usuarioReference.child(admin.getLogin()).setValue(admin);
@@ -61,6 +69,12 @@ public class SplashActivity extends AppCompatActivity {
         LOGADO = sharedPreferences.getString("usuarioLogado", "");
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
 
     @Override
     protected void onStart() {

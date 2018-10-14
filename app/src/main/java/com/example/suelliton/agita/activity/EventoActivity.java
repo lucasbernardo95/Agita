@@ -119,18 +119,6 @@ public class EventoActivity extends AppCompatActivity
         eventosCarousel = new ArrayList<>();
         listaEventos = new ArrayList<>();
 
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                //populateCarousel();
-//                carrossel.setImageListener(clickImagem);/*implementa a listagem de eventosCarousel do carrossel.*/
-//                carrossel.setPageCount(eventosCarousel.size()); /*informa a quantidade de elementos que irá conter no carrossel*/
-//                //carrossel.notify();
-//
-//            }
-//        },500);
-
         controlaExibicaoMenu();
 
         myrecycler.setLayoutManager(new GridLayoutManager(EventoActivity.this,2));

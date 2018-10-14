@@ -7,12 +7,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.Util;
@@ -36,12 +37,12 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,9 +50,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-
 import static com.example.suelliton.agita.activity.EditEventoActivity.listaEstilos;
 import static com.example.suelliton.agita.activity.SplashActivity.database;
+import static com.example.suelliton.agita.activity.SplashActivity.idEventoReference;
 import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 
@@ -77,6 +78,8 @@ public class AddEventoActivity extends AppCompatActivity {
     ProgressBar progress;
     private DatabaseReference referenceEventoTemporario;
 
+    private long idEventoCriado = 0;
+
     private final String TAG = "teste";
     MenuItem itemComfirm;
     @Override
@@ -93,6 +96,13 @@ public class AddEventoActivity extends AppCompatActivity {
         Log.i(TAG, "2 - Modo reference edit: "+referenceEventoTemporario.getRef());
         carregaLocais();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //incrementa o id do evento (na classe SplashActivity)
+        incrementaIdEvento();
     }
 
     //Método para chamar o Time Picker Dialog e setar a horaDetalhe no evento
@@ -200,112 +210,123 @@ public class AddEventoActivity extends AppCompatActivity {
 
     }
 
-public void salvarEvento(){
-    progress.setVisibility(View.VISIBLE);
-    String nome = ed_nome.getText().toString();
-    String hora = value_ed_hora.getText().toString();
-    String data = Util.convertMillisToDate(cv_data.getDate());
-    final String local = ed_endereco.getText().toString();
-    String estilo = ed_estilo.getText().toString();
-    String bandas = ed_bandas.getText().toString();
-    double entrada = ed_entrada.getText().toString() == null? 0 : Double.parseDouble(ed_entrada.getText().toString());
-    String descricao = ed_descricao.getText().toString();
-    String casa = ed_casaShow.getText().toString();
+    //incrementa o ID do evento sempre que um novo evento for adicionado
+    public void incrementaIdEvento(){
 
-    if (isCampoVazio(nome)) { //verificação do nomeDetalhe
-        alertField(getString(R.string.aviso_nome_validacao));
-        ed_nome.requestFocus();
-        return;
-    } else if (isCampoVazio(hora)) { //horaDetalhe
-        alertField(getString(R.string.aviso_hora_validacao));
-        value_ed_hora.requestFocus();
-        return;
-    } else if (isCampoVazio(data)) {
-        alertField(getString(R.string.aviso_data_validacao));
-        cv_data.requestFocus();
-        return;
-    } else if (isCampoVazio(local)) {
-        alertField(getString(R.string.aviso_local_validacao));
-        ed_endereco.requestFocus();
-        return;
-    } else if (isCampoVazio(estilo)) {
-        alertField(getString(R.string.aviso_estilo_validacao));
-        ed_estilo.requestFocus();
-        return;
-    }else if (entrada < 0) {
-        alertField(getString(R.string.aviso_valor_validacao));
-        ed_entrada.requestFocus();
-        return;
-    }
-
-    List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
-
-    if(enderecos.size()== 0) {//verifica se veio algum endereço
-        alertField( getString(R.string.alerta_endereco_invalido));
-        progress.setVisibility(View.GONE);
-        ed_endereco.requestFocus();
-    }else{
-        double lat = enderecos.get(0).getLatitude();
-        double lng = enderecos.get(0).getLongitude();
-
-        //se for um evento novo e não tiver foto, coloca a foto default antes de salvar o evento no bd
-        if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
-            urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
-        }
-
-        novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, entrada, descricao, urlBanner,  casa,usuarioLogado.getLogin());
-        //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
-        referenceEventoTemporario.push().setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
+        final long[] id = new long[1];
+        idEventoReference.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onSuccess(Void aVoid) {
-                Query query = referenceEventoTemporario.orderByChild("nome").startAt(novoEvento.getNome()).endAt(novoEvento.getNome()).limitToFirst(1);
-                query.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        referenceEventoTemporario.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                idEventoCriado = (long) dataSnapshot.getValue();
+                Log.i("teste", "saída incrementaIdEvento: " +idEventoCriado);
+            }
 
-                        //Se não tem nada na galeria, coloca a foto default
-                        if(bitmapGaleria == null){
-                            customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.");
-                        }else{//Caso contrário, se tem uma foto, faz p upload
-                            try {
-                                uploadFirebaseBytes(bitmapGaleria, dataSnapshot.getRef().getKey());
-                                customAlert("Evento cadastrado!", "Operação realizada com sucesso!");
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
 
-                    }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            }
 
-                    }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
 
-                    }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
             }
         });
 
-        //locaisReference.child(localDetalhe).setValue(localDetalhe);
+    }
+
+    public void salvarEvento(){
+        progress.setVisibility(View.VISIBLE);
+        String nome = ed_nome.getText().toString();
+        String hora = value_ed_hora.getText().toString();
+        String data = Util.convertMillisToDate(cv_data.getDate());
+        final String local = ed_endereco.getText().toString();
+        String estilo = ed_estilo.getText().toString();
+        String bandas = ed_bandas.getText().toString();
+        double entrada = ed_entrada.getText().toString() == null? 0 : Double.parseDouble(ed_entrada.getText().toString());
+        String descricao = ed_descricao.getText().toString();
+        String casa = ed_casaShow.getText().toString();
+
+        if (isCampoVazio(nome)) { //verificação do nomeDetalhe
+            alertField(getString(R.string.aviso_nome_validacao));
+            ed_nome.requestFocus();
+            return;
+        } else if (isCampoVazio(hora)) { //horaDetalhe
+            alertField(getString(R.string.aviso_hora_validacao));
+            value_ed_hora.requestFocus();
+            return;
+        } else if (isCampoVazio(data)) {
+            alertField(getString(R.string.aviso_data_validacao));
+            cv_data.requestFocus();
+            return;
+        } else if (isCampoVazio(local)) {
+            alertField(getString(R.string.aviso_local_validacao));
+            ed_endereco.requestFocus();
+            return;
+        } else if (isCampoVazio(estilo)) {
+            alertField(getString(R.string.aviso_estilo_validacao));
+            ed_estilo.requestFocus();
+            return;
+        }else if (entrada < 0) {
+            alertField(getString(R.string.aviso_valor_validacao));
+            ed_entrada.requestFocus();
+            return;
+        }
+
+        List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
+
+        if(enderecos.size()== 0) {//verifica se veio algum endereço
+            alertField( getString(R.string.alerta_endereco_invalido));
+            progress.setVisibility(View.GONE);
+            ed_endereco.requestFocus();
+        }else{
+            double lat = enderecos.get(0).getLatitude();
+            double lng = enderecos.get(0).getLongitude();
+
+            //se for um evento novo e não tiver foto, coloca a foto default antes de salvar o evento no bd
+            if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
+                urlBanner = "https://firebasestorage.googleapis.com/v0/b/agita-ed061.appspot.com/o/eventos%2Fevento_sem_banner.png?alt=media&token=a6f53830-48bb-4388-b242-7cc589278e03";
+            }
+            //incrementa o valor do id
+            final long idEvento = idEventoCriado + 1;
+            //monta a key do evento (id-loginUsuario) ex: 8-admin
+            final String keyEvento = String.valueOf(idEvento) + "-" + usuarioLogado.getLogin();
+
+            novoEvento = new Evento(nome, data, hora, local, estilo, lat, lng, bandas, entrada, descricao, urlBanner,  casa,usuarioLogado.getLogin());
+            novoEvento.setKey(keyEvento);
+            //Se for um cadastro, armazena numa tabela temporária para os eventos ainda não verificados por um administrador
+            referenceEventoTemporario.child(keyEvento).setValue(novoEvento).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    //Depois atualiza o valor da variável id no firebase
+                    idEventoReference.child("id").setValue(idEvento);
+                    //Se não tem nada na galeria, coloca a foto default
+                    if(bitmapGaleria == null){
+                        customAlert("Evento sem banner!", "Você poderá incluir na aba 'Meus eventos'.");
+                    }else{//Caso contrário, se tem uma foto, faz p upload
+                        try {
+                            uploadFirebaseBytes(bitmapGaleria, keyEvento);
+                            customAlert("Evento cadastrado!", "Operação realizada com sucesso!");
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
+            //locaisReference.child(localDetalhe).setValue(localDetalhe);
     }
 
 }
-
-
 
     private void customAlert(String title, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -323,7 +344,6 @@ public void salvarEvento(){
         dialog.show();
 
     }
-
 
     /**
      * key = Chave do evento que se deseja setar o banner
@@ -408,4 +428,5 @@ public void salvarEvento(){
         }
 
     }
+
 }

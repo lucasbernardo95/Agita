@@ -8,9 +8,8 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.suelliton.agita.R;
-import com.example.suelliton.agita.activity.EventoActivity;
 import com.example.suelliton.agita.model.Evento;
 import com.example.suelliton.agita.utils.GPSTracker;
 import com.example.suelliton.agita.utils.MyDialog;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -108,7 +102,6 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
         });
 
         //ação do botão info
-
         myHolder.bt_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -237,10 +230,6 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
             dono = (TextView) itemView.findViewById(R.id.donoEventoAdmin);
             imagem = (ImageView) itemView.findViewById(R.id.imageEventoAdmin);
 
-            //permite dar um zoom na foto
-//            PhotoViewAttacher photoZoom = new PhotoViewAttacher(imagemDetalhe);
-//            photoZoom.update();
-
             aprova = (ImageButton) itemView.findViewById(R.id.botaoAprova);
             exclui = (ImageButton) itemView.findViewById(R.id.botaoExcluir);
             bt_info = (ImageButton) itemView.findViewById(R.id.botaoInfoAdmin);
@@ -292,38 +281,12 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
                         eventosReference.child(model.getKey()).setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Query query = eventosReference.orderByChild("nome").startAt(model.getNome()).endAt(model.getNome()).limitToFirst(1);
-                                query.addChildEventListener(new ChildEventListener() {
-                                    @Override
-                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                        //eventosReference.child(dataSnapshot.getRef().getKey()).child("key").setValue(dataSnapshot.getRef().getKey());
-                                    }
-
-                                    @Override
-                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                                    }
-
-                                    @Override
-                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
+                                Log.i("teste", "Aprovado com sucesso");
                             }
                         });
 
                         //apaga o evento antigo
-                        temporarioReference.child(key).removeValue();
+                        temporarioReference.child(model.getKey()).removeValue();
 
                         listaEventos.remove(model);
                         adapterAdmin.notifyItemRemoved(position);

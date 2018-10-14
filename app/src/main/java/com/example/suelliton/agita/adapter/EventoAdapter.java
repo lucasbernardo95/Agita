@@ -286,11 +286,6 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
             botaoEditar = (ImageButton) v.findViewById(R.id.buttonEdit);
             botaoExcluir = (ImageButton) v.findViewById(R.id.buttonDelete);
             botaoAlerta = (ImageButton) v.findViewById(R.id.buttonAlert);
-
-
-
-
-
         }
     }
 
