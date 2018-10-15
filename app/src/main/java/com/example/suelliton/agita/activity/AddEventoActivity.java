@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -37,7 +36,6 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -46,22 +44,22 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import static com.example.suelliton.agita.activity.EditEventoActivity.listaEstilos;
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.idEventoReference;
-import static com.example.suelliton.agita.activity.SplashActivity.locaisReference;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 
 public class AddEventoActivity extends AppCompatActivity {
     private final int REQUEST_GALERIA = 2;
+    private final int REQUEST_MAPA_LOCAL = 3;
     EditText ed_nome;
     CalendarView cv_data;
     TextView value_ed_hora; //exibe o valorDetalhe da horaDetalhe
     ImageButton bt_ed_hora; //chama o relógio para editar a horaDetalhe
+    ImageButton bt_local_evento; //Botão para abrir o mapa de marcação do local do evento
     AutoCompleteTextView ed_endereco;
     AutoCompleteTextView ed_estilo;
     EditText ed_bandas;
@@ -79,9 +77,10 @@ public class AddEventoActivity extends AppCompatActivity {
     private DatabaseReference referenceEventoTemporario;
 
     private long idEventoCriado = 0;
+    private double[] latlong;
 
     private final String TAG = "teste";
-    MenuItem itemComfirm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +93,7 @@ public class AddEventoActivity extends AppCompatActivity {
 
         referenceEventoTemporario = database.getReference("eventoTemporario");
         Log.i(TAG, "2 - Modo reference edit: "+referenceEventoTemporario.getRef());
-        carregaLocais();
+//        carregaLocais();
 
     }
 
@@ -127,27 +126,27 @@ public class AddEventoActivity extends AppCompatActivity {
     //Seta os valores do evento a ser editado nos edittext's
 
 
-    public void carregaLocais(){
-        listaLocais = new ArrayList<>();
-        locaisReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data:dataSnapshot.getChildren() ) {
-                    listaLocais.add(data.getRef().getKey());
-                    Log.i(TAG,"5 - localDetalhe: "+data.getRef().getKey());
-                }
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(AddEventoActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, listaLocais);
-                ed_endereco.setThreshold(1);
-                ed_endereco.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    public void carregaLocais(){
+//        listaLocais = new ArrayList<>();
+//        locaisReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot data:dataSnapshot.getChildren() ) {
+//                    listaLocais.add(data.getRef().getKey());
+//                    Log.i(TAG,"5 - localDetalhe: "+data.getRef().getKey());
+//                }
+//                ArrayAdapter<String> adapter = new ArrayAdapter<>(AddEventoActivity.this,
+//                        android.R.layout.simple_dropdown_item_1line, listaLocais);
+//                ed_endereco.setThreshold(1);
+//                ed_endereco.setAdapter(adapter);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     public void findViews(){
         progress = (ProgressBar) findViewById(R.id.progress);
@@ -155,7 +154,7 @@ public class AddEventoActivity extends AppCompatActivity {
         cv_data = (CalendarView) findViewById(R.id.cv_dataCadastro);
         value_ed_hora = (TextView) findViewById(R.id.value_hora_cadastro);
         bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
-        ed_endereco = (AutoCompleteTextView) findViewById(R.id.endereco_cadastro);
+        ed_endereco = (AutoCompleteTextView) findViewById(R.id.endereco_cadastro2);
 
         //Seta a lista de estilos no adapter
         ed_estilo = (AutoCompleteTextView) findViewById(R.id.estilo_cadastro);
@@ -167,10 +166,21 @@ public class AddEventoActivity extends AppCompatActivity {
         ed_descricao = (EditText) findViewById(R.id.descricao_cadastro);
         ed_casaShow = (EditText) findViewById(R.id.casa_show_cadastro);
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
+        ((ImageView) findViewById(R.id.imgStatusLocal)).setBackgroundResource(R.drawable.ic_alert);
         bt_ed_hora.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setTimeEvent();
+            }
+        });
+
+        //Abre um fragment para que o usuário possa marcar o local do evento no mapa
+        bt_local_evento = (ImageButton) findViewById(R.id.botaoLocalEvento);
+        bt_local_evento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AddEventoActivity.this, MapsActivity.class);
+                startActivityForResult(intent , REQUEST_MAPA_LOCAL);
             }
         });
 
@@ -268,9 +278,8 @@ public class AddEventoActivity extends AppCompatActivity {
             alertField(getString(R.string.aviso_data_validacao));
             cv_data.requestFocus();
             return;
-        } else if (isCampoVazio(local)) {
+        } else if (latlong == null) {
             alertField(getString(R.string.aviso_local_validacao));
-            ed_endereco.requestFocus();
             return;
         } else if (isCampoVazio(estilo)) {
             alertField(getString(R.string.aviso_estilo_validacao));
@@ -282,15 +291,17 @@ public class AddEventoActivity extends AppCompatActivity {
             return;
         }
 
-        List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
+//        List<Address> enderecos = Util.getNomeLocalFromEndereco(AddEventoActivity.this,local);
 
-        if(enderecos.size()== 0) {//verifica se veio algum endereço
+        if(/*enderecos.size()*/ latlong == null) {//verifica se veio algum endereço
             alertField( getString(R.string.alerta_endereco_invalido));
             progress.setVisibility(View.GONE);
             ed_endereco.requestFocus();
         }else{
-            double lat = enderecos.get(0).getLatitude();
-            double lng = enderecos.get(0).getLongitude();
+//            double lat = enderecos.get(0).getLatitude();
+//            double lng = enderecos.get(0).getLongitude();
+            String lat = String.valueOf(latlong[0]);
+            String lng = String.valueOf(latlong[1]);
 
             //se for um evento novo e não tiver foto, coloca a foto default antes de salvar o evento no bd
             if(bitmapGaleria == null){ //Se não tem nada na galeria, coloca a foto default
@@ -408,6 +419,9 @@ public class AddEventoActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+//        Log.i(TAG, "estou aqui");
+//        Log.i(TAG, "requestCode " + requestCode);
+//        Log.i(TAG, "resultCode " +resultCode);
         if(resultCode == RESULT_OK && requestCode == REQUEST_GALERIA){
             Uri uriSelectedImage = data.getData();
             CropImage.activity(uriSelectedImage)
@@ -425,6 +439,19 @@ public class AddEventoActivity extends AppCompatActivity {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
+        } else if (resultCode == REQUEST_MAPA_LOCAL && requestCode == REQUEST_MAPA_LOCAL) {
+
+            latlong = data.getDoubleArrayExtra("coordenada");
+            Log.i(TAG,"0: "+ latlong[0]);
+            Log.i(TAG, "1: "+ latlong[1]);
+            if ( (latlong[0] == 0.0 && latlong[1] == 0.0) || latlong == null){
+                ((TextView) findViewById(R.id.status_local)).setText("Informe o local do evento!");
+                ((ImageView) findViewById(R.id.imgStatusLocal)).setBackgroundResource(R.drawable.ic_alert);
+            }else{
+                ((TextView) findViewById(R.id.status_local)).setText("Ok!");
+                ((ImageView) findViewById(R.id.imgStatusLocal)).setBackgroundResource(R.drawable.ic_ok);
+            }
+
         }
 
     }

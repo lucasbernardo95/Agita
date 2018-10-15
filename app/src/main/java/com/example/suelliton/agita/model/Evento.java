@@ -9,8 +9,8 @@ public class Evento implements Serializable {
     private String hora;
     private String endereco;
     private String estilo;
-    private double latitude;
-    private double longitude;
+    private String latitude;
+    private String longitude;
     private String bandas;
     private double entrada;
     private String descricao;
@@ -27,7 +27,7 @@ public class Evento implements Serializable {
     public Evento() {
     }
 
-    public Evento(String nome, String data, String hora, String endereco, String estilo, double latitude, double longitude, String bandas, double entrada, String descricao, String urlBanner,String casashow, String dono) {
+    public Evento(String nome, String data, String hora, String endereco, String estilo, String latitude, String longitude, String bandas, double entrada, String descricao, String urlBanner,String casashow, String dono) {
         this.nome = nome;
         this.data = data;
         this.hora = hora;
@@ -72,11 +72,11 @@ public class Evento implements Serializable {
         this.qtdCurtidas = qtdCurtidas;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
@@ -128,12 +128,12 @@ public class Evento implements Serializable {
         this.estilo = estilo;
     }
 
-    public double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 

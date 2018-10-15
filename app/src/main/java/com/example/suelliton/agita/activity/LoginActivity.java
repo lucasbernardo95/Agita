@@ -6,10 +6,10 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,16 +21,17 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Usuario;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
-import static com.example.suelliton.agita.activity.SplashActivity.database;
-import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
+import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class LoginActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;

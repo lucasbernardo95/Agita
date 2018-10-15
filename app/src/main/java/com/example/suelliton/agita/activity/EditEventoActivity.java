@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +19,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CalendarView;
-import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -55,6 +54,7 @@ import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
 public class EditEventoActivity extends AppCompatActivity {
 
     private final int REQUEST_GALERIA = 2;
+    private final int REQUEST_MAPA_LOCAL = 3;
     EditText ed_nome;
     CalendarView cv_data;
     TextView value_ed_hora; //exibe o valorDetalhe da horaDetalhe
@@ -65,6 +65,8 @@ public class EditEventoActivity extends AppCompatActivity {
     private EditText ed_entrada;
     private EditText ed_descricao;
     private EditText ed_casaShow;
+    private double[] latlong;
+    private boolean modificou_ponto_mapa = false;
 
     ImageView imageView;
     FirebaseStorage storage;
@@ -108,7 +110,7 @@ public class EditEventoActivity extends AppCompatActivity {
         cv_data = (CalendarView) findViewById(R.id.cv_dataCadastro);
         value_ed_hora = (TextView) findViewById(R.id.value_hora_cadastro);
         bt_ed_hora = (ImageButton) findViewById(R.id.hora_cadastro);
-        ed_endereco = (AutoCompleteTextView) findViewById(R.id.endereco_cadastro);
+        ed_endereco = (AutoCompleteTextView) findViewById(R.id.endereco_cadastro2);
 
         //Seta a lista de estilos num adapter
         ed_estilo = (AutoCompleteTextView) findViewById(R.id.estilo_cadastro);
@@ -121,6 +123,7 @@ public class EditEventoActivity extends AppCompatActivity {
         ed_descricao = (EditText) findViewById(R.id.descricao_cadastro);
         ed_casaShow = (EditText) findViewById(R.id.casa_show_cadastro);
         imageView = (ImageView) findViewById(R.id.imagem_galeria);
+
 
     }
 
@@ -148,6 +151,15 @@ public class EditEventoActivity extends AppCompatActivity {
                 setTimeEvent();
             }
         });
+
+        if( (isCampoVazio(eventoEdit.getLatitude()) || isCampoVazio(eventoEdit.getLongitude())) ||
+                (eventoEdit.getLatitude().equals("0.0") || eventoEdit.getLongitude().equals("0.0"))) {
+            ((TextView) findViewById(R.id.status_local)).setText("Informe o local do evento!");
+            ((ImageView) findViewById(R.id.imgStatusLocal)).setBackgroundResource(R.drawable.ic_alert);
+        } else {
+            ((TextView) findViewById(R.id.status_local)).setText("Local encontrado!");
+            ((ImageView) findViewById(R.id.imgStatusLocal)).setBackgroundResource(R.drawable.ic_ok);
+        }
 
     }
 
@@ -206,7 +218,7 @@ public class EditEventoActivity extends AppCompatActivity {
 
     //Atualiza os atributos do evento como se fosse um construtor
     private void atualizarCamposEvento(String nome, String data, String hora, String local, String estilo,
-                                      double lat, double lng, String bandas, double valor, String descricao,
+                                       String lat, String lng, String bandas, double valor, String descricao,
                                       String url, String casa,String dono){
         eventoEdit.setNome(nome);
         eventoEdit.setData(data);
@@ -248,10 +260,10 @@ public class EditEventoActivity extends AppCompatActivity {
             alertField(getString(R.string.aviso_data_validacao));
             cv_data.requestFocus();
             return;
-        } else if (isCampoVazio(endereco)) {
-            alertField(getString(R.string.aviso_local_validacao));
-            ed_endereco.requestFocus();
-            return;
+//        } else if (isCampoVazio(endereco)) {
+//            alertField(getString(R.string.aviso_local_validacao));
+//            ed_endereco.requestFocus();
+//            return;
         } else if (isCampoVazio(estilo)) {
             alertField(getString(R.string.aviso_estilo_validacao));
             ed_estilo.requestFocus();
@@ -262,18 +274,26 @@ public class EditEventoActivity extends AppCompatActivity {
             return;
         }
 
-        List<Address> enderecos = Util.getNomeLocalFromEndereco(EditEventoActivity.this,endereco);
+//        List<Address> enderecos = Util.getNomeLocalFromEndereco(EditEventoActivity.this,endereco);
+//
+//        if(enderecos.size() == 0) {//verifica se veio algum endereço
+//            alertField( getString(R.string.alerta_endereco_invalido));
+//            progress.setVisibility(View.GONE);
+//            ed_endereco.requestFocus();
+//            return;
+//        }
 
-        if(enderecos.size() == 0) {//verifica se veio algum endereço
-            alertField( getString(R.string.alerta_endereco_invalido));
-            progress.setVisibility(View.GONE);
-            ed_endereco.requestFocus();
-            return;
+//        double lat = enderecos.get(0).getLatitude();
+//        double lng = enderecos.get(0).getLongitude();
+        String lat;
+        String lng;
+        if (modificou_ponto_mapa) {
+            lat = String.valueOf(latlong[0]);
+            lng = String.valueOf(latlong[1]);
+        }else {
+            lat = eventoEdit.getLatitude();
+            lng = eventoEdit.getLongitude();
         }
-
-        double lat = enderecos.get(0).getLatitude();
-        double lng = enderecos.get(0).getLongitude();
-
         atualizarCamposEvento(nome, data, hora, endereco, estilo, lat, lng, bandas, entrada, descricao, eventoEdit.getUrlBanner(),casa,usuarioLogado.getLogin());
 
         //Se tiver algo na galeria, atualiza a imagem e url no banco
@@ -404,6 +424,21 @@ public class EditEventoActivity extends AppCompatActivity {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
+        }else if (resultCode == REQUEST_MAPA_LOCAL && requestCode == REQUEST_MAPA_LOCAL) {
+
+            latlong = data.getDoubleArrayExtra("coordenada");
+            Log.i(TAG,"0: "+ latlong[0]);
+            Log.i(TAG, "1: "+ latlong[1]);
+            if ( (latlong[0] == 0.0 && latlong[1] == 0.0) || latlong == null){
+                modificou_ponto_mapa = false;
+                ((TextView) findViewById(R.id.status_local)).setText("Informe o local do evento!");
+                ((ImageView) findViewById(R.id.imgStatusLocal)).setBackgroundResource(R.drawable.ic_alert);
+            }else{
+                modificou_ponto_mapa = true;
+                ((TextView) findViewById(R.id.status_local)).setText("Ok!");
+                ((ImageView) findViewById(R.id.imgStatusLocal)).setBackgroundResource(R.drawable.ic_ok);
+            }
+
         }
 
     }

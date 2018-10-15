@@ -37,6 +37,31 @@
         <!-- horaDetalhe  -->
 
         <!-- localDetalhe  -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/botaoLocalEvento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mapa" />
+
+            <TextView
+                android:id="@+id/status_local"
+                android:text="Informe o local do evento!"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/imgStatusLocal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|end" />
+
+        </LinearLayout>
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,10 +69,10 @@
             android:layout_marginTop="8dp">
 
             <AutoCompleteTextView
-                android:id="@+id/endereco_cadastro"
+                android:id="@+id/endereco_cadastro2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Logradouro, cidade, estado"
+                android:hint="Ex.: Logradouro, cidade, estado"
                 android:inputType="textAutoComplete" />
 
         </android.support.design.widget.TextInputLayout>

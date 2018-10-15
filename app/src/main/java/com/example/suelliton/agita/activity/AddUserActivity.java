@@ -6,10 +6,10 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -20,17 +20,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.model.Usuario;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
-
 import static com.example.suelliton.agita.activity.SplashActivity.usuarioLogado;
+import static com.example.suelliton.agita.activity.SplashActivity.usuarioReference;
 
 public class AddUserActivity extends AppCompatActivity{
     private UserLoginTask mAuthTask = null;
@@ -181,7 +182,7 @@ public class AddUserActivity extends AppCompatActivity{
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(nome,email,contato,cpfcnpj,login, password);
+                mAuthTask = new UserLoginTask(nome,email,contato,cpfcnpj,login, password);
             mAuthTask.execute((Void) null);
         }
     }

@@ -1,4 +1,5 @@
 package com.example.suelliton.agita.activity;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,25 +29,22 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.suelliton.agita.R;
 import com.example.suelliton.agita.adapter.EventoAdapter;
 import com.example.suelliton.agita.model.Evento;
-import com.example.suelliton.agita.model.Usuario;
 import com.example.suelliton.agita.utils.GPSTracker;
 import com.example.suelliton.agita.utils.MyDialog;
 import com.example.suelliton.agita.utils.PermissionUtils;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,11 +54,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.suelliton.agita.activity.AdminActivity.adapterAdmin;
-import static com.example.suelliton.agita.activity.AdminActivity.listaEventos;
 import static com.example.suelliton.agita.activity.SplashActivity.database;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosIrei;
 import static com.example.suelliton.agita.activity.SplashActivity.eventosReference;
@@ -252,8 +249,12 @@ public class EventoActivity extends AppCompatActivity
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     Evento evento = dataSnapshot.getValue(Evento.class);
-                    if (lat > evento.getLatitude() - 0.0450000 && lat < evento.getLatitude() + 0.0450000 &&
-                            lng > evento.getLongitude() - 0.020000 && lng < evento.getLongitude() + 0.020000) {
+                    //converte os valores de latitude e longitude para double, para facilitar a comparação
+                    double latitude = Double.parseDouble( evento.getLatitude());
+                    double longitude = Double.parseDouble( evento.getLongitude());
+
+                    if (lat > latitude - 0.0450000 && lat < latitude + 0.0450000 &&
+                            lng > longitude - 0.020000 && lng < longitude + 0.020000) {
                         if(slave.equals("") || slave.equals("data") || slave.equals("nome")){//quando clica no menu principal
                             listaEventos.add(evento);
                         }else{//quando clica no menu secundario de estilos
