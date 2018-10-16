@@ -88,8 +88,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
         myHolder.exclui.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alertEventoDelet(context, escolhido, escolhido.getKey(), position);
-
+                    alertEventoDelet(escolhido, escolhido.getKey(), position);
             }
         });
 
@@ -97,7 +96,7 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
         myHolder.aprova.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                aletEventVerify(context, escolhido, escolhido.getKey(), position);
+                    aletEventVerify(escolhido, escolhido.getKey(), position);
             }
         });
 
@@ -239,18 +238,22 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
 
     }
 
-    private void alertEventoDelet(Context context, final Evento evento, final String key, final int position) {
+    private void alertEventoDelet(final Evento evento, final String key, final int position) {
         new AlertDialog.Builder(context)
                 .setTitle("Deletando: "+evento.getNome())
                 .setMessage("Tem certeza que deseja deletar esse evento?")
                 .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        temporarioReference.child(key).removeValue();
-                        deleteBannerEvent(key); //deleta também o banner
-                        //remove o item da lista de eventos e atualiza o adapter
-                        listaEventos.remove(evento);
-                        adapterAdmin.notifyItemRemoved(position);
+                        if(key != null && !key.equals("")) {
+                            temporarioReference.child(key).removeValue();
+                            deleteBannerEvent(key); //deleta também o banner
+                            //remove o item da lista de eventos e atualiza o adapter
+                            listaEventos.remove(evento);
+                            adapterAdmin.notifyItemRemoved(position);
+                        }else{
+                            Toast.makeText(context, "Não é possível excluir o evento, contate desenvolvedores", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 })
                 .setNegativeButton("Não", null)
@@ -267,30 +270,31 @@ public class EventAdapterAdmin extends RecyclerView.Adapter implements Filterabl
         });
     } //
 
-    private void aletEventVerify(Context context, final Evento model, final  String key, final  int position) {
+    private void aletEventVerify(final Evento model, final  String key, final  int position) {
         new AlertDialog.Builder(context)
                 .setTitle("Confirmação de validação")
                 .setMessage("Tem certeza que deseja prosseguir?")
                 .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        if(key != null && !key.equals("")) {
+                            //seta como verificado
+                            model.setVerificado(true);
+                            //Salva o evento em outra tabela
+                            eventosReference.child(model.getKey()).setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.i("teste", "Aprovado com sucesso");
+                                }
+                            });
+                            //apaga o evento antigo
+                            temporarioReference.child(model.getKey()).removeValue();
 
-                        //seta como verificado
-                        model.setVerificado(true);
-                        //Salva o evento em outra tabela
-                        eventosReference.child(model.getKey()).setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.i("teste", "Aprovado com sucesso");
-                            }
-                        });
-
-                        //apaga o evento antigo
-                        temporarioReference.child(model.getKey()).removeValue();
-
-                        listaEventos.remove(model);
-                        adapterAdmin.notifyItemRemoved(position);
-
+                            listaEventos.remove(model);
+                            adapterAdmin.notifyItemRemoved(position);
+                        }else{
+                            Toast.makeText(context, "Não é possível aprovar o evento, contate desenvolvedores", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                 })

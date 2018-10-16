@@ -756,7 +756,6 @@ public class EventoActivity extends AppCompatActivity
                 buscaEventos("Outros");
                 setFilterTextView("Filtrado pelo estilo Outros");
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }

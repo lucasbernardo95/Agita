@@ -100,7 +100,9 @@ public class AdminActivity extends AppCompatActivity {
         childListener = temporarioReference.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                listaEventos.add(dataSnapshot.getValue(Evento.class));
+                if(dataSnapshot.exists()) {
+                    listaEventos.add(dataSnapshot.getValue(Evento.class));
+                }
             }
 
             @Override

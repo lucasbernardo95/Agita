@@ -107,14 +107,22 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
         myHolder.botaoEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(context, EditEventoActivity.class).putExtra("eventoEdit",escolhido));
-            }
+                    if(escolhido.getKey() != null && !escolhido.getKey().equals("")) {
+                        context.startActivity(new Intent(context, EditEventoActivity.class).putExtra("eventoEdit", escolhido));
+                    }else{
+                        Toast.makeText(context, "Não é possível editar o evento, por favor contate administradores", Toast.LENGTH_SHORT).show();
+                    }
+                }
         });
 
         myHolder.botaoExcluir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alertEventoDelet(context, escolhido);
+                if(escolhido.getKey() != null && !escolhido.getKey().equals("")) {
+                    alertEventoDelet(context, escolhido);
+                }else{
+                    Toast.makeText(context, "Não é possível excluir o evento, por favor contate administradores", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -152,21 +160,20 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
             public void onClick(View view) {
                 //Toast.makeText(context, "clicou", Toast.LENGTH_SHORT).show();
                 if(usuarioLogado !=null) {
-                    if (like[0]) {
-                        like[0] = false;
-                        myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
-                        eventosCurtidos.remove(escolhido.getKey());
-                        eventosReference.child(escolhido.getKey()).child("qtdCurtidas").setValue(escolhido.getQtdCurtidas() - 1);
-                    } else {
-                        like[0] = true;
-                        myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
-                        eventosCurtidos.add(escolhido.getKey());
-                        eventosReference.child(escolhido.getKey()).child("qtdCurtidas").setValue(escolhido.getQtdCurtidas() + 1);
-                    }
-                    usuarioLogado.setCurtidos(eventosCurtidos);
-                    usuarioReference.child(usuarioLogado.getLogin()).setValue(usuarioLogado);
-                    view.requestFocus();
-
+                        if (like[0]) {
+                            like[0] = false;
+                            myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_nolike);
+                            eventosCurtidos.remove(escolhido.getKey());
+                            eventosReference.child(escolhido.getKey()).child("qtdCurtidas").setValue(escolhido.getQtdCurtidas() - 1);
+                        } else {
+                            like[0] = true;
+                            myHolder.botaoLike.setBackgroundResource(R.drawable.ic_action_like);
+                            eventosCurtidos.add(escolhido.getKey());
+                            eventosReference.child(escolhido.getKey()).child("qtdCurtidas").setValue(escolhido.getQtdCurtidas() + 1);
+                        }
+                        usuarioLogado.setCurtidos(eventosCurtidos);
+                        usuarioReference.child(usuarioLogado.getLogin()).setValue(usuarioLogado);
+                        view.requestFocus();
                 }else{
                     Toast.makeText(context, "Faça login para curtir o evento", Toast.LENGTH_SHORT).show();
                 }
@@ -289,15 +296,19 @@ public class EventoAdapter extends RecyclerView.Adapter implements Filterable {
         }
     }
 
-    private void alertEventoDelet(Context context, final Evento evento) {
+    private void alertEventoDelet(final Context context, final Evento evento) {
         new AlertDialog.Builder(context)
                 .setTitle("Deletando "+evento.getNome())
                 .setMessage("Tem certeza que deseja deletar esse evento?")
                 .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        deleteEvent(evento);
-                        deleteBannerEvent(evento.getKey());
+                        if(evento.getKey() != null && !evento.getKey().equals("")) {
+                            deleteEvent(evento);
+                            deleteBannerEvent(evento.getKey());
+                        }else{
+                            Toast.makeText(context, "Evento sem key!, por favor contate administrador do sistema", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 })
                 .setNegativeButton("Não", null)
