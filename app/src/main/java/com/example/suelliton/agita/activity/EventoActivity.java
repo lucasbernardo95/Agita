@@ -1,6 +1,7 @@
 package com.example.suelliton.agita.activity;
 
 import android.Manifest;
+import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -565,10 +566,14 @@ public class EventoActivity extends AppCompatActivity
                         .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                               eventosReference.child(eventoClicado.getKey()).child("qtdIrao").setValue(eventoClicado.getQtdIrao()+1);
-                               eventosIrei.add(eventoClicado.getKey());
-                               usuarioReference.child(usuarioLogado.getLogin()).child("irei").setValue(eventosIrei);
-                               linearInteresse.setVisibility(View.GONE);
+                               if(eventoClicado.getKey() != null && !eventoClicado.getKey().equals("")) {
+                                   eventosReference.child(eventoClicado.getKey()).child("qtdIrao").setValue(eventoClicado.getQtdIrao() + 1);
+                                   eventosIrei.add(eventoClicado.getKey());
+                                   usuarioReference.child(usuarioLogado.getLogin()).child("irei").setValue(eventosIrei);
+                                   linearInteresse.setVisibility(View.GONE);
+                               }else{
+                                   Toast.makeText(EventoActivity.this, "Não foi possível declarar interesse no evento", Toast.LENGTH_SHORT).show();
+                               }
                             }
 
                         })
@@ -585,10 +590,14 @@ public class EventoActivity extends AppCompatActivity
                         .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                eventosReference.child(eventoClicado.getKey()).child("qtdTalvez").setValue(eventoClicado.getQtdTalvez()+1);
-                                eventosTalvez.add(eventoClicado.getKey());
-                                usuarioReference.child(usuarioLogado.getLogin()).child("talvez").setValue(eventosTalvez);
-                                linearInteresse.setVisibility(View.GONE);
+                                if(eventoClicado.getKey() != null && !eventoClicado.getKey().equals("")) {
+                                    eventosReference.child(eventoClicado.getKey()).child("qtdTalvez").setValue(eventoClicado.getQtdTalvez()+1);
+                                    eventosTalvez.add(eventoClicado.getKey());
+                                    usuarioReference.child(usuarioLogado.getLogin()).child("talvez").setValue(eventosTalvez);
+                                    linearInteresse.setVisibility(View.GONE);
+                                }else{
+                                    Toast.makeText(EventoActivity.this, "Não foi possível declarar interesse no evento", Toast.LENGTH_SHORT).show();
+                                }
                             }
 
                         })
@@ -614,7 +623,6 @@ public class EventoActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_filtro_estilos, menu);
-
         //Pega o Componente de busca do actionBar
         SearchView searchView = (SearchView) menu.findItem(R.id.ic_search).getActionView();
         //Define um texto de ajuda 'texto fantasma':
