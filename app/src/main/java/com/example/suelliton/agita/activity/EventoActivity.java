@@ -195,7 +195,7 @@ public class EventoActivity extends AppCompatActivity
     };
 
     public void buscaEventos(String slave){
-
+        toolbar.getMenu().setGroupVisible(0,true);//mostra lupa e buscas de estilos
         switch (master){
             case "todosEventos":
                     getTodosEventos(slave);
@@ -567,7 +567,13 @@ public class EventoActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                if(eventoClicado.getKey() != null && !eventoClicado.getKey().equals("")) {
-                                   eventosReference.child(eventoClicado.getKey()).child("qtdIrao").setValue(eventoClicado.getQtdIrao() + 1);
+                                   DatabaseReference workReference;
+                                   if(eventoClicado.isVerificado()){
+                                       workReference = eventosReference;
+                                   }else{
+                                       workReference = temporarioReference;
+                                   }
+                                   workReference.child(eventoClicado.getKey()).child("qtdIrao").setValue(eventoClicado.getQtdIrao() + 1);
                                    eventosIrei.add(eventoClicado.getKey());
                                    usuarioReference.child(usuarioLogado.getLogin()).child("irei").setValue(eventosIrei);
                                    linearInteresse.setVisibility(View.GONE);
@@ -591,7 +597,13 @@ public class EventoActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 if(eventoClicado.getKey() != null && !eventoClicado.getKey().equals("")) {
-                                    eventosReference.child(eventoClicado.getKey()).child("qtdTalvez").setValue(eventoClicado.getQtdTalvez()+1);
+                                    DatabaseReference workReference;
+                                    if(eventoClicado.isVerificado()){
+                                         workReference = eventosReference;
+                                    }else{
+                                         workReference = temporarioReference;
+                                    }
+                                    workReference.child(eventoClicado.getKey()).child("qtdTalvez").setValue(eventoClicado.getQtdTalvez()+1);
                                     eventosTalvez.add(eventoClicado.getKey());
                                     usuarioReference.child(usuarioLogado.getLogin()).child("talvez").setValue(eventosTalvez);
                                     linearInteresse.setVisibility(View.GONE);
